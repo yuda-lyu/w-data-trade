@@ -1,3 +1,4 @@
+import dataCalibrate from './dataCalibrate.mjs'
 import dataConvert from './dataConvert.mjs'
 import writeJson from './writeJson.mjs'
 import pickValue from './pickValue.mjs'
@@ -29,6 +30,7 @@ import calcVwap from './calcVwap.mjs'
 
 let r = {
     dataConvert,
+    dataCalibrate,
     writeJson,
     pickValue,
     diviProt,
