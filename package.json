@@ -1,0 +1,29 @@
+{
+  "name": "w-data-trade",
+  "version": "1.0.0",
+  "main": "dist/w-data-trade.umd.js",
+  "dependencies": {
+    "lodash-es": "^4.18.1",
+    "w-statistic": "^1.0.24",
+    "wsemi": "^1.8.67"
+  },
+  "devDependencies": {
+    "w-package-tools": "^1.1.12"
+  },
+  "scripts": {
+    "test": "mocha \"test/unit-*.test.mjs\" --parallel --timeout 60000",
+    "deploy": "gh-pages -d docs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yuda-lyu/w-data-trade.git"
+  },
+  "keywords": [
+    "package",
+    "tool",
+    "csv",
+    "nodejs"
+  ],
+  "author": "yuda-lyu(semisphere)",
+  "license": "MIT"
+}
