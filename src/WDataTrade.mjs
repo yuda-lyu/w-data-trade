@@ -1,4 +1,7 @@
+import dataConvert from './dataConvert.mjs'
+import writeJson from './writeJson.mjs'
 import pickValue from './pickValue.mjs'
+import diviProt from './diviProt.mjs'
 import caEma from './caEma.mjs'
 import calcAdx from './calcAdx.mjs'
 import calcAtr from './calcAtr.mjs'
@@ -25,7 +28,10 @@ import calcVwap from './calcVwap.mjs'
 
 
 let r = {
+    dataConvert,
+    writeJson,
     pickValue,
+    diviProt,
     caEma,
     calcAdx,
     calcAtr,

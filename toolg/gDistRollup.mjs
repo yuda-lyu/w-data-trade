@@ -16,8 +16,12 @@ async function rp() {
         // bNodePolyfill: true,
         // bMinify: false,
         globals: {
+            path: 'path',
+            fs: 'fs',
         },
         external: [
+            'path',
+            'fs',
         ],
     })
         .catch((err) => {

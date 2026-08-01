@@ -1,6 +1,6 @@
 {
   "name": "w-data-trade",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "dist/w-data-trade.umd.js",
   "dependencies": {
     "lodash-es": "^4.18.1",
