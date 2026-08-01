@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>calcEma.mjs - Documentation</title>
+    
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#caEma">caEma</a></li><li><a href="global.html#calcAdx">calcAdx</a></li><li><a href="global.html#calcAtr">calcAtr</a></li><li><a href="global.html#calcAts">calcAts</a></li><li><a href="global.html#calcBbpb">calcBbpb</a></li><li><a href="global.html#calcCandle">calcCandle</a></li><li><a href="global.html#calcCvd">calcCvd</a></li><li><a href="global.html#calcDonchian">calcDonchian</a></li><li><a href="global.html#calcEma">calcEma</a></li><li><a href="global.html#calcIchimoku">calcIchimoku</a></li><li><a href="global.html#calcKdj">calcKdj</a></li><li><a href="global.html#calcKeltner">calcKeltner</a></li><li><a href="global.html#calcKlr">calcKlr</a></li><li><a href="global.html#calcMa">calcMa</a></li><li><a href="global.html#calcMacd">calcMacd</a></li><li><a href="global.html#calcMfi">calcMfi</a></li><li><a href="global.html#calcObv">calcObv</a></li><li><a href="global.html#calcOrig">calcOrig</a></li><li><a href="global.html#calcRsi">calcRsi</a></li><li><a href="global.html#calcSupertrend">calcSupertrend</a></li><li><a href="global.html#calcVec">calcVec</a></li><li><a href="global.html#calcVortex">calcVortex</a></li><li><a href="global.html#calcVwap">calcVwap</a></li><li><a href="global.html#dataCalibrate">dataCalibrate</a></li><li><a href="global.html#dataConvert">dataConvert</a></li></ul>
+    
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">calcEma.mjs</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import each from 'lodash-es/each.js'
+import pickValue from './pickValue.mjs'
+import caEma from './caEma.mjs'
+
+
+/**
+ * 計算各週期之指數移動平均EMA(Exponential Moving Average)
+ *
+ * 各週期len為該期涵蓋之K線根數(以4hr K線為基準，1day=6根)，資料筆數不足該期len時，該期vs為空陣列
+ * 第1筆為種子值(取前len筆之算術平均SMA)，對應輸入之第len根，物件僅含{time,param}
+ * 其後各筆依EMA公式(alpha=2/(len+1))遞推，逐根對齊至最後一根，物件另含{value,diff,ratio}
+ * diff=EMA-現值，ratio=diff/現值(現值為0時ratio給0)
+ *
+ * Unit Test: {@link https://github.com/yuda-lyu/w-data-trade/blob/master/test/unit-calcEma.test.mjs Github}
+ * @function
+ * @param {Array} arr 輸入K線陣列，各元素需含time與計算所用之數值欄位
+ * @param {String} key 輸入計算所用數值欄位名稱字串，例如'Close'
+ * @param {Object} [opt={}] 輸入設定物件，預設{}
+ * @param {Boolean} [opt.norm=false] 輸入是否將param改為EMA與現值之偏離比例(EMA-現值)/現值布林值，預設false
+ * @returns {Promise} 回傳Promise，resolve為各期結果陣列，各元素為{period,len,vs}，vs內各元素為{time,param}(第1筆種子值僅含{time,param}，其後各筆另含{value,diff,ratio})
+ * @example
+ *
+ * let arr = [
+ *     { time: '2020-01-01T00:00:00', Open: 101, High: 101.5, Low: 100.5, Close: 101 },
+ *     { time: '2020-01-01T04:00:00', Open: 101, High: 105.17, Low: 99.28, Close: 103.45 },
+ *     { time: '2020-01-01T08:00:00', Open: 103.45, High: 108.74, Low: 101.35, Close: 106.64 },
+ *     { time: '2020-01-01T12:00:00', Open: 106.64, High: 111.54, Low: 104.68, Close: 109.58 },
+ *     { time: '2020-01-01T16:00:00', Open: 109.58, High: 112.76, Low: 108.18, Close: 111.37 },
+ *     { time: '2020-01-01T20:00:00', Open: 111.37, High: 112.3, Low: 110.72, Close: 111.65 },
+ * ]
+ *
+ * calcEma(arr, 'Close')
+ *     .then((rs) => {
+ *         console.log(rs[0].vs)
+ *         // => [ { time: '2020-01-01T20:00:00', param: 107.28166666666665 } ]
+ *     })
+ *
+ */
+let calcEma = (() => {
+
+    //import w from 'wsemi'
+
+
+    let kp = {
+        '1day': 6, // 1 day = 6 * 4 hours
+        '2day': 12, // 2 days = 12 * 4 hours
+        '4day': 24, // 4 days = 24 * 4 hours
+        '7day': 42, // 7 days = 42 * 4 hours
+        '15day': 90, // 15 days = 90 * 4 hours
+        '30day': 180, // 30 days = 180 * 4 hours
+    }
+
+    let caEmas = (vs, opt = {}) => {
+
+        //rrs
+        let rrs = []
+        each(kp, (len, period) => {
+
+            //caEma
+            let rs = caEma(vs, len, opt)
+
+            //push
+            rrs.push({
+                period,
+                len,
+                vs: rs,
+            })
+
+        })
+
+        return rrs
+    }
+
+    let calcEma = async (arr, key, opt = {}) => {
+        // arr = [
+        //   {"time":"2020-01-01T00:00:00","Open":7195,"High":7225.62,"Low":7145.01,"Close":7173.32,"Volumn":4657.972543,"CloseTime":"2020-01-01T03:59:59","QuoteAssetVolume":33441599.81960844,"NumberOfTrades":46046,"TakerBuyBaseAssetVolume":2161.591103,"TakerBuyQuoteAssetVolume":15520451.66291961},
+        //   {"time":"2020-01-01T04:00:00","Open":7173.75,"High":7208.41,"Low":7165.1,"Close":7195.23,"Volumn":2091.720176,"CloseTime":"2020-01-01T07:59:59","QuoteAssetVolume":15032938.06298061,"NumberOfTrades":29738,"TakerBuyBaseAssetVolume":1010.628114,"TakerBuyQuoteAssetVolume":7263338.98247078},
+        //   {"time":"2020-01-01T08:00:00","Open":7195.24,"High":7245,"Low":7175.46,"Close":7225.01,"Volumn":2833.74918,"CloseTime":"2020-01-01T11:59:59","QuoteAssetVolume":20445895.8017956,"NumberOfTrades":32476,"TakerBuyBaseAssetVolume":1548.865619,"TakerBuyQuoteAssetVolume":11176594.41972043},
+        //   {"time":"2020-01-01T12:00:00","Open":7225,"High":7236.27,"Low":7199.11,"Close":7209.83,"Volumn":2061.295051,"CloseTime":"2020-01-01T15:59:59","QuoteAssetVolume":14890182.27509305,"NumberOfTrades":29991,"TakerBuyBaseAssetVolume":1049.711236,"TakerBuyQuoteAssetVolume":7582850.37593562},
+        //   ...
+        // ]
+
+        //pickValue
+        let vs = pickValue(arr, key) //轉為 { time, value }
+
+        //caEmas
+        let rs = caEmas(vs, opt)
+
+        return rs
+    }
+
+    return calcEma
+})()
+
+
+export default calcEma
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.5</a> on Sat Aug 01 2026 21:47:04 GMT+0800 (台北標準時間) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+
+
+</body>
+</html>

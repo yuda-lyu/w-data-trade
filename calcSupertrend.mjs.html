@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>calcSupertrend.mjs - Documentation</title>
+    
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#caEma">caEma</a></li><li><a href="global.html#calcAdx">calcAdx</a></li><li><a href="global.html#calcAtr">calcAtr</a></li><li><a href="global.html#calcAts">calcAts</a></li><li><a href="global.html#calcBbpb">calcBbpb</a></li><li><a href="global.html#calcCandle">calcCandle</a></li><li><a href="global.html#calcCvd">calcCvd</a></li><li><a href="global.html#calcDonchian">calcDonchian</a></li><li><a href="global.html#calcEma">calcEma</a></li><li><a href="global.html#calcIchimoku">calcIchimoku</a></li><li><a href="global.html#calcKdj">calcKdj</a></li><li><a href="global.html#calcKeltner">calcKeltner</a></li><li><a href="global.html#calcKlr">calcKlr</a></li><li><a href="global.html#calcMa">calcMa</a></li><li><a href="global.html#calcMacd">calcMacd</a></li><li><a href="global.html#calcMfi">calcMfi</a></li><li><a href="global.html#calcObv">calcObv</a></li><li><a href="global.html#calcOrig">calcOrig</a></li><li><a href="global.html#calcRsi">calcRsi</a></li><li><a href="global.html#calcSupertrend">calcSupertrend</a></li><li><a href="global.html#calcVec">calcVec</a></li><li><a href="global.html#calcVortex">calcVortex</a></li><li><a href="global.html#calcVwap">calcVwap</a></li><li><a href="global.html#dataCalibrate">dataCalibrate</a></li><li><a href="global.html#dataConvert">dataConvert</a></li></ul>
+    
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">calcSupertrend.mjs</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import isNumber from 'lodash-es/isNumber.js'
+import size from 'lodash-es/size.js'
+import get from 'lodash-es/get.js'
+import each from 'lodash-es/each.js'
+import diviProt from './diviProt.mjs'
+
+
+/**
+ * 計算各週期之Supertrend(Olivier Seban ATR通道趨勢指標)
+ *
+ * 各週期kp值為{len,mult}物件，len為ATR平滑期數(以4hr K線為基準之根數)，mult為ATR通道厚度倍數；資料筆數n小於len+1時，該期vs為空陣列
+ * TR(真實區間)=max(|High-Low|,|High-前一根Close|,|Low-前一根Close|)，ATR種子為第1至len根TR之算術平均，其後以Wilder平滑遞推(atr=(atr*(len-1)+TR)/len)
+ * basicUpper=(High+Low)/2+mult*ATR，basicLower=(High+Low)/2-mult*ATR
+ * finalUpper僅在basicUpper較前值小或前一根Close高於前值時更新為basicUpper，否則鎖死沿用前值；finalLower僅在basicLower較前值大或前一根Close低於前值時更新為basicLower，否則鎖死沿用前值
+ * 方向dir沿續前一根，多頭且Close跌破finalLower時翻空，空頭且Close突破finalUpper時翻多；首根依Close是否小於等於finalUpper判定初始方向
+ * ST線line：多頭取finalLower，空頭取finalUpper
+ * stDistance=(Close-line)/Close，Close=0時給0
+ * stDistanceMod=diviProt(Close+opt.plusClose-line, Close+opt.plusClose)，opt.plusClose=0時退化為stDistance；diviProt對分母絕對值小於0.00001時會鎖定為±0.00001(保留正負號)以避免除以0爆炸
+ * 各期第1筆對應輸入之第len根，其後逐根對齊至最後一根
+ *
+ * Unit Test: {@link https://github.com/yuda-lyu/w-data-trade/blob/master/test/unit-calcSupertrend.test.mjs Github}
+ * @function
+ * @param {Array} arr 輸入K線陣列，各元素需含time、High、Low、Close等欄位
+ * @param {String} key 輸入計算所用數值欄位名稱字串，目前未實際使用(內部固定採用High、Low、Close)
+ * @param {Object} [opt={}] 輸入設定物件，預設{}
+ * @param {Number} [opt.plusClose=0] 輸入stDistanceMod計算時對Close之偏移量，用以避免Close接近0時除法爆炸，預設0
+ * @returns {Promise} 回傳Promise，resolve為各期結果陣列，各元素為{period,len,vs}，vs內各元素為{time,stDistance,stDistanceMod}
+ * @example
+ *
+ * let arr = [
+ *     { time: '2020-01-01T00:00:00', Open: 10, High: 10, Low: 10, Close: 10 },
+ *     { time: '2020-01-01T04:00:00', Open: 10, High: 12, Low: 10, Close: 12 },
+ *     { time: '2020-01-01T08:00:00', Open: 12, High: 12, Low: 11, Close: 11 },
+ *     { time: '2020-01-01T12:00:00', Open: 11, High: 13, Low: 11, Close: 13 },
+ * ]
+ *
+ * calcSupertrend(arr, 'Close')
+ *     .then((rs) => {
+ *         console.log(rs[0])
+ *         // => {
+ *         //   period: '12hr',
+ *         //   len: 3,
+ *         //   vs: [ { time: '2020-01-01T12:00:00', stDistance: -0.17948717948717954, stDistanceMod: -0.17948717948717954 } ]
+ *         // }
+ *     })
+ *
+ */
+let calcSupertrend = (() => {
+
+    //Supertrend 各 period 對應 (len, mult) 配對 (4hr K 線)
+    //len  = ATR 平滑期數 (n × 4hr)
+    //mult = ATR 通道厚度倍數 (k)
+    //設計原則: period 越長 → ATR 反應越平滑 + 通道越厚, 兩者同向降翻轉敏感度
+    //錨點: 1day=(6,3) 對應 Olivier Seban 原版 (10,3); 4day=(24,4) 對應 d12 grid 最佳 (20,4)
+    let kp = {
+        '12hr': { len: 3, mult: 2 },
+        '16hr': { len: 4, mult: 2 },
+        '20hr': { len: 5, mult: 2.5 },
+        '1day': { len: 6, mult: 3 },
+        '2day': { len: 12, mult: 3 },
+        '4day': { len: 24, mult: 4 },
+        '7day': { len: 42, mult: 4 },
+        '15day': { len: 90, mult: 5 },
+        '30day': { len: 180, mult: 5 },
+    }
+
+    let caSupertrend = (arr, len, mult, opt = {}) => {
+
+        //check
+        if (!isNumber(len)) {
+            throw new Error(`len is not a number`)
+        }
+        if (!isNumber(mult)) {
+            throw new Error(`mult is not a number`)
+        }
+
+        //n
+        let n = size(arr)
+
+        //check
+        if (n &lt; len + 1) {
+            return []
+        }
+
+        //plusClose
+        let plusClose = get(opt, 'plusClose', 0)
+
+        let kTime = 'time'
+        let kHigh = 'High'
+        let kLow = 'Low'
+        let kClose = 'Close'
+
+        //計算各根 TR (從 i=1 開始, 需要前一根 Close)
+        let trs = new Array(n).fill(0)
+        for (let i = 1; i &lt; n; i++) {
+            let h = arr[i][kHigh]
+            let l = arr[i][kLow]
+            let cPrev = arr[i - 1][kClose]
+            if (!isNumber(h)) {
+                throw new Error(`invalid h[${h}]`)
+            }
+            if (!isNumber(l)) {
+                throw new Error(`invalid l[${l}]`)
+            }
+            if (!isNumber(cPrev)) {
+                throw new Error(`invalid cPrev[${cPrev}]`)
+            }
+            let tr = Math.max(Math.abs(h - l), Math.abs(h - cPrev), Math.abs(l - cPrev))
+            trs[i] = tr
+        }
+
+        //種子 ATR: 前 len 根 TR 的 SMA (對齊 calcAtr 風格)
+        let sumTr = 0
+        for (let i = 1; i &lt;= len; i++) {
+            sumTr += trs[i]
+        }
+        let atrPrev = sumTr / len
+
+        //rs
+        let rs = []
+
+        //遞推狀態
+        let finalUpperPrev = null
+        let finalLowerPrev = null
+        let closePrev = arr[len - 1][kClose] //「前一根 Close」用於 finalBand 重置判斷
+        let dirPrev = null
+
+        for (let i = len; i &lt; n; i++) {
+
+            //當前根 ATR (Wilder smoothing): i=len 用種子, 之後遞推
+            let atrNow
+            if (i === len) {
+                atrNow = atrPrev
+            }
+            else {
+                atrNow = (atrPrev * (len - 1) + trs[i]) / len
+            }
+
+            let h = arr[i][kHigh]
+            let l = arr[i][kLow]
+            let c = arr[i][kClose]
+
+            //check
+            if (!isNumber(c)) {
+                throw new Error(`invalid c[${c}]`)
+            }
+
+            //basic 通道
+            let hl2 = (h + l) / 2
+            let basicUpper = hl2 + mult * atrNow
+            let basicLower = hl2 - mult * atrNow
+
+            //final upper (鎖死: 只能下移或上根穿越時重置)
+            let finalUpper
+            if (finalUpperPrev === null) {
+                finalUpper = basicUpper
+            }
+            else {
+                if (basicUpper &lt; finalUpperPrev || closePrev > finalUpperPrev) {
+                    finalUpper = basicUpper
+                }
+                else {
+                    finalUpper = finalUpperPrev
+                }
+            }
+
+            //final lower (鎖死: 只能上移或上根跌破時重置)
+            let finalLower
+            if (finalLowerPrev === null) {
+                finalLower = basicLower
+            }
+            else {
+                if (basicLower > finalLowerPrev || closePrev &lt; finalLowerPrev) {
+                    finalLower = basicLower
+                }
+                else {
+                    finalLower = finalLowerPrev
+                }
+            }
+
+            //direction: 沿續前根, 收盤穿越對側通道時翻轉
+            let dir
+            if (dirPrev === null) {
+                //初始化: close &lt;= finalUpper → 視為空頭起點; 否則多頭
+                dir = c &lt;= finalUpper ? -1 : 1
+            }
+            else {
+                dir = dirPrev
+                if (dirPrev === 1 &amp;&amp; c &lt; finalLower) {
+                    dir = -1
+                }
+                else if (dirPrev === -1 &amp;&amp; c > finalUpper) {
+                    dir = 1
+                }
+            }
+
+            //ST 線: 多頭用 finalLower (下方支撐), 空頭用 finalUpper (上方壓力)
+            let line = dir === 1 ? finalLower : finalUpper
+
+            //stDistance = (Close - line) / Close  (原版, 保留供日後對比)
+            //多頭: Close > line → 正值 (buffer 大小); 空頭: Close &lt; line → 負值
+            let stDistance = c !== 0 ? (c - line) / c : 0
+
+            //stDistanceMod = (Close+plusClose - line) / (Close+plusClose)
+            //  plusClose=0 時退化成原版 (c-line)/c (price 預設用法)
+            //  plusClose>0 時把 Close 偏移正方向, 對 index OHLC (close 可 ≈0 或負) 修正除法爆炸
+            //  diviProt 額外保護: |分母| &lt; 0.00001 時 floor 至 ±0.00001 (保留 sign)
+            let cp = c + plusClose
+            let stDistanceMod = diviProt(cp - line, cp)
+
+            //push (內含方向(sign) + 強度(magnitude), 對齊 d05 DE 搜門檻架構)
+            rs.push({
+                time: arr[i][kTime],
+                stDistance,
+                stDistanceMod,
+            })
+
+            //next iter
+            finalUpperPrev = finalUpper
+            finalLowerPrev = finalLower
+            closePrev = c
+            dirPrev = dir
+            atrPrev = atrNow
+
+        }
+        // console.log('rs', rs)
+
+        return rs
+    }
+
+    let caSupertrends = (arr, opt = {}) => {
+
+        //rrs
+        let rrs = []
+        each(kp, (cfg, period) => {
+
+            //caSupertrend
+            let rs = caSupertrend(arr, cfg.len, cfg.mult, opt)
+
+            //push
+            rrs.push({
+                period,
+                len: cfg.len,
+                vs: rs,
+            })
+            // console.log('rrs', rrs)
+
+        })
+
+        return rrs
+    }
+
+    let calcSupertrend = async(arr, key, opt = {}) => {
+        // arr = [
+        //   {"time":"2020-01-01T00:00:00","Open":7195,"High":7225.62,"Low":7145.01,"Close":7173.32,...},
+        //   {"time":"2020-01-01T04:00:00","Open":7173.75,"High":7208.41,"Low":7165.1,"Close":7195.23,...},
+        //   ...
+        // ]
+
+        //caSupertrends
+        let rs = caSupertrends(arr, opt)
+
+        return rs
+    }
+
+    return calcSupertrend
+})()
+
+
+export default calcSupertrend
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.5</a> on Sat Aug 01 2026 21:47:04 GMT+0800 (台北標準時間) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+
+
+</body>
+</html>

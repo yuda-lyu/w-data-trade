@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>calcKdj.mjs - Documentation</title>
+    
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#caEma">caEma</a></li><li><a href="global.html#calcAdx">calcAdx</a></li><li><a href="global.html#calcAtr">calcAtr</a></li><li><a href="global.html#calcAts">calcAts</a></li><li><a href="global.html#calcBbpb">calcBbpb</a></li><li><a href="global.html#calcCandle">calcCandle</a></li><li><a href="global.html#calcCvd">calcCvd</a></li><li><a href="global.html#calcDonchian">calcDonchian</a></li><li><a href="global.html#calcEma">calcEma</a></li><li><a href="global.html#calcIchimoku">calcIchimoku</a></li><li><a href="global.html#calcKdj">calcKdj</a></li><li><a href="global.html#calcKeltner">calcKeltner</a></li><li><a href="global.html#calcKlr">calcKlr</a></li><li><a href="global.html#calcMa">calcMa</a></li><li><a href="global.html#calcMacd">calcMacd</a></li><li><a href="global.html#calcMfi">calcMfi</a></li><li><a href="global.html#calcObv">calcObv</a></li><li><a href="global.html#calcOrig">calcOrig</a></li><li><a href="global.html#calcRsi">calcRsi</a></li><li><a href="global.html#calcSupertrend">calcSupertrend</a></li><li><a href="global.html#calcVec">calcVec</a></li><li><a href="global.html#calcVortex">calcVortex</a></li><li><a href="global.html#calcVwap">calcVwap</a></li><li><a href="global.html#dataCalibrate">dataCalibrate</a></li><li><a href="global.html#dataConvert">dataConvert</a></li></ul>
+    
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">calcKdj.mjs</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import isNumber from 'lodash-es/isNumber.js'
+import size from 'lodash-es/size.js'
+import last from 'lodash-es/last.js'
+import each from 'lodash-es/each.js'
+
+
+/**
+ * 計算各週期之KDJ隨機指標(Stochastic Oscillator KDJ)
+ *
+ * 各週期len即RSV回看期數(以4hr K線為基準，1day=6根)，資料筆數不足該期len時，該期vs為空陣列
+ * K/D以EMA平滑遞推(kAlpha=dAlpha=1/3)，K與D初始值(seed)皆為50
+ * RSV=(Close-Ln)/(Hn-Ln)*100，Hn/Ln為視窗內(最近len根)之最高High/最低Low，Hn===Ln時RSV取中性值50(避免除以0)
+ * 輸出自輸入索引len-1起(視窗未滿之根不輸出)，其後逐根對齊至最後一根
+ * opt目前未被讀取(本函式尚未提供可調整之設定項)
+ *
+ * Unit Test: {@link https://github.com/yuda-lyu/w-data-trade/blob/master/test/unit-calcKdj.test.mjs Github}
+ * @function
+ * @param {Array} arr 輸入K線陣列，各元素需含time、High、Low、Close欄位
+ * @param {String} key 輸入計算所用數值欄位名稱字串，例如'Close'(僅供介面一致性，本函式實際計算取用High/Low/Close)
+ * @param {Object} [opt={}] 輸入設定物件，預設{}
+ * @returns {Promise} 回傳Promise，resolve為各期結果陣列，各元素為{period,len,vs}，vs內各元素為{time,K,D,J,KminusD}
+ * @example
+ *
+ * let arr = [
+ *     { time: '2020-01-01T00:00:00', Open: 101, High: 101.5, Low: 100.5, Close: 101 },
+ *     { time: '2020-01-01T04:00:00', Open: 101, High: 105.17, Low: 99.28, Close: 103.45 },
+ *     { time: '2020-01-01T08:00:00', Open: 103.45, High: 108.74, Low: 101.35, Close: 106.64 },
+ *     { time: '2020-01-01T12:00:00', Open: 106.64, High: 111.54, Low: 104.68, Close: 109.58 },
+ *     { time: '2020-01-01T16:00:00', Open: 109.58, High: 112.76, Low: 108.18, Close: 111.37 },
+ *     { time: '2020-01-01T20:00:00', Open: 111.37, High: 112.3, Low: 110.72, Close: 111.65 },
+ * ]
+ *
+ * calcKdj(arr, 'Close')
+ *     .then((rs) => {
+ *         console.log(rs[0].vs)
+ *         // => [
+ *         //   {
+ *         //     time: '2020-01-01T20:00:00',
+ *         //     K: 63.92185954500495,
+ *         //     D: 54.640619848334985,
+ *         //     J: 82.48433893834486,
+ *         //     KminusD: 9.281239696669964
+ *         //   }
+ *         // ]
+ *     })
+ *
+ */
+let calcKdj = (() => {
+
+    // import w from 'wsemi'
+    // import pickValue from './pickValue.mjs'
+
+
+    let kp = {
+        '1day': 6, // 1 day = 6 * 4 hours
+        '2day': 12, // 2 days = 12 * 4 hours
+        '4day': 24, // 4 days = 24 * 4 hours
+        '7day': 42, // 7 days = 42 * 4 hours
+        '15day': 90, // 15 days = 90 * 4 hours
+        '30day': 180, // 30 days = 180 * 4 hours
+    }
+
+    let caKdj = (arr, len, opt = {}) => {
+
+        //check
+        if (!isNumber(len)) {
+            throw new Error(`len is not a number`)
+        }
+
+        //n
+        let n = size(arr)
+
+        //check
+        if (n &lt; len) {
+            return []
+        }
+
+        let kTime = 'time'
+        let kHigh = 'High'
+        let kLow = 'Low'
+        let kClose = 'Close'
+
+        let period = len //RSV回看期數
+        let kAlpha = 1 / 3 //K平滑係數(EMA)
+        let dAlpha = 1 / 3 //D平滑係數(EMA)
+        let seed = 50 //K與D初始值
+
+        let K = seed
+        let D = seed
+        let J = null
+
+        //雙端佇列維持period內最高與最低值索引
+        let hiDeque = [] //存放可能的最高價之索引, 單調遞增索引, 為遞減
+        let loDeque = [] //存放可能的最低價之索引, 單調遞增索引, 為遞增
+
+        //rs
+        let rs = []
+        for (let i = 0; i &lt; n; i++) {
+
+            //h, l, c
+            let h = arr[i][kHigh]
+            let l = arr[i][kLow]
+            let c = arr[i][kClose]
+
+            //check
+            if (!isNumber(h)) {
+                throw new Error(`invalid h[${h}]`)
+            }
+            if (!isNumber(l)) {
+                throw new Error(`invalid l[${l}]`)
+            }
+            if (!isNumber(c)) {
+                throw new Error(`invalid c[${c}]`)
+            }
+
+            //維護最高價deque, 偵測尾端High值, 若比當前h小則移除, 再把i推入
+            while (size(hiDeque) > 0 &amp;&amp; arr[last(hiDeque)][kHigh] &lt;= h) {
+                hiDeque.pop() //從尾端移除
+            }
+            hiDeque.push(i)
+
+            //若頭部索引超出視窗起始指標(i-period+1), 則須移除
+            while (size(hiDeque) > 0 &amp;&amp; hiDeque[0] &lt; (i - period + 1)) {
+                hiDeque.shift() //從頭端移除
+            }
+
+            //維護最低價deque, 偵測尾端Low值, 若比當前l大則移除, 再把i推入
+            while (size(loDeque) > 0 &amp;&amp; arr[last(loDeque)][kLow] >= l) {
+                loDeque.pop() //從尾端移除
+            }
+            loDeque.push(i)
+
+            //若頭部索引超出視窗起始指標(i-period+1), 則須移除
+            while (size(loDeque) > 0 &amp;&amp; loDeque[0] &lt; (i - period + 1)) {
+                loDeque.shift() //從頭端移除
+            }
+
+            //check, 視窗未滿足period
+            if (i &lt; period - 1) {
+                // if (fillHead) add(i, null, null)
+                continue
+            }
+
+            //視窗內最高/最低
+            let Hn = arr[hiDeque[0]][kHigh]
+            let Ln = arr[loDeque[0]][kLow]
+
+            //RSV
+            let RSV = null
+            if (Hn === Ln) {
+                //避免除以0 , 視窗內價格不變取中性50
+                RSV = 50
+            }
+            else {
+                RSV = ((c - Ln) / (Hn - Ln)) * 100
+            }
+
+            //平滑計算K,D
+            K = kAlpha * RSV + (1 - kAlpha) * K
+            D = dAlpha * K + (1 - dAlpha) * D
+            J = 3 * K - 2 * D
+
+            //push
+            rs.push({
+                time: arr[i][kTime],
+                K,
+                D,
+                J,
+                KminusD: K - D,
+            })
+
+        }
+        // console.log('rs', rs)
+
+        return rs
+    }
+
+    let caKdjs = (arr, opt = {}) => {
+
+        //rrs
+        let rrs = []
+        each(kp, (len, period) => {
+
+            //caKdj
+            let rs = caKdj(arr, len, opt)
+
+            //push
+            rrs.push({
+                period,
+                len,
+                vs: rs,
+            })
+            // console.log('rrs', rrs)
+
+        })
+
+        return rrs
+    }
+
+    let calcKdj = async(arr, key, opt = {}) => {
+        // arr = [
+        //   {"time":"2020-01-01T00:00:00","Open":7195,"High":7225.62,"Low":7145.01,"Close":7173.32,"Volumn":4657.972543,"CloseTime":"2020-01-01T03:59:59","QuoteAssetVolume":33441599.81960844,"NumberOfTrades":46046,"TakerBuyBaseAssetVolume":2161.591103,"TakerBuyQuoteAssetVolume":15520451.66291961},
+        //   {"time":"2020-01-01T04:00:00","Open":7173.75,"High":7208.41,"Low":7165.1,"Close":7195.23,"Volumn":2091.720176,"CloseTime":"2020-01-01T07:59:59","QuoteAssetVolume":15032938.06298061,"NumberOfTrades":29738,"TakerBuyBaseAssetVolume":1010.628114,"TakerBuyQuoteAssetVolume":7263338.98247078},
+        //   {"time":"2020-01-01T08:00:00","Open":7195.24,"High":7245,"Low":7175.46,"Close":7225.01,"Volumn":2833.74918,"CloseTime":"2020-01-01T11:59:59","QuoteAssetVolume":20445895.8017956,"NumberOfTrades":32476,"TakerBuyBaseAssetVolume":1548.865619,"TakerBuyQuoteAssetVolume":11176594.41972043},
+        //   {"time":"2020-01-01T12:00:00","Open":7225,"High":7236.27,"Low":7199.11,"Close":7209.83,"Volumn":2061.295051,"CloseTime":"2020-01-01T15:59:59","QuoteAssetVolume":14890182.27509305,"NumberOfTrades":29991,"TakerBuyBaseAssetVolume":1049.711236,"TakerBuyQuoteAssetVolume":7582850.37593562},
+        //   ...
+        // ]
+
+        // //pickValue
+        // let vs = pickValue(arr, key) //轉為 { time, value }
+
+        //caKdjs
+        let rs = caKdjs(arr, opt)
+
+        return rs
+    }
+
+    return calcKdj
+})()
+
+
+export default calcKdj
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.5</a> on Sat Aug 01 2026 21:47:04 GMT+0800 (台北標準時間) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+
+
+</body>
+</html>
