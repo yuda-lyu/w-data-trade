@@ -1,4 +1,51 @@
-import isNumber from 'lodash-es/isNumber.js'
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>calcIchimoku.mjs - Documentation</title>
+    
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#caEma">caEma</a></li><li><a href="global.html#calcAdx">calcAdx</a></li><li><a href="global.html#calcAtr">calcAtr</a></li><li><a href="global.html#calcAts">calcAts</a></li><li><a href="global.html#calcBbpb">calcBbpb</a></li><li><a href="global.html#calcCandle">calcCandle</a></li><li><a href="global.html#calcCvd">calcCvd</a></li><li><a href="global.html#calcDonchian">calcDonchian</a></li><li><a href="global.html#calcEma">calcEma</a></li><li><a href="global.html#calcIchimoku">calcIchimoku</a></li><li><a href="global.html#calcKdj">calcKdj</a></li><li><a href="global.html#calcKeltner">calcKeltner</a></li><li><a href="global.html#calcKlr">calcKlr</a></li><li><a href="global.html#calcMa">calcMa</a></li><li><a href="global.html#calcMacd">calcMacd</a></li><li><a href="global.html#calcMfi">calcMfi</a></li><li><a href="global.html#calcObv">calcObv</a></li><li><a href="global.html#calcOrig">calcOrig</a></li><li><a href="global.html#calcRsi">calcRsi</a></li><li><a href="global.html#calcSupertrend">calcSupertrend</a></li><li><a href="global.html#calcVec">calcVec</a></li><li><a href="global.html#calcVortex">calcVortex</a></li><li><a href="global.html#calcVwap">calcVwap</a></li><li><a href="global.html#dataCalibrate">dataCalibrate</a></li><li><a href="global.html#dataConvert">dataConvert</a></li></ul>
+    
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">calcIchimoku.mjs</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import isNumber from 'lodash-es/isNumber.js'
 import get from 'lodash-es/get.js'
 import size from 'lodash-es/size.js'
 import each from 'lodash-es/each.js'
@@ -9,7 +56,7 @@ import diviProt from './diviProt.mjs'
  * 計算各週期之一目均衡表Ichimoku Cloud(Ichimoku Kinko Hyo)
  *
  * 三層lookback依經典9:26:52比例縮放，各期(period)對應之kp設定為{tenkan,kijun,senkouB}三參數配對(單位皆為以4hr K線為基準之根數)，
- * period標籤本身即對應senkouB(最長lookback)所涵蓋之天數，僅保留4day~30day四期(短於4day時tenkan會<4而失去意義)：
+ * period標籤本身即對應senkouB(最長lookback)所涵蓋之天數，僅保留4day~30day四期(短於4day時tenkan會&lt;4而失去意義)：
  *   '4day':  { tenkan: 4,  kijun: 12, senkouB: 24 }
  *   '7day':  { tenkan: 7,  kijun: 21, senkouB: 42 }
  *   '15day': { tenkan: 16, kijun: 45, senkouB: 90 }
@@ -34,7 +81,7 @@ import diviProt from './diviProt.mjs'
  *
  * //最短之4day期需24根senkouB且再回看kijun根，故至少需36根K線，此處給40根
  * let arr = []
- * for (let i = 0; i < 40; i++) {
+ * for (let i = 0; i &lt; 40; i++) {
  *     let c = 100 + Math.sin(i * 0.7) * 5 + Math.cos(i * 0.31) * 3
  *     arr.push({
  *         time: new Date(Date.UTC(2020, 0, 1) + i * 4 * 3600 * 1000).toISOString().slice(0, 19),
@@ -79,7 +126,7 @@ let calcIchimoku = (() => {
     //Kijun   = SenkouB / 2                (中期趨勢線)
     //SenkouB = period × 6                 (最長 lookback, 雲頂/底候選之一)
     //
-    //僅保留 4day~30day, 短於 4day 時 Tenkan 會 < 4 失意義 (e.g. 1day 對應 Tenkan=1)
+    //僅保留 4day~30day, 短於 4day 時 Tenkan 會 &lt; 4 失意義 (e.g. 1day 對應 Tenkan=1)
     //
     //keyOut:
     //  cloudDist  = (Close - cloudMid) / Close   (Close 相對 cloud 中心偏離 %, 正=多/負=空)
@@ -103,13 +150,13 @@ let calcIchimoku = (() => {
     let hhll = (arr, startIdx, endIdx, kHigh, kLow) => {
         let hi = -Infinity
         let lo = Infinity
-        for (let j = startIdx; j <= endIdx; j++) {
+        for (let j = startIdx; j &lt;= endIdx; j++) {
             let h = arr[j][kHigh]
             let l = arr[j][kLow]
             if (h > hi) {
                 hi = h
             }
-            if (l < lo) {
+            if (l &lt; lo) {
                 lo = l
             }
         }
@@ -153,7 +200,7 @@ let calcIchimoku = (() => {
         //  SenkouA: 需 i-kijun 之 Tenkan/Kijun 都已存在 → i 至少 2*kijun-1
         //  SenkouB: 需 i-kijun 期回看 senkouB 根 → i 至少 kijun + senkouB - 1
         let startIdx = Math.max(2 * kijun - 1, kijun + senkouB - 1)
-        if (n < startIdx + 1) {
+        if (n &lt; startIdx + 1) {
             return []
         }
 
@@ -165,7 +212,7 @@ let calcIchimoku = (() => {
         //先 forward 算 Tenkan, Kijun 全序列
         let tenkans = new Array(n).fill(null)
         let kijuns = new Array(n).fill(null)
-        for (let i = 0; i < n; i++) {
+        for (let i = 0; i &lt; n; i++) {
             if (i >= tenkan - 1) {
                 tenkans[i] = hhll(arr, i - tenkan + 1, i, kHigh, kLow)
             }
@@ -179,14 +226,14 @@ let calcIchimoku = (() => {
         //SenkouB[i] = hhll(High/Low, i-kijun-senkouB+1, i-kijun)
         let senkouAs = new Array(n).fill(null)
         let senkouBs = new Array(n).fill(null)
-        for (let i = 0; i < n; i++) {
+        for (let i = 0; i &lt; n; i++) {
             let srcIdx = i - kijun
-            if (srcIdx < 0) {
+            if (srcIdx &lt; 0) {
                 continue
             }
             let t = tenkans[srcIdx]
             let k = kijuns[srcIdx]
-            if (t !== null && k !== null) {
+            if (t !== null &amp;&amp; k !== null) {
                 senkouAs[i] = (t + k) / 2
             }
             if (srcIdx >= senkouB - 1) {
@@ -196,7 +243,7 @@ let calcIchimoku = (() => {
 
         //rs
         let rs = []
-        for (let i = startIdx; i < n; i++) {
+        for (let i = startIdx; i &lt; n; i++) {
             let t = tenkans[i]
             let k = kijuns[i]
             let sa = senkouAs[i]
@@ -229,7 +276,7 @@ let calcIchimoku = (() => {
             //*Mod = 對 close 加 plusClose 為穩定分母, 對 index OHLC (close 可 ≈0 或負) 修正除法爆炸
             //  plusClose=0 時退化成原版 (price 預設用法)
             //  plusClose>0 時把 close 偏移正方向, 解決 close ≈ 0 之 outlier
-            //  diviProt 額外保護: |分母| < 0.00001 時 floor 至 ±0.00001 (保留 sign)
+            //  diviProt 額外保護: |分母| &lt; 0.00001 時 floor 至 ±0.00001 (保留 sign)
             let cp = c + plusClose
             let cloudMidp = cloudMid + plusCloudMid
             let bandWidthp = bandWidth + plusBandWidth
@@ -292,3 +339,28 @@ let calcIchimoku = (() => {
 
 
 export default calcIchimoku
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.5</a> on Sat Aug 01 2026 21:47:04 GMT+0800 (台北標準時間) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+
+
+</body>
+</html>

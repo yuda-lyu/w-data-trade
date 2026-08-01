@@ -1,4 +1,51 @@
-import isNumber from 'lodash-es/isNumber.js'
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>calcMacd.mjs - Documentation</title>
+    
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#caEma">caEma</a></li><li><a href="global.html#calcAdx">calcAdx</a></li><li><a href="global.html#calcAtr">calcAtr</a></li><li><a href="global.html#calcAts">calcAts</a></li><li><a href="global.html#calcBbpb">calcBbpb</a></li><li><a href="global.html#calcCandle">calcCandle</a></li><li><a href="global.html#calcCvd">calcCvd</a></li><li><a href="global.html#calcDonchian">calcDonchian</a></li><li><a href="global.html#calcEma">calcEma</a></li><li><a href="global.html#calcIchimoku">calcIchimoku</a></li><li><a href="global.html#calcKdj">calcKdj</a></li><li><a href="global.html#calcKeltner">calcKeltner</a></li><li><a href="global.html#calcKlr">calcKlr</a></li><li><a href="global.html#calcMa">calcMa</a></li><li><a href="global.html#calcMacd">calcMacd</a></li><li><a href="global.html#calcMfi">calcMfi</a></li><li><a href="global.html#calcObv">calcObv</a></li><li><a href="global.html#calcOrig">calcOrig</a></li><li><a href="global.html#calcRsi">calcRsi</a></li><li><a href="global.html#calcSupertrend">calcSupertrend</a></li><li><a href="global.html#calcVec">calcVec</a></li><li><a href="global.html#calcVortex">calcVortex</a></li><li><a href="global.html#calcVwap">calcVwap</a></li><li><a href="global.html#dataCalibrate">dataCalibrate</a></li><li><a href="global.html#dataConvert">dataConvert</a></li></ul>
+    
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">calcMacd.mjs</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import isNumber from 'lodash-es/isNumber.js'
 import size from 'lodash-es/size.js'
 import get from 'lodash-es/get.js'
 import each from 'lodash-es/each.js'
@@ -24,7 +71,7 @@ import caEma from './caEma.mjs'
  *
  * //收盤價1至34之等差序列，time自2020-01-01T00:00:00起每根間隔4小時
  * let arr = []
- * for (let i = 0; i < 34; i++) {
+ * for (let i = 0; i &lt; 34; i++) {
  *     let d = new Date(Date.UTC(2020, 0, 1) + i * 4 * 3600 * 1000)
  *     arr.push({ time: d.toISOString().slice(0, 19), Close: i + 1 })
  * }
@@ -67,7 +114,7 @@ let calcMacd = (() => {
         let n = size(arr)
 
         //check
-        if (n < len) {
+        if (n &lt; len) {
             return []
         }
 
@@ -85,13 +132,13 @@ let calcMacd = (() => {
         let signalPeriod = Math.floor(len * 9)
 
         //check
-        if (n < slowPeriod + signalPeriod - 1) {
+        if (n &lt; slowPeriod + signalPeriod - 1) {
             return []
         }
 
         //ensure
-        if (slowPeriod <= fastPeriod) slowPeriod = fastPeriod + 1
-        if (signalPeriod < 1) signalPeriod = 1
+        if (slowPeriod &lt;= fastPeriod) slowPeriod = fastPeriod + 1
+        if (signalPeriod &lt; 1) signalPeriod = 1
         // console.log('fastPeriod', fastPeriod)
         // console.log('slowPeriod', slowPeriod)
         // console.log('signalPeriod', signalPeriod)
@@ -111,7 +158,7 @@ let calcMacd = (() => {
 
         //difs(Fast-Slow)
         let difs = []
-        for (let i = slowPeriod - 1; i < n; i++) {
+        for (let i = slowPeriod - 1; i &lt; n; i++) {
 
             //t
             let t = get(vs, `${i}.${kTime}`, null)
@@ -132,7 +179,7 @@ let calcMacd = (() => {
             // console.log('s', s)
 
             //push
-            if (isNumber(f) && isNumber(s)) {
+            if (isNumber(f) &amp;&amp; isNumber(s)) {
                 let v = f - s
                 difs.push({
                     time: t,
@@ -160,7 +207,7 @@ let calcMacd = (() => {
 
         //rs
         let rs = []
-        for (let i = 0; i < n; i++) {
+        for (let i = 0; i &lt; n; i++) {
 
             //t
             let t = get(vs, `${i}.time`, null)
@@ -182,7 +229,7 @@ let calcMacd = (() => {
 
             //osc
             let osc = null // Histogram (Bar)
-            if (isNumber(dif) && isNumber(dem)) {
+            if (isNumber(dif) &amp;&amp; isNumber(dem)) {
                 osc = dif - dem
             }
             // console.log('osc', osc)
@@ -190,7 +237,7 @@ let calcMacd = (() => {
             //DIF: 快線, 趨勢有沒有開始動
             //DEM(DEA): 慢線, 趨勢有沒有被確認
             //OSC(MACD柱狀): 動能, 兩者差距有多大
-            if (isNumber(dif) && isNumber(dem) && isNumber(osc)) {
+            if (isNumber(dif) &amp;&amp; isNumber(dem) &amp;&amp; isNumber(osc)) {
                 rs.push({
                     time: t,
                     DIF: dif,
@@ -249,3 +296,28 @@ let calcMacd = (() => {
 
 
 export default calcMacd
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.5</a> on Sat Aug 01 2026 21:47:04 GMT+0800 (台北標準時間) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+
+
+</body>
+</html>

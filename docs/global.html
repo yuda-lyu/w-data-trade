@@ -1,0 +1,8919 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>Global - Documentation</title>
+    
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#caEma">caEma</a></li><li><a href="global.html#calcAdx">calcAdx</a></li><li><a href="global.html#calcAtr">calcAtr</a></li><li><a href="global.html#calcAts">calcAts</a></li><li><a href="global.html#calcBbpb">calcBbpb</a></li><li><a href="global.html#calcCandle">calcCandle</a></li><li><a href="global.html#calcCvd">calcCvd</a></li><li><a href="global.html#calcDonchian">calcDonchian</a></li><li><a href="global.html#calcEma">calcEma</a></li><li><a href="global.html#calcIchimoku">calcIchimoku</a></li><li><a href="global.html#calcKdj">calcKdj</a></li><li><a href="global.html#calcKeltner">calcKeltner</a></li><li><a href="global.html#calcKlr">calcKlr</a></li><li><a href="global.html#calcMa">calcMa</a></li><li><a href="global.html#calcMacd">calcMacd</a></li><li><a href="global.html#calcMfi">calcMfi</a></li><li><a href="global.html#calcObv">calcObv</a></li><li><a href="global.html#calcOrig">calcOrig</a></li><li><a href="global.html#calcRsi">calcRsi</a></li><li><a href="global.html#calcSupertrend">calcSupertrend</a></li><li><a href="global.html#calcVec">calcVec</a></li><li><a href="global.html#calcVortex">calcVortex</a></li><li><a href="global.html#calcVwap">calcVwap</a></li><li><a href="global.html#dataCalibrate">dataCalibrate</a></li><li><a href="global.html#dataConvert">dataConvert</a></li></ul>
+    
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">Global</h1>
+    
+
+    
+
+
+
+
+<section>
+
+<header>
+    
+        <h2>
+        
+            
+        
+        </h2>
+        
+    
+</header>
+
+<article>
+    
+        <div class="container-overview">
+        
+            
+
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+            
+
+            
+        
+        </div>
+    
+
+    
+
+    
+
+    
+    
+    
+
+     
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    <h4 class="name" id="caEma"><span class="type-signature"></span>caEma<span class="signature">(vs, len, opt<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Array}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+    
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li><p>計算指數移動平均EMA(Exponential Moving Average)序列</p>
+<p>平滑係數alpha=2/(len+1)；種子ema0為輸入前len筆value之簡單算術平均，對應輸出第0筆，其time為vs[len-1].time
+第0筆物件僅有{time,param}(無value/diff/ratio，為既有現象)；第1筆起(對應輸入索引len起)物件為{time,value,diff,ratio,param}，diff為ema減現值，ratio為diff除以現值(現值為0時給0)
+輸入vs筆數不足len時回傳空陣列；len非數值時拋出例外</p>
+<p>Unit Test: <a href="https://github.com/yuda-lyu/w-data-trade/blob/master/test/unit-caEma.test.mjs">Github</a></p></li></ul></dd>
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="caEma.mjs.html">caEma.mjs</a>, <a href="caEma.mjs.html#line39">line 39</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+    <h5 class="h5-examples">Example</h5>
+    
+    <pre class="prettyprint"><code>let vs = [    { time: '2020-01-01T00:00:00', value: 1 },    { time: '2020-01-01T04:00:00', value: 2 },    { time: '2020-01-01T08:00:00', value: 3 },    { time: '2020-01-01T12:00:00', value: 4 },]let rs = caEma(vs, 2)console.log(rs)// => [//   { time: '2020-01-01T04:00:00', param: 1.5 },//   { time: '2020-01-01T08:00:00', value: 2.5, diff: -0.5, ratio: -0.16666666666666666, param: 2.5 },//   { time: '2020-01-01T12:00:00', value: 3.5, diff: -0.5, ratio: -0.125, param: 3.5 }// ]</code></pre>
+
+
+
+
+    <h5 class="h5-parameters">Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>vs</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入數值序列，各元素為{time,value}</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>len</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入計算所用之期數(K線根數)</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>opt</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>{}</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入設定物件，預設{}</p>
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>norm</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>false</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入是否將param改為(EMA-現值)/現值布林值，預設false</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>回傳各筆結果陣列，第0筆為{time,param}，其後各筆為{time,value,diff,ratio,param}</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Array</span>
+
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="calcAdx"><span class="type-signature"></span>calcAdx<span class="signature">(arr, key, opt<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+    
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li><p>計算各週期之ADX(Average Directional Index，動向指標，含+DI/-DI/DIcross)</p>
+<p>自輸入索引1起算+DM、-DM與TR(True Range)，經兩層Wilder's平滑後得+DI、-DI、DX與ADX
+第二層平滑之ADX種子對應輸入索引2<em>len-1起算，其後逐根遞推；資料筆數n小於2</em>len+1時該期vs回空陣列
+第一筆ADXslope因無前值可比故為0</p>
+<p>Unit Test: <a href="https://github.com/yuda-lyu/w-data-trade/blob/master/test/unit-calcAdx.test.mjs">Github</a></p></li></ul></dd>
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="calcAdx.mjs.html">calcAdx.mjs</a>, <a href="calcAdx.mjs.html#line45">line 45</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+    <h5 class="h5-examples">Example</h5>
+    
+    <pre class="prettyprint"><code>let arr = [    { time: '2020-01-01T00:00:00', Open: 100, High: 101, Low: 99, Close: 100 },    { time: '2020-01-01T04:00:00', Open: 100, High: 103, Low: 99, Close: 102 },    { time: '2020-01-01T08:00:00', Open: 102, High: 103, Low: 100, Close: 101 },    { time: '2020-01-01T12:00:00', Open: 101, High: 106, Low: 100, Close: 105 },    { time: '2020-01-01T16:00:00', Open: 105, High: 106, Low: 102, Close: 103 },    { time: '2020-01-01T20:00:00', Open: 103, High: 108, Low: 102, Close: 107 },    { time: '2020-01-02T00:00:00', Open: 107, High: 108, Low: 105, Close: 106 },]calcAdx(arr, 'Close')    .then((rs) => {        console.log(rs[0])        // => {        //   period: '12hr',        //   len: 3,        //   vs: [        //     { time: '2020-01-01T20:00:00', ADX: 100, plusDI: 29.23076923076923, minusDI: 0, DIcross: 29.23076923076923, ADXslope: 0 },        //     { time: '2020-01-02T00:00:00', ADX: 100, plusDI: 22.287390029325515, minusDI: 0, DIcross: 22.287390029325515, ADXslope: 0 }        //   ]        // }    })</code></pre>
+
+
+
+
+    <h5 class="h5-parameters">Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>arr</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入K線陣列，各元素需含time、High、Low、Close欄位</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>key</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入計算所用數值欄位名稱字串，本指標固定讀取High/Low/Close欄位，key目前未被使用，僅為與其他指標介面一致而保留</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>opt</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>{}</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入設定物件，預設{}，本指標目前無可用設定鍵</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>回傳Promise，resolve為各期結果陣列，各元素為{period,len,vs}，vs內各元素為{time,ADX,plusDI,minusDI,DIcross,ADXslope}</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise</span>
+
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="calcAtr"><span class="type-signature"></span>calcAtr<span class="signature">(arr, key, opt<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+    
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li><p>計算各週期之ATR(Average True Range，真實區間均值)</p>
+<p>TR(i)=max(|High-Low|,|High-前一筆Close|,|Low-前一筆Close|)，自輸入索引1起算
+ATR種子取索引1至len之TR簡單平均，其後以Wilder's平滑法(ATR=(ATR前一筆*(len-1)+TR)/len)遞推，第一筆對應輸入索引len，資料筆數n小於len+1時該期vs回空陣列
+atrRatio於close為0時回0；atrRatioMod以diviProt保護分母(close+opt.plusClose)避免除以趨近0之值；atrChange第一筆無前值故為0；trRank為當根TR於前len根中嚴格小於之比例</p>
+<p>Unit Test: <a href="https://github.com/yuda-lyu/w-data-trade/blob/master/test/unit-calcAtr.test.mjs">Github</a></p></li></ul></dd>
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="calcAtr.mjs.html">calcAtr.mjs</a>, <a href="calcAtr.mjs.html#line46">line 46</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+    <h5 class="h5-examples">Example</h5>
+    
+    <pre class="prettyprint"><code>let arr = [    { time: '2020-01-01T00:00:00', Open: 100, High: 101, Low: 99, Close: 100 },    { time: '2020-01-01T04:00:00', Open: 100, High: 103, Low: 99, Close: 102 },    { time: '2020-01-01T08:00:00', Open: 102, High: 103, Low: 100, Close: 101 },    { time: '2020-01-01T12:00:00', Open: 101, High: 106, Low: 100, Close: 105 },    { time: '2020-01-01T16:00:00', Open: 105, High: 106, Low: 102, Close: 103 },]calcAtr(arr, 'Close')    .then((rs) => {        console.log(rs[0])        // => {        //   period: '12hr',        //   len: 3,        //   vs: [        //     { time: '2020-01-01T12:00:00', atr: 4.333333333333333, atrRatio: 0.04126984126984127, atrRatioMod: 0.04126984126984127, atrChange: 0, trRank: 0.6666666666666666 },        //     { time: '2020-01-01T16:00:00', atr: 4.222222222222222, atrRatio: 0.040992448759439054, atrRatioMod: 0.040992448759439054, atrChange: -0.025641025641025553, trRank: 0.3333333333333333 }        //   ]        // }    })</code></pre>
+
+
+
+
+    <h5 class="h5-parameters">Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>arr</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入K線陣列，各元素需含time、High、Low、Close欄位</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>key</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入計算所用數值欄位名稱字串，本指標固定讀取High/Low/Close欄位，key目前未被使用，僅為與其他指標介面一致而保留</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>opt</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>{}</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入設定物件，預設{}</p>
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>plusClose</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>0</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入偏移close以穩定atrRatioMod分母之數值，預設0</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>回傳Promise，resolve為各期結果陣列，各元素為{period,len,vs}，vs內各元素為{time,atr,atrRatio,atrRatioMod,atrChange,trRank}</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise</span>
+
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="calcAts"><span class="type-signature"></span>calcAts<span class="signature">(arr, key, opt<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+    
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li><p>計算各週期之ATS(Average Trade Size，平均單筆成交額)</p>
+<p>ats(i)=NumberOfTrades(i)&gt;0 ? QuoteAssetVolume(i)/NumberOfTrades(i) : 0
+atsRatio為當根ats相對最近len根(含當根)簡單平均之倍數，baseline為0時回1；atsChange為當根ats相對前一根之變化率，前一根ats為0時回0
+第一筆對應輸入索引len-1，資料筆數n小於len+1時該期vs回空陣列</p>
+<p>Unit Test: <a href="https://github.com/yuda-lyu/w-data-trade/blob/master/test/unit-calcAts.test.mjs">Github</a></p></li></ul></dd>
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="calcAts.mjs.html">calcAts.mjs</a>, <a href="calcAts.mjs.html#line42">line 42</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+    <h5 class="h5-examples">Example</h5>
+    
+    <pre class="prettyprint"><code>let arr = [    { time: '2020-01-01T00:00:00', QuoteAssetVolume: 33441599, NumberOfTrades: 46046 },    { time: '2020-01-01T04:00:00', QuoteAssetVolume: 15032938, NumberOfTrades: 29738 },    { time: '2020-01-01T08:00:00', QuoteAssetVolume: 20445895, NumberOfTrades: 32476 },    { time: '2020-01-01T12:00:00', QuoteAssetVolume: 14890182, NumberOfTrades: 29991 },]calcAts(arr, 'Close')    .then((rs) => {        console.log(rs[0])        // => {        //   period: '12hr',        //   len: 3,        //   vs: [        //     { time: '2020-01-01T08:00:00', atsRatio: 1.0146995613283087, atsChange: 0.2454075213472537 },        //     { time: '2020-01-01T12:00:00', atsRatio: 0.9129026732554982, atsChange: -0.21138421472562993 }        //   ]        // }    })</code></pre>
+
+
+
+
+    <h5 class="h5-parameters">Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>arr</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入K線陣列，各元素需含time、QuoteAssetVolume、NumberOfTrades欄位</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>key</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入計算所用數值欄位名稱字串，本指標固定讀取QuoteAssetVolume/NumberOfTrades欄位，key目前未被使用，僅為與其他指標介面一致而保留</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>opt</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>{}</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入設定物件，預設{}，本指標目前無可用設定鍵</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>回傳Promise，resolve為各期結果陣列，各元素為{period,len,vs}，vs內各元素為{time,atsRatio,atsChange}</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise</span>
+
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="calcBbpb"><span class="type-signature"></span>calcBbpb<span class="signature">(arr, key, opt<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+    
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li><p>計算各週期之BBpctB(布林通道%B)與BBwidth(布林通道寬度)</p>
+<p>Middle=SMA(Close,len)，Sigma為母體標準差，Upper/Lower=Middle±opt.k*Sigma(opt.k預設2)
+BBpctB=(Close-Lower)/(Upper-Lower)，通道寬度為0時回0.5；BBwidth=(Upper-Lower)/Middle，Middle為0時回0；BBwidthChange為與前一筆BBwidth之差，首筆回0
+BBwidthMod、BBwidthChangeMod為以diviProt保護分母之修正版本，分母為(Middle-opt.subMid)取opt.powMid次方後加opt.plusMid，分子為通道寬度加opt.plusBandWidth，供分母易趨近0之情境(如以指數OHLC計算)使用
+第一筆對應輸入索引len-1，資料筆數n小於len時該期vs回空陣列</p>
+<p>Unit Test: <a href="https://github.com/yuda-lyu/w-data-trade/blob/master/test/unit-calcBbpb.test.mjs">Github</a></p></li></ul></dd>
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="calcBbpb.mjs.html">calcBbpb.mjs</a>, <a href="calcBbpb.mjs.html#line50">line 50</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+    <h5 class="h5-examples">Example</h5>
+    
+    <pre class="prettyprint"><code>let arr = [    { time: '2020-01-01T00:00:00', Close: 100 },    { time: '2020-01-01T04:00:00', Close: 102 },    { time: '2020-01-01T08:00:00', Close: 101 },    { time: '2020-01-01T12:00:00', Close: 105 },]calcBbpb(arr, 'Close')    .then((rs) => {        console.log(rs[0])        // => {        //   period: '12hr',        //   len: 3,        //   vs: [        //     { time: '2020-01-01T08:00:00', BBpctB: 0.5, BBwidth: 0.03233649825454878, BBwidthChange: 0, BBwidthMod: 0.03233649825454878, BBwidthChangeMod: 0 },        //     { time: '2020-01-01T12:00:00', BBpctB: 0.8432032364918327, BBwidth: 0.06622103264405994, BBwidthChange: 0.03388453438951116, BBwidthMod: 0.06622103264405994, BBwidthChangeMod: 0.03388453438951116 }        //   ]        // }    })</code></pre>
+
+
+
+
+    <h5 class="h5-parameters">Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>arr</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入K線陣列，各元素需含time與計算所用之數值欄位</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>key</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入計算所用數值欄位名稱字串，例如'Close'</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>opt</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>{}</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入設定物件，預設{}</p>
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>k</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>2</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入布林帶標準差倍數，預設2</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>subMid</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>0</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入自middle扣除之數值(去中心化)，預設0</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>plusMid</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>0</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入平移(去中心化後之)mid以遠離0之數值，預設0</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>powMid</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>1</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入對mid絕對值取冪次之次方數，保留原符號，預設1</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>plusBandWidth</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>0</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入偏移bandWidth以穩定BBwidthMod分子之數值，預設0</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>回傳Promise，resolve為各期結果陣列，各元素為{period,len,vs}，vs內各元素為{time,BBpctB,BBwidth,BBwidthChange,BBwidthMod,BBwidthChangeMod}</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise</span>
+
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="calcCandle"><span class="type-signature"></span>calcCandle<span class="signature">(arr, key, opt<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+    
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li><p>計算各根K線之型態特徵量(Candle Pattern，含實體、影線比例與吞噬強度)</p>
+<p>本指標僅反映當下該根K線自身形狀，無週期累積概念，kp僅含'4hr':1一組
+bodyRatio、upperWickRatio、lowerWickRatio、candleDir分別為實體、上影線、下影線佔全根範圍(High-Low)之比例與收開差方向強度，範圍(High-Low)為0時四值皆回0
+engulfStrength僅於當根與前一根方向相反且前一根有範圍時計算，為方向號誌乘上當根實體與前一根範圍之比值，否則回0
+因engulfStrength需前一根資料，第一筆對應輸入第2根(index 1)，資料筆數n小於2時回空陣列</p>
+<p>Unit Test: <a href="https://github.com/yuda-lyu/w-data-trade/blob/master/test/unit-calcCandle.test.mjs">Github</a></p></li></ul></dd>
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="calcCandle.mjs.html">calcCandle.mjs</a>, <a href="calcCandle.mjs.html#line42">line 42</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+    <h5 class="h5-examples">Example</h5>
+    
+    <pre class="prettyprint"><code>let arr = [    { time: '2020-01-01T00:00:00', Open: 10, High: 12, Low: 9, Close: 11 },    { time: '2020-01-01T04:00:00', Open: 11, High: 13, Low: 10, Close: 12 },    { time: '2020-01-01T08:00:00', Open: 12, High: 12.5, Low: 9, Close: 9.5 },]calcCandle(arr, 'Close')    .then((rs) => {        console.log(rs[0])        // => {        //   period: '4hr',        //   len: 1,        //   vs: [        //     { time: '2020-01-01T04:00:00', bodyRatio: 0.3333333333333333, upperWickRatio: 0.3333333333333333, lowerWickRatio: 0.3333333333333333, candleDir: 0.3333333333333333, engulfStrength: 0 },        //     { time: '2020-01-01T08:00:00', bodyRatio: 0.7142857142857143, upperWickRatio: 0.14285714285714285, lowerWickRatio: 0.14285714285714285, candleDir: -0.7142857142857143, engulfStrength: -0.8333333333333334 }        //   ]        // }    })</code></pre>
+
+
+
+
+    <h5 class="h5-parameters">Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>arr</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入K線陣列，各元素需含time、Open、High、Low、Close欄位</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>key</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入計算所用數值欄位名稱字串，本指標固定讀取Open/High/Low/Close欄位，key目前未被使用，僅為與其他指標介面一致而保留</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>opt</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>{}</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入設定物件，預設{}，本指標目前無可用設定鍵</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>回傳Promise，resolve為各期結果陣列，各元素為{period,len,vs}，vs內各元素為{time,bodyRatio,upperWickRatio,lowerWickRatio,candleDir,engulfStrength}</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise</span>
+
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="calcCvd"><span class="type-signature"></span>calcCvd<span class="signature">(arr, key, opt<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+    
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li><p>計算各週期之CVD(Cumulative Volume Delta，累積量能差)</p>
+<p>delta(i)=(2*TakerBuyBaseAssetVolume(i)-Volumn(i))/Volumn(i)，Volumn(i)小於等於0時delta回0
+cvd為視窗[i-len+1,i]內delta加總後除以√len之歸一化累積值，第一筆對應輸入索引len-1
+cvdSlope=(cvd(i)-cvd(i-3))/3，固定回看3根(對應12hr)以呈現累積動能之變化速度
+資料筆數n小於len+3時該期vs回空陣列</p>
+<p>Unit Test: <a href="https://github.com/yuda-lyu/w-data-trade/blob/master/test/unit-calcCvd.test.mjs">Github</a></p></li></ul></dd>
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="calcCvd.mjs.html">calcCvd.mjs</a>, <a href="calcCvd.mjs.html#line46">line 46</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+    <h5 class="h5-examples">Example</h5>
+    
+    <pre class="prettyprint"><code>let arr = [    { time: '2020-01-01T00:00:00', Volumn: 1000, TakerBuyBaseAssetVolume: 600 },    { time: '2020-01-01T04:00:00', Volumn: 1200, TakerBuyBaseAssetVolume: 500 },    { time: '2020-01-01T08:00:00', Volumn: 900, TakerBuyBaseAssetVolume: 400 },    { time: '2020-01-01T12:00:00', Volumn: 1100, TakerBuyBaseAssetVolume: 700 },    { time: '2020-01-01T16:00:00', Volumn: 1300, TakerBuyBaseAssetVolume: 800 },    { time: '2020-01-01T20:00:00', Volumn: 1000, TakerBuyBaseAssetVolume: 450 },    { time: '2020-01-02T00:00:00', Volumn: 1050, TakerBuyBaseAssetVolume: 600 },]calcCvd(arr, 'Close')    .then((rs) => {        console.log(rs[0])        // => {        //   period: '12hr',        //   len: 3,        //   vs: [        //     { time: '2020-01-01T20:00:00', cvd: 0.23295881491077913, cvdSlope: 0.09262127861591667 },        //     { time: '2020-01-02T00:00:00', cvd: 0.15797826047056798, cvdSlope: 0.053631390307006886 }        //   ]        // }    })</code></pre>
+
+
+
+
+    <h5 class="h5-parameters">Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>arr</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入K線陣列，各元素需含time、Volumn、TakerBuyBaseAssetVolume欄位</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>key</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入計算所用數值欄位名稱字串，本指標固定讀取Volumn/TakerBuyBaseAssetVolume欄位，key目前未被使用，僅為與其他指標介面一致而保留</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>opt</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>{}</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入設定物件，預設{}，本指標目前無可用設定鍵</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>回傳Promise，resolve為各期結果陣列，各元素為{period,len,vs}，vs內各元素為{time,cvd,cvdSlope}</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise</span>
+
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="calcDonchian"><span class="type-signature"></span>calcDonchian<span class="signature">(arr, key, opt<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+    
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li><p>計算各週期之唐奇安通道DC(Donchian Channel)</p>
+<p>各週期len為該期涵蓋之K線根數(以4hr K線為基準，1day=6根)，資料筆數不足該期len時，該期vs為空陣列
+opt.excludeCurrent=false(預設)時，視窗為[i-len+1,i]含當前根，第1筆對應輸入之第len根(index len-1)；
+為true時視窗為[i-len,i-1]不含當前根，第1筆對應輸入之第len+1根(index len)
+其後皆逐根對齊至最後一根</p>
+<p>Unit Test: <a href="https://github.com/yuda-lyu/w-data-trade/blob/master/test/unit-calcDonchian.test.mjs">Github</a></p></li></ul></dd>
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="calcDonchian.mjs.html">calcDonchian.mjs</a>, <a href="calcDonchian.mjs.html#line52">line 52</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+    <h5 class="h5-examples">Example</h5>
+    
+    <pre class="prettyprint"><code>let arr = [    { time: '2020-01-01T00:00:00', Open: 101, High: 101.5, Low: 100.5, Close: 101 },    { time: '2020-01-01T04:00:00', Open: 101, High: 105.17, Low: 99.28, Close: 103.45 },    { time: '2020-01-01T08:00:00', Open: 103.45, High: 108.74, Low: 101.35, Close: 106.64 },]calcDonchian(arr, 'Close')    .then((rs) => {        let r = rs.find((v) => v.period === '12hr')        console.log(r.vs)        // => [        //   {        //     time: '2020-01-01T08:00:00',        //     dcPctB: 0.7780126849894297,        //     dcWidth: 0.09095279300067297,        //     dcWidthChange: 0,        //     dcWidthMod: 0.09095279300067297,        //     dcWidthChangeMod: 0        //   }        // ]    })</code></pre>
+
+
+
+
+    <h5 class="h5-parameters">Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>arr</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入K線陣列，各元素需含time、High、Low、Close欄位</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>key</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入計算所用數值欄位名稱字串，例如'Close'(僅供介面一致性，本函式實際計算取用High/Low/Close)</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>opt</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>{}</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入設定物件，預設{}</p>
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>excludeCurrent</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>false</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入視窗是否排除當前根之布林值，預設false，預設含當前根</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>subMid</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>0</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入計算dcWidthMod前，mid去中心化之扣除量，預設0</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>plusMid</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>0</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入mid去中心化後之平移量，避免mid趨近0時比值爆炸，預設0</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>powMid</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>1</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入mid絕對值之次方數(保留原符號)，預設1</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>plusBandWidth</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>0</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入bandWidth之偏移量，用於穩定dcWidthMod分子，預設0</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>回傳Promise，resolve為各期結果陣列，各元素為{period,len,vs}，vs內各元素為{time,dcPctB,dcWidth,dcWidthChange,dcWidthMod,dcWidthChangeMod}</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise</span>
+
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="calcEma"><span class="type-signature"></span>calcEma<span class="signature">(arr, key, opt<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+    
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li><p>計算各週期之指數移動平均EMA(Exponential Moving Average)</p>
+<p>各週期len為該期涵蓋之K線根數(以4hr K線為基準，1day=6根)，資料筆數不足該期len時，該期vs為空陣列
+第1筆為種子值(取前len筆之算術平均SMA)，對應輸入之第len根，物件僅含{time,param}
+其後各筆依EMA公式(alpha=2/(len+1))遞推，逐根對齊至最後一根，物件另含{value,diff,ratio}
+diff=EMA-現值，ratio=diff/現值(現值為0時ratio給0)</p>
+<p>Unit Test: <a href="https://github.com/yuda-lyu/w-data-trade/blob/master/test/unit-calcEma.test.mjs">Github</a></p></li></ul></dd>
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="calcEma.mjs.html">calcEma.mjs</a>, <a href="calcEma.mjs.html#line39">line 39</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+    <h5 class="h5-examples">Example</h5>
+    
+    <pre class="prettyprint"><code>let arr = [    { time: '2020-01-01T00:00:00', Open: 101, High: 101.5, Low: 100.5, Close: 101 },    { time: '2020-01-01T04:00:00', Open: 101, High: 105.17, Low: 99.28, Close: 103.45 },    { time: '2020-01-01T08:00:00', Open: 103.45, High: 108.74, Low: 101.35, Close: 106.64 },    { time: '2020-01-01T12:00:00', Open: 106.64, High: 111.54, Low: 104.68, Close: 109.58 },    { time: '2020-01-01T16:00:00', Open: 109.58, High: 112.76, Low: 108.18, Close: 111.37 },    { time: '2020-01-01T20:00:00', Open: 111.37, High: 112.3, Low: 110.72, Close: 111.65 },]calcEma(arr, 'Close')    .then((rs) => {        console.log(rs[0].vs)        // => [ { time: '2020-01-01T20:00:00', param: 107.28166666666665 } ]    })</code></pre>
+
+
+
+
+    <h5 class="h5-parameters">Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>arr</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入K線陣列，各元素需含time與計算所用之數值欄位</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>key</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入計算所用數值欄位名稱字串，例如'Close'</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>opt</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>{}</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入設定物件，預設{}</p>
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>norm</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>false</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入是否將param改為EMA與現值之偏離比例(EMA-現值)/現值布林值，預設false</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>回傳Promise，resolve為各期結果陣列，各元素為{period,len,vs}，vs內各元素為{time,param}(第1筆種子值僅含{time,param}，其後各筆另含{value,diff,ratio})</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise</span>
+
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="calcIchimoku"><span class="type-signature"></span>calcIchimoku<span class="signature">(arr, key, opt<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+    
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li><p>計算各週期之一目均衡表Ichimoku Cloud(Ichimoku Kinko Hyo)</p>
+<p>三層lookback依經典9:26:52比例縮放，各期(period)對應之kp設定為{tenkan,kijun,senkouB}三參數配對(單位皆為以4hr K線為基準之根數)，
+period標籤本身即對應senkouB(最長lookback)所涵蓋之天數，僅保留4day~30day四期(短於4day時tenkan會&lt;4而失去意義)：
+'4day':  { tenkan: 4,  kijun: 12, senkouB: 24 }
+'7day':  { tenkan: 7,  kijun: 21, senkouB: 42 }
+'15day': { tenkan: 16, kijun: 45, senkouB: 90 }
+'30day': { tenkan: 31, kijun: 90, senkouB: 180 }
+Tenkan=(視窗內最高High+最低Low)/2(視窗為最近tenkan根)，Kijun同理(視窗為最近kijun根)
+SenkouA[i]=(Tenkan[i-kijun]+Kijun[i-kijun])/2，SenkouB[i]=(i-kijun期回看senkouB根之最高High+最低Low)/2
+cloudTop=max(SenkouA,SenkouB)，cloudBot=min(SenkouA,SenkouB)，cloudMid=(cloudTop+cloudBot)/2
+第1筆對應輸入索引startIdx=max(2*kijun-1, kijun+senkouB-1)，資料筆數不足startIdx+1時，該期vs為空陣列
+不輸出Chikou(遲行線)，因其原版定義為Close[i+26]之look-ahead資料，回測不可用</p>
+<p>Unit Test: <a href="https://github.com/yuda-lyu/w-data-trade/blob/master/test/unit-calcIchimoku.test.mjs">Github</a></p></li></ul></dd>
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="calcIchimoku.mjs.html">calcIchimoku.mjs</a>, <a href="calcIchimoku.mjs.html#line71">line 71</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+    <h5 class="h5-examples">Example</h5>
+    
+    <pre class="prettyprint"><code>//最短之4day期需24根senkouB且再回看kijun根，故至少需36根K線，此處給40根let arr = []for (let i = 0; i &lt; 40; i++) {    let c = 100 + Math.sin(i * 0.7) * 5 + Math.cos(i * 0.31) * 3    arr.push({        time: new Date(Date.UTC(2020, 0, 1) + i * 4 * 3600 * 1000).toISOString().slice(0, 19),        High: c + 1,        Low: c - 1,        Close: c,    })}calcIchimoku(arr, 'Close')    .then((rs) => {        console.log(rs.map((v) => `${v.period}(len=${v.len}): ${v.vs.length} 筆`))        // => [        //   '4day(len=24): 5 筆',        //   '7day(len=42): 0 筆',        //   '15day(len=90): 0 筆',        //   '30day(len=180): 0 筆'        // ]        let p4day = rs.find((v) => v.period === '4day')        console.log(p4day.vs[p4day.vs.length - 1])        // => {        //   time: '2020-01-07T12:00:00',        //   cloudDist: 0.06339165670785038,        //   cloudThick: 0.011928239637035617,        //   tkDiff: 0.034558548904317685,        //   cloudDistMod: 0.06339165670785038,        //   cloudThickMod: 0.011928239637035617,        //   tkDiffMod: 0.034558548904317685        // }    })</code></pre>
+
+
+
+
+    <h5 class="h5-parameters">Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>arr</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入K線陣列，各元素需含time、High、Low、Close欄位</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>key</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入計算所用數值欄位名稱字串，例如'Close'(僅供介面一致性，本函式實際計算取用High/Low/Close)</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>opt</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>{}</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入設定物件，預設{}</p>
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>plusClose</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>0</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入偏移Close之量，用於穩定cloudDistMod、cloudThickMod、tkDiffMod之分母，預設0</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>plusCloudMid</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>0</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入偏移cloudMid之量，用於穩定cloudDistMod之分子，預設0</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>plusBandWidth</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>0</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入偏移cloudTop-cloudBot(bandWidth)之量，用於穩定cloudThickMod之分子，預設0</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>plusTenkans</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>0</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入偏移Tenkan(與Kijun同步)之量，用於穩定tkDiffMod之分子，預設0</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>回傳Promise，resolve為各期結果陣列，各元素為{period,len,vs}，vs內各元素為{time,cloudDist,cloudThick,tkDiff,cloudDistMod,cloudThickMod,tkDiffMod}</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise</span>
+
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="calcKdj"><span class="type-signature"></span>calcKdj<span class="signature">(arr, key, opt<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+    
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li><p>計算各週期之KDJ隨機指標(Stochastic Oscillator KDJ)</p>
+<p>各週期len即RSV回看期數(以4hr K線為基準，1day=6根)，資料筆數不足該期len時，該期vs為空陣列
+K/D以EMA平滑遞推(kAlpha=dAlpha=1/3)，K與D初始值(seed)皆為50
+RSV=(Close-Ln)/(Hn-Ln)*100，Hn/Ln為視窗內(最近len根)之最高High/最低Low，Hn===Ln時RSV取中性值50(避免除以0)
+輸出自輸入索引len-1起(視窗未滿之根不輸出)，其後逐根對齊至最後一根
+opt目前未被讀取(本函式尚未提供可調整之設定項)</p>
+<p>Unit Test: <a href="https://github.com/yuda-lyu/w-data-trade/blob/master/test/unit-calcKdj.test.mjs">Github</a></p></li></ul></dd>
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="calcKdj.mjs.html">calcKdj.mjs</a>, <a href="calcKdj.mjs.html#line48">line 48</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+    <h5 class="h5-examples">Example</h5>
+    
+    <pre class="prettyprint"><code>let arr = [    { time: '2020-01-01T00:00:00', Open: 101, High: 101.5, Low: 100.5, Close: 101 },    { time: '2020-01-01T04:00:00', Open: 101, High: 105.17, Low: 99.28, Close: 103.45 },    { time: '2020-01-01T08:00:00', Open: 103.45, High: 108.74, Low: 101.35, Close: 106.64 },    { time: '2020-01-01T12:00:00', Open: 106.64, High: 111.54, Low: 104.68, Close: 109.58 },    { time: '2020-01-01T16:00:00', Open: 109.58, High: 112.76, Low: 108.18, Close: 111.37 },    { time: '2020-01-01T20:00:00', Open: 111.37, High: 112.3, Low: 110.72, Close: 111.65 },]calcKdj(arr, 'Close')    .then((rs) => {        console.log(rs[0].vs)        // => [        //   {        //     time: '2020-01-01T20:00:00',        //     K: 63.92185954500495,        //     D: 54.640619848334985,        //     J: 82.48433893834486,        //     KminusD: 9.281239696669964        //   }        // ]    })</code></pre>
+
+
+
+
+    <h5 class="h5-parameters">Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>arr</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入K線陣列，各元素需含time、High、Low、Close欄位</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>key</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入計算所用數值欄位名稱字串，例如'Close'(僅供介面一致性，本函式實際計算取用High/Low/Close)</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>opt</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>{}</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入設定物件，預設{}</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>回傳Promise，resolve為各期結果陣列，各元素為{period,len,vs}，vs內各元素為{time,K,D,J,KminusD}</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise</span>
+
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="calcKeltner"><span class="type-signature"></span>calcKeltner<span class="signature">(arr, key, opt<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+    
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li><p>計算各週期之肯特納通道Keltner Channel</p>
+<p>各期(period)對應之kp設定為{len,mult}參數配對(len單位為以4hr K線為基準之根數)，
+len為EMA(中線)與ATR(通道厚度基準)共用之平滑期數，mult為ATR通道厚度倍數，錨點1day=(len:6,mult:2)對應Linda Raschke經典(20,10,2)標準：
+'12hr': { len: 3,   mult: 1.5 }
+'16hr': { len: 4,   mult: 1.5 }
+'20hr': { len: 5,   mult: 1.5 }
+'1day':  { len: 6,   mult: 2 }
+'2day':  { len: 12,  mult: 2 }
+'4day':  { len: 24,  mult: 2 }
+'7day':  { len: 42,  mult: 2.5 }
+'15day': { len: 90,  mult: 2.5 }
+'30day': { len: 180, mult: 3 }
+middle=EMA(Close,len)，ATR以Wilder平滑遞推(種子為前len筆TR之算術平均SMA)，upper=middle+mult<em>ATR，lower=middle-mult</em>ATR
+第1筆對應輸入索引len(此時EMA與ATR皆已就緒)，資料筆數不足len+1時，該期vs為空陣列，其後逐根對齊至最後一根</p>
+<p>Unit Test: <a href="https://github.com/yuda-lyu/w-data-trade/blob/master/test/unit-calcKeltner.test.mjs">Github</a></p></li></ul></dd>
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="calcKeltner.mjs.html">calcKeltner.mjs</a>, <a href="calcKeltner.mjs.html#line56">line 56</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+    <h5 class="h5-examples">Example</h5>
+    
+    <pre class="prettyprint"><code>let arr = [    { time: '2020-01-01T00:00:00', Open: 101, High: 101.5, Low: 100.5, Close: 101 },    { time: '2020-01-01T04:00:00', Open: 101, High: 105.17, Low: 99.28, Close: 103.45 },    { time: '2020-01-01T08:00:00', Open: 103.45, High: 108.74, Low: 101.35, Close: 106.64 },    { time: '2020-01-01T12:00:00', Open: 106.64, High: 111.54, Low: 104.68, Close: 109.58 },]calcKeltner(arr, 'Close')    .then((rs) => {        let r = rs.find((v) => v.period === '12hr')        console.log(r.vs)        // => [        //   {        //     time: '2020-01-01T12:00:00',        //     kcPctB: 0.6460609069844429,        //     kcWidth: 0.18886266664582768,        //     kcWidthMod: 0.18886266664582768        //   }        // ]    })</code></pre>
+
+
+
+
+    <h5 class="h5-parameters">Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>arr</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入K線陣列，各元素需含time、High、Low、Close欄位</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>key</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入計算所用數值欄位名稱字串，例如'Close'(僅供介面一致性，本函式實際計算取用High/Low/Close)</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>opt</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>{}</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入設定物件，預設{}</p>
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>plusMiddle</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>0</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入偏移middle之量，用於穩定kcWidthMod之分母，預設0</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>回傳Promise，resolve為各期結果陣列，各元素為{period,len,vs}，vs內各元素為{time,kcPctB,kcWidth,kcWidthMod}</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise</span>
+
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="calcKlr"><span class="type-signature"></span>calcKlr<span class="signature">(arr, key, opt<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+    
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li><p>計算各週期之K線OHLC比值(K-Line OHLC Ratio)</p>
+<p>僅一期'4hr'(len固定為1)，逐根獨立計算同根Open/High/Low/Close間之六種比值，不需回看歷史根數，
+輸出自輸入索引0起，逐根對齊至最後一根，資料筆數不足len(即輸入為空陣列)時，該期vs為空陣列
+ho=H/O，lo=L/O，co=C/O，hc=H/C，lc=L/C，hl=H/L，六比值皆先將O/H/L/C同步加上opt.plusClose後才經diviProt計算(分母保護：|分母|&lt;0.00001時clamp至±0.00001，保留符號)</p>
+<p>Unit Test: <a href="https://github.com/yuda-lyu/w-data-trade/blob/master/test/unit-calcKlr.test.mjs">Github</a></p></li></ul></dd>
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="calcKlr.mjs.html">calcKlr.mjs</a>, <a href="calcKlr.mjs.html#line45">line 45</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+    <h5 class="h5-examples">Example</h5>
+    
+    <pre class="prettyprint"><code>let arr = [    { time: '2020-01-01T00:00:00', Open: 101, High: 101.5, Low: 100.5, Close: 101 },]calcKlr(arr, 'Close')    .then((rs) => {        console.log(rs[0].vs)        // => [        //   {        //     time: '2020-01-01T00:00:00',        //     ho: 1.004950495049505,        //     lo: 0.995049504950495,        //     co: 1,        //     hc: 1.004950495049505,        //     lc: 0.995049504950495,        //     hl: 1.0099502487562189        //   }        // ]    })</code></pre>
+
+
+
+
+    <h5 class="h5-parameters">Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>arr</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入K線陣列，各元素需含time、Open、High、Low、Close欄位</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>key</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入計算所用數值欄位名稱字串，例如'Close'(僅供介面一致性，本函式實際計算取用Open/High/Low/Close)</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>opt</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>{}</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入設定物件，預設{}</p>
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>plusClose</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>0</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入對Open/High/Low/Close同步加上之偏移量，加完後才計算六比值，預設0</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>回傳Promise，resolve為各期結果陣列，各元素為{period,len,vs}，vs內各元素為{time,ho,lo,co,hc,lc,hl}</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise</span>
+
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="calcMa"><span class="type-signature"></span>calcMa<span class="signature">(arr, key, opt<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+    
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li><p>計算各週期之移動平均MA(Moving Average)</p>
+<p>各週期len為該期涵蓋之K線根數(以4hr K線為基準，1day=6根)，資料筆數不足該期len時，該期vs為空陣列
+各期第1筆對應輸入之第len根，其後逐根對齊至最後一根</p>
+<p>Unit Test: <a href="https://github.com/yuda-lyu/w-data-trade/blob/master/test/unit-calcMa.test.mjs">Github</a></p></li></ul></dd>
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="calcMa.mjs.html">calcMa.mjs</a>, <a href="calcMa.mjs.html#line45">line 45</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+    <h5 class="h5-examples">Example</h5>
+    
+    <pre class="prettyprint"><code>let arr = [    { time: '2020-01-01T00:00:00', Close: 7173.32 },    { time: '2020-01-01T04:00:00', Close: 7195.23 },    { time: '2020-01-01T08:00:00', Close: 7225.01 },    { time: '2020-01-01T12:00:00', Close: 7209.83 },    { time: '2020-01-01T16:00:00', Close: 7188.77 },    { time: '2020-01-01T20:00:00', Close: 7200.85 },]calcMa(arr, 'Close')    .then((rs) => {        console.log(rs[0])        // => {        //   period: '1day',        //   len: 6,        //   vs: [ { time: '2020-01-01T20:00:00', param: 7198.835 } ]        // }    })</code></pre>
+
+
+
+
+    <h5 class="h5-parameters">Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>arr</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入K線陣列，各元素需含time與計算所用之數值欄位</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>key</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入計算所用數值欄位名稱字串，例如'Close'</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>opt</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>{}</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入設定物件，預設{}</p>
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>norm</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>false</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入是否將param改為均線與現值之偏離比例(MA-現值)/現值布林值，預設false</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>回傳Promise，resolve為各期結果陣列，各元素為{period,len,vs}，vs內各元素為{time,param}</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise</span>
+
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="calcMacd"><span class="type-signature"></span>calcMacd<span class="signature">(arr, key, opt<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+    
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li><p>計算各週期之指數平滑異同移動平均線MACD(Moving Average Convergence Divergence)</p>
+<p>各週期len為基準倍率(以4hr K線為基準)，實際採用快線期數fastPeriod=len<em>12、慢線期數slowPeriod=len</em>26、訊號線期數signalPeriod=len<em>9(即標準MACD(12,26,9)之等比放大)
+DIF(快線)為收盤價快線EMA減慢線EMA，DEM(慢線，即訊號線)為DIF之EMA，OSC(柱狀動能)為DIF減DEM
+資料筆數n小於len或小於slowPeriod+signalPeriod-1時，該期vs為空陣列
+各期第1筆對應輸入之第35</em>len-2根(即索引(slowPeriod-1)+(signalPeriod-1))，其後逐根對齊至最後一根</p>
+<p>Unit Test: <a href="https://github.com/yuda-lyu/w-data-trade/blob/master/test/unit-calcMacd.test.mjs">Github</a></p></li></ul></dd>
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="calcMacd.mjs.html">calcMacd.mjs</a>, <a href="calcMacd.mjs.html#line45">line 45</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+    <h5 class="h5-examples">Example</h5>
+    
+    <pre class="prettyprint"><code>//收盤價1至34之等差序列，time自2020-01-01T00:00:00起每根間隔4小時let arr = []for (let i = 0; i &lt; 34; i++) {    let d = new Date(Date.UTC(2020, 0, 1) + i * 4 * 3600 * 1000)    arr.push({ time: d.toISOString().slice(0, 19), Close: i + 1 })}calcMacd(arr, 'Close')    .then((rs) => {        let r = rs.find((v) => v.period === '4hr')        console.log(r)        // => {        //   period: '4hr',        //   len: 1,        //   vs: [ { time: '2020-01-06T12:00:00', DIF: 7, DEM: 7, OSC: 0 } ]        // }        //其餘各期(8hr,12hr,16hr,20hr,1day)因資料筆數未達門檻(35*len-2)，vs皆為[]    })</code></pre>
+
+
+
+
+    <h5 class="h5-parameters">Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>arr</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入K線陣列，各元素需含time與計算所用之數值欄位</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>key</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入計算所用數值欄位名稱字串，目前未實際使用(內部固定採用Close)</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>opt</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>{}</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入設定物件，預設{}，目前未讀取任何鍵值(保留參數)</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>回傳Promise，resolve為各期結果陣列，各元素為{period,len,vs}，vs內各元素為{time,DIF,DEM,OSC}</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise</span>
+
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="calcMfi"><span class="type-signature"></span>calcMfi<span class="signature">(arr, key, opt<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+    
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li><p>計算各週期之資金流量指標MFI(Money Flow Index)</p>
+<p>各週期len為該期涵蓋之K線根數(以4hr K線為基準，1day=6根)，資料筆數n小於len+1時，該期vs為空陣列
+典型價tp=(High+Low+Close)/3，原始資金流rawMF=tp*Volumn；tp較前一根上升時計入正向資金流posMF，下降時計入負向資金流negMF，持平則兩者皆不計入
+MFI=100-100/(1+視窗內sumPosMF/sumNegMF之比值)；sumPosMF與sumNegMF皆小於等於opt.eps時給50(完全平盤)，僅sumNegMF小於等於opt.eps時給100(全部正向)，僅sumPosMF小於等於opt.eps時給0(全部負向)
+MFIratio=sumPosMF/(sumPosMF+sumNegMF)，兩者總和小於等於opt.eps時給0.5
+MFIdiv為MFI與len根前之MFI取正負號比較，與Close之len根漲跌方向相同給1，相反給-1，任一方向為0或無歷史值則給0
+各期第1筆對應輸入之第len根，其後逐根對齊至最後一根</p>
+<p>Unit Test: <a href="https://github.com/yuda-lyu/w-data-trade/blob/master/test/unit-calcMfi.test.mjs">Github</a></p></li></ul></dd>
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="calcMfi.mjs.html">calcMfi.mjs</a>, <a href="calcMfi.mjs.html#line44">line 44</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+    <h5 class="h5-examples">Example</h5>
+    
+    <pre class="prettyprint"><code>let arr = [    { time: '2020-01-01T00:00:00', High: 10, Low: 10, Close: 10, Volumn: 100 },    { time: '2020-01-01T04:00:00', High: 12, Low: 12, Close: 12, Volumn: 100 },    { time: '2020-01-01T08:00:00', High: 12, Low: 12, Close: 12, Volumn: 100 },    { time: '2020-01-01T12:00:00', High: 9, Low: 9, Close: 9, Volumn: 100 },]calcMfi(arr, 'Close')    .then((rs) => {        console.log(rs[0])        // => {        //   period: '12hr',        //   len: 3,        //   vs: [ { time: '2020-01-01T12:00:00', MFI: 57.14285714285714, MFIratio: 0.5714285714285714, MFIdiv: 0 } ]        // }    })</code></pre>
+
+
+
+
+    <h5 class="h5-parameters">Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>arr</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入K線陣列，各元素需含time、High、Low、Close、Volumn等欄位</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>key</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入計算所用數值欄位名稱字串，目前未實際使用(內部固定採用High、Low、Close、Volumn)</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>opt</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>{}</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入設定物件，預設{}</p>
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>eps</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>1e-12</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入視為0之資金流門檻值，預設1e-12</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>回傳Promise，resolve為各期結果陣列，各元素為{period,len,vs}，vs內各元素為{time,MFI,MFIratio,MFIdiv}</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise</span>
+
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="calcObv"><span class="type-signature"></span>calcObv<span class="signature">(arr, key, opt<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+    
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li><p>計算各週期之能量潮OBV(On Balance Volume)</p>
+<p>各週期len為該期涵蓋之K線根數(以4hr K線為基準，1day=6根)，資料筆數n小於len+1時，該期vs為空陣列
+累積OBV：Close較前一根上升時obv累加該根Volumn，下降時obv累減該根Volumn，持平則obv不變，obv[0]=0
+OBVnorm=(obv-視窗len根obv之算術平均OBV_MA)/|OBV_MA|，OBV_MA=0時給0
+OBVslope=(obv-len根前之obv)/(len*|len根前之obv|)，len根前之obv為0時分母改為len
+OBVdiv為obv與len根前之obv取正負號比較，與Close之len根漲跌方向相同給1，相反給-1，任一方向為0則給0
+各期第1筆對應輸入之第len根，其後逐根對齊至最後一根</p>
+<p>Unit Test: <a href="https://github.com/yuda-lyu/w-data-trade/blob/master/test/unit-calcObv.test.mjs">Github</a></p></li></ul></dd>
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="calcObv.mjs.html">calcObv.mjs</a>, <a href="calcObv.mjs.html#line42">line 42</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+    <h5 class="h5-examples">Example</h5>
+    
+    <pre class="prettyprint"><code>let arr = [    { time: '2020-01-01T00:00:00', Close: 10, Volumn: 1 },    { time: '2020-01-01T04:00:00', Close: 12, Volumn: 2 },    { time: '2020-01-01T08:00:00', Close: 11, Volumn: 3 },    { time: '2020-01-01T12:00:00', Close: 13, Volumn: 4 },]calcObv(arr, 'Close')    .then((rs) => {        console.log(rs[0])        // => {        //   period: '12hr',        //   len: 3,        //   vs: [ { time: '2020-01-01T12:00:00', OBVnorm: 1.2500000000000002, OBVslope: 1, OBVdiv: 1 } ]        // }    })</code></pre>
+
+
+
+
+    <h5 class="h5-parameters">Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>arr</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入K線陣列，各元素需含time、Close、Volumn等欄位</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>key</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入計算所用數值欄位名稱字串，目前未實際使用(內部固定採用Close、Volumn)</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>opt</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>{}</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入設定物件，預設{}，目前未讀取任何鍵值(保留參數)</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>回傳Promise，resolve為各期結果陣列，各元素為{period,len,vs}，vs內各元素為{time,OBVnorm,OBVslope,OBVdiv}</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise</span>
+
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="calcOrig"><span class="type-signature"></span>calcOrig<span class="signature">(arr, key)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+    
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li><p>計算各週期之原始數值Orig(Original Value，逐筆直接複製輸入數值，不做任何運算)</p>
+<p>僅逐筆對應輸入，不做視窗/累積運算，亦不篩選或檢查數值合法性；資料筆數與輸入相同，缺key欄位或非數值時param為undefined或原樣值，該筆仍保留
+固定回傳單一區塊，period為'none'，len為0</p>
+<p>Unit Test: <a href="https://github.com/yuda-lyu/w-data-trade/blob/master/test/unit-calcOrig.test.mjs">Github</a></p></li></ul></dd>
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="calcOrig.mjs.html">calcOrig.mjs</a>, <a href="calcOrig.mjs.html#line38">line 38</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+    <h5 class="h5-examples">Example</h5>
+    
+    <pre class="prettyprint"><code>let arr = [    { time: '2020-01-01T00:00:00', Close: 7173.32 },    { time: '2020-01-01T04:00:00', Close: 7195.23 },    { time: '2020-01-01T08:00:00', Close: 7225.01 },]calcOrig(arr, 'Close')    .then((rs) => {        console.log(rs[0])        // => {        //   period: 'none',        //   len: 0,        //   vs: [        //     { time: '2020-01-01T00:00:00', param: 7173.32 },        //     { time: '2020-01-01T04:00:00', param: 7195.23 },        //     { time: '2020-01-01T08:00:00', param: 7225.01 }        //   ]        // }    })</code></pre>
+
+
+
+
+    <h5 class="h5-parameters">Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>arr</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>輸入K線陣列，各元素需含time與計算所用之數值欄位</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>key</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>輸入計算所用數值欄位名稱字串，例如'Close'</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>回傳Promise，resolve為單一結果陣列，元素為{period,len,vs}，period固定為'none'，len固定為0，vs內各元素為{time,param}</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise</span>
+
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="calcRsi"><span class="type-signature"></span>calcRsi<span class="signature">(arr, key, opt<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+    
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li><p>計算各週期之相對強弱指標RSI(Relative Strength Index，採Wilder平滑法)</p>
+<p>各週期len為該期涵蓋之K線根數(以4hr K線為基準，1day=6根)，資料筆數n小於len+1時，該期vs為空陣列
+每根漲跌diff=Close-前一根Close，漲幅up=max(diff,0)，跌幅down=max(-diff,0)
+種子(opt.seed='sma'，預設)：avgGain為第1至len根up之算術平均，avgLoss為第1至len根down之算術平均
+種子(opt.seed='first')：avgGain、avgLoss分別取第1根之up、down，再以Wilder遞推方式(avg=(avg*(len-1)+x)/len)推進至第len根
+其後每根皆以avg=(avg*(len-1)+x)/len遞推；RS=avgGain/avgLoss，RSI=100-100/(1+RS)
+avgGain與avgLoss皆小於等於opt.eps時RSI給50(完全平盤)，僅avgLoss小於等於opt.eps時給100(一路上漲)，僅avgGain小於等於opt.eps時給0(一路下跌)
+各期第1筆對應輸入之第len根，其後逐根對齊至最後一根</p>
+<p>Unit Test: <a href="https://github.com/yuda-lyu/w-data-trade/blob/master/test/unit-calcRsi.test.mjs">Github</a></p></li></ul></dd>
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="calcRsi.mjs.html">calcRsi.mjs</a>, <a href="calcRsi.mjs.html#line46">line 46</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+    <h5 class="h5-examples">Example</h5>
+    
+    <pre class="prettyprint"><code>let arr = [    { time: '2020-01-01T00:00:00', Close: 10 },    { time: '2020-01-01T04:00:00', Close: 11 },    { time: '2020-01-01T08:00:00', Close: 10.5 },    { time: '2020-01-01T12:00:00', Close: 12 },]calcRsi(arr, 'Close')    .then((rs) => {        console.log(rs[0])        // => {        //   period: '12hr',        //   len: 3,        //   vs: [ { time: '2020-01-01T12:00:00', RSI: 83.33333333333334, rsiAvgGain: 0.8333333333333334, rsiAvgLoss: 0.16666666666666666, rsiUp: 1.5, rsiDown: 0 } ]        // }    })</code></pre>
+
+
+
+
+    <h5 class="h5-parameters">Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>arr</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入K線陣列，各元素需含time、Close等欄位</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>key</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入計算所用數值欄位名稱字串，目前未實際使用(內部固定採用Close)</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>opt</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>{}</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入設定物件，預設{}</p>
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>seed</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>'sma'</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入種子avgGain、avgLoss之計算方式，'sma'為前len根之算術平均，'first'為取第1根再以Wilder遞推至第len根，預設'sma'</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>eps</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>1e-12</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入視avgGain、avgLoss為0之門檻值，預設1e-12</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>回傳Promise，resolve為各期結果陣列，各元素為{period,len,vs}，vs內各元素為{time,RSI,rsiAvgGain,rsiAvgLoss,rsiUp,rsiDown}</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise</span>
+
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="calcSupertrend"><span class="type-signature"></span>calcSupertrend<span class="signature">(arr, key, opt<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+    
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li><p>計算各週期之Supertrend(Olivier Seban ATR通道趨勢指標)</p>
+<p>各週期kp值為{len,mult}物件，len為ATR平滑期數(以4hr K線為基準之根數)，mult為ATR通道厚度倍數；資料筆數n小於len+1時，該期vs為空陣列
+TR(真實區間)=max(|High-Low|,|High-前一根Close|,|Low-前一根Close|)，ATR種子為第1至len根TR之算術平均，其後以Wilder平滑遞推(atr=(atr*(len-1)+TR)/len)
+basicUpper=(High+Low)/2+mult<em>ATR，basicLower=(High+Low)/2-mult</em>ATR
+finalUpper僅在basicUpper較前值小或前一根Close高於前值時更新為basicUpper，否則鎖死沿用前值；finalLower僅在basicLower較前值大或前一根Close低於前值時更新為basicLower，否則鎖死沿用前值
+方向dir沿續前一根，多頭且Close跌破finalLower時翻空，空頭且Close突破finalUpper時翻多；首根依Close是否小於等於finalUpper判定初始方向
+ST線line：多頭取finalLower，空頭取finalUpper
+stDistance=(Close-line)/Close，Close=0時給0
+stDistanceMod=diviProt(Close+opt.plusClose-line, Close+opt.plusClose)，opt.plusClose=0時退化為stDistance；diviProt對分母絕對值小於0.00001時會鎖定為±0.00001(保留正負號)以避免除以0爆炸
+各期第1筆對應輸入之第len根，其後逐根對齊至最後一根</p>
+<p>Unit Test: <a href="https://github.com/yuda-lyu/w-data-trade/blob/master/test/unit-calcSupertrend.test.mjs">Github</a></p></li></ul></dd>
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="calcSupertrend.mjs.html">calcSupertrend.mjs</a>, <a href="calcSupertrend.mjs.html#line48">line 48</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+    <h5 class="h5-examples">Example</h5>
+    
+    <pre class="prettyprint"><code>let arr = [    { time: '2020-01-01T00:00:00', Open: 10, High: 10, Low: 10, Close: 10 },    { time: '2020-01-01T04:00:00', Open: 10, High: 12, Low: 10, Close: 12 },    { time: '2020-01-01T08:00:00', Open: 12, High: 12, Low: 11, Close: 11 },    { time: '2020-01-01T12:00:00', Open: 11, High: 13, Low: 11, Close: 13 },]calcSupertrend(arr, 'Close')    .then((rs) => {        console.log(rs[0])        // => {        //   period: '12hr',        //   len: 3,        //   vs: [ { time: '2020-01-01T12:00:00', stDistance: -0.17948717948717954, stDistanceMod: -0.17948717948717954 } ]        // }    })</code></pre>
+
+
+
+
+    <h5 class="h5-parameters">Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>arr</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入K線陣列，各元素需含time、High、Low、Close等欄位</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>key</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入計算所用數值欄位名稱字串，目前未實際使用(內部固定採用High、Low、Close)</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>opt</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>{}</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入設定物件，預設{}</p>
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>plusClose</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>0</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入stDistanceMod計算時對Close之偏移量，用以避免Close接近0時除法爆炸，預設0</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>回傳Promise，resolve為各期結果陣列，各元素為{period,len,vs}，vs內各元素為{time,stDistance,stDistanceMod}</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise</span>
+
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="calcVec"><span class="type-signature"></span>calcVec<span class="signature">(arr, key, opt<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+    
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li><p>計算各週期之差值向量Vec(後一值減前一值，非真實速度)</p>
+<p>各週期len為該期涵蓋之K線根數(以4hr K線為基準，1day=6根)，資料筆數不足該期len時，該期vs為空陣列
+各期第1筆對應輸入之第len根(非len-1，因需與len根前之值相減)，其後逐根對齊至最後一根</p>
+<p>Unit Test: <a href="https://github.com/yuda-lyu/w-data-trade/blob/master/test/unit-calcVec.test.mjs">Github</a></p></li></ul></dd>
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="calcVec.mjs.html">calcVec.mjs</a>, <a href="calcVec.mjs.html#line49">line 49</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+    <h5 class="h5-examples">Example</h5>
+    
+    <pre class="prettyprint"><code>let arr = [    { time: '2020-01-01T00:00:00', Close: 1 },    { time: '2020-01-01T04:00:00', Close: 2 },    { time: '2020-01-01T08:00:00', Close: 3 },    { time: '2020-01-01T12:00:00', Close: 4 },    { time: '2020-01-01T16:00:00', Close: 5 },    { time: '2020-01-01T20:00:00', Close: 6 },]calcVec(arr, 'Close')    .then((rs) => {        console.log(rs[0])        // => {        //   period: '4hr',        //   len: 1,        //   vs: [        //     { time: '2020-01-01T04:00:00', param: 1 },        //     { time: '2020-01-01T08:00:00', param: 1 },        //     { time: '2020-01-01T12:00:00', param: 1 },        //     { time: '2020-01-01T16:00:00', param: 1 },        //     { time: '2020-01-01T20:00:00', param: 1 }        //   ]        // }    })</code></pre>
+
+
+
+
+    <h5 class="h5-parameters">Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>arr</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入K線陣列，各元素需含time與計算所用之數值欄位</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>key</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入計算所用數值欄位名稱字串，例如'Close'</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>opt</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>{}</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入設定物件，預設{}</p>
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>norm</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>false</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入是否將param改為差值對現值之比例(value[i]-value[i-len])/value[i]布林值，預設false</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>回傳Promise，resolve為各期結果陣列，各元素為{period,len,vs}，vs內各元素為{time,param}</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise</span>
+
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="calcVortex"><span class="type-signature"></span>calcVortex<span class="signature">(arr, key, opt<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+    
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li><p>計算各週期之Vortex Indicator(VI+/VI-，Etienne Botes與Douglas Siepman原始定義)</p>
+<p>各週期len為該期涵蓋之K線根數(以4hr K線為基準，1day=6根)，直接讀取輸入arr內High、Low、Close欄位計算，資料筆數不足len+1根時，該期vs為空陣列
+各期第1筆對應輸入之第len根(因每根計算VM+/VM-/TR皆需前一根資料，故自輸入第1根起算，累積滿len根視窗後才有第1筆輸出)，其後逐根對齊至最後一根
+sum(TR)為0(視窗內無波動)時，VI+與VI-皆直接給0以避免除以0</p>
+<p>Unit Test: <a href="https://github.com/yuda-lyu/w-data-trade/blob/master/test/unit-calcVortex.test.mjs">Github</a></p></li></ul></dd>
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="calcVortex.mjs.html">calcVortex.mjs</a>, <a href="calcVortex.mjs.html#line48">line 48</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+    <h5 class="h5-examples">Example</h5>
+    
+    <pre class="prettyprint"><code>let arr = [    { time: '2020-01-01T00:00:00', High: 105, Low: 95, Close: 100 },    { time: '2020-01-01T04:00:00', High: 110, Low: 100, Close: 108 },    { time: '2020-01-01T08:00:00', High: 112, Low: 104, Close: 106 },    { time: '2020-01-01T12:00:00', High: 109, Low: 101, Close: 103 },]calcVortex(arr, 'Close')    .then((rs) => {        let r = rs.find((v) => v.period === '12hr')        console.log(r)        // => {        //   period: '12hr',        //   len: 3,        //   vs: [        //     {        //       time: '2020-01-01T12:00:00',        //       VIplus: 1.2307692307692308,        //       VIminus: 0.8461538461538461,        //       VIdiff: 0.3846153846153847,        //       VIsum: 2.076923076923077        //     }        //   ]        // }    })</code></pre>
+
+
+
+
+    <h5 class="h5-parameters">Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>arr</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入K線陣列，各元素需含time、High、Low、Close欄位</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>key</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>保留參數(與同系列calc函式介面一致)，目前函式內部未使用</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>opt</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>{}</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入設定物件，預設{}，目前函式內部未使用</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>回傳Promise，resolve為各期結果陣列，各元素為{period,len,vs}，vs內各元素為{time,VIplus,VIminus,VIdiff,VIsum}</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise</span>
+
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="calcVwap"><span class="type-signature"></span>calcVwap<span class="signature">(arr, key, opt<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+    
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li><p>計算各週期之Rolling VWAP偏離度(vwapDist)與其以ATR正規化後之偏離度(vwapDistATR)</p>
+<p>各週期len為該期涵蓋之K線根數(以4hr K線為基準，1day=6根)，直接讀取輸入arr內High、Low、Close、Volumn欄位計算，資料筆數不足len+1根時，該期vs為空陣列
+ATR以Wilder平滑計算，種子為前len根TR之簡單平均；VWAP為典型價((High+Low+Close)/3)乘Volumn後之rolling窗口總和除以Volumn總和
+各期第1筆對應輸入之第len根(與ATR對齊)，其後逐根對齊至最後一根
+vwapDist於Close為0時給0；vwapDistATR於ATR為0時給0</p>
+<p>Unit Test: <a href="https://github.com/yuda-lyu/w-data-trade/blob/master/test/unit-calcVwap.test.mjs">Github</a></p></li></ul></dd>
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="calcVwap.mjs.html">calcVwap.mjs</a>, <a href="calcVwap.mjs.html#line47">line 47</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+    <h5 class="h5-examples">Example</h5>
+    
+    <pre class="prettyprint"><code>let arr = [    { time: '2020-01-01T00:00:00', High: 105, Low: 95, Close: 100, Volumn: 10 },    { time: '2020-01-01T04:00:00', High: 110, Low: 100, Close: 108, Volumn: 12 },    { time: '2020-01-01T08:00:00', High: 112, Low: 104, Close: 106, Volumn: 8 },    { time: '2020-01-01T12:00:00', High: 109, Low: 101, Close: 103, Volumn: 15 },]calcVwap(arr, 'Close')    .then((rs) => {        let r = rs.find((v) => v.period === '12hr')        console.log(r)        // => {        //   period: '12hr',        //   len: 3,        //   vs: [        //     {        //       time: '2020-01-01T12:00:00',        //       vwapDist: -0.02515025427646778,        //       vwapDistATR: -0.29890109890109784        //     }        //   ]        // }    })</code></pre>
+
+
+
+
+    <h5 class="h5-parameters">Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>arr</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入K線陣列，各元素需含time、High、Low、Close、Volumn欄位</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>key</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>保留參數(與同系列calc函式介面一致)，目前函式內部未使用</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>opt</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>{}</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入設定物件，預設{}，目前函式內部未使用</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>回傳Promise，resolve為各期結果陣列，各元素為{period,len,vs}，vs內各元素為{time,vwapDist,vwapDistATR}</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise</span>
+
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="dataCalibrate"><span class="type-signature type-signature-async">(async) </span>dataCalibrate<span class="signature">(calcFn, arrSrc, arrRef, pairs, optMethodInit, opt<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+    
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li><p>校正calc函式之optMethod: 搜尋參數，使來源側(src)各keyOut之z-score分布形狀對齊參考側(ref)對應keyOut</p>
+<p>本專案用例: src=溢價指數(index) OHLC，ref=價格(price) OHLC，校正index系變換偏移量
+搜尋為逐維座標下降: 每維先粗掃(現值+0+正負mags量級)，再以粗掃最佳為中心做倍率細化與微調
+防churn: 需(score0-scoreBest)/score0 &gt; threshold，且(score0-scoreBest) &gt; thresholdAbs，兩者皆達門檻才採納搜尋結果，否則optMethod維持optMethodInit</p>
+<p>Unit Test: <a href="https://github.com/yuda-lyu/w-data-trade/blob/master/test/unit-dataCalibrate.test.mjs">Github</a></p></li></ul></dd>
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="dataCalibrate.mjs.html">dataCalibrate.mjs</a>, <a href="dataCalibrate.mjs.html#line81">line 81</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+    <h5 class="h5-examples">Example</h5>
+    
+    <pre class="prettyprint"><code>let mkArr = (n) => {
+    let arr = []
+    for (let i = 0; i &lt; n; i++) {
+        arr.push({ time: `t${i}`, u: Math.sin(i * 1.7) })
+    }
+    return arr
+}
+
+let calcFn = async (arr, keyIn, optMethod) => {
+    let a = optMethod.a !== undefined ? optMethod.a : 0
+    let vs = arr.map((v) => {
+        let x = v.u + a * v.u * v.u
+        return { time: v.time, X: x }
+    })
+    return [{ period: 'p1', len: 1, vs }]
+}
+
+let arr = mkArr(400)
+
+dataCalibrate(calcFn, arr, arr, ['X'], { a: 0 }, { optMethodRef: { a: 0.1 } })
+    .then((r) => {
+        console.log(r)
+        // => {
+        //   adopt: true,
+        //   optMethod: { a: 0.1 },
+        //   optMethodBest: { a: 0.1 },
+        //   score0: 0.0478199962161957,
+        //   scoreBest: 0,
+        //   nEval: 26,
+        //   detail: [
+        //     { keyOutSrc: 'X', keyOutRef: 'X', dist: 0, pNearZeroSrc: 0.0425, pNearZeroRef: 0.0425 }
+        //   ]
+        // }
+    })</code></pre>
+
+
+
+
+    <h5 class="h5-parameters">Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>calcFn</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入指標計算函式，簽章為(arr,keyIn,optMethod)=&gt;rrs(各期{period,vs:[{time,...keyOuts}]}之陣列，可回傳Promise)</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>arrSrc</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入來源側(src)之K線陣列</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>arrRef</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入參考側(ref)之K線陣列</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>pairs</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入兩側keyOut對應表，元素為{keyOutSrc,keyOutRef}物件或字串(代表兩側同名之縮寫)</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>optMethodInit</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入現行optMethod(搜尋起點與防churn比較基準)，params中不存在之鍵搜尋時以0起算</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>opt</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>{}</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入設定物件，預設{}</p>
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>params</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>keys(optMethodInit)</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入要校正之參數名陣列，預設為optMethodInit全部鍵</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>keyIn</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>'none'</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入傳入calcFn之keyIn，預設'none'</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>optMethodRef</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>{}</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入參考側呼叫calcFn所用之optMethod，預設{}</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>mags</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>[1e-4,3e-4,1e-3,3e-3,0.01,0.03,0.1,0.3]</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入粗掃量級階梯(正值，內部自動含正負與0)</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>threshold</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>0.15</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入採納門檻(相對改善比例)</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>thresholdAbs</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>0.01</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入採納門檻(絕對改善量)</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>nSweep</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入逐維掃描輪數，預設單參數為1輪，多參數為2輪</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>funLog</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入搜尋進度回呼函式(msg)，可選</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>回傳Promise，resolve為{adopt,optMethod,optMethodBest,score0,scoreBest,nEval,detail}，adopt為是否採納搜尋結果之布林值，optMethod為依防churn判定之最終值(adopt=false時即optMethodInit)，optMethodBest為搜尋所得最佳值(不論是否採納)，score0為起始參數之目標函數值，scoreBest為搜尋所得最佳目標函數值，nEval為calcFn對arrSrc之實際評估次數，detail為各pair於最終optMethod下之形狀對照陣列，各元素為{keyOutSrc,keyOutRef,dist,pNearZeroSrc,pNearZeroRef}</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise</span>
+
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="dataConvert"><span class="type-signature type-signature-async">(async) </span>dataConvert<span class="signature">(name, symbol, interval, cointpe, keyKind, methods, arrOhlc, kp, fdSelfData, opt<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+    
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li><p>依methods內各method呼叫kp對應之calc函式產生指標序列，再依各deal之nm(avg,std)做z-score正規化，並輸出各method/keyIn/keyOut組合之統計量</p>
+<p>若opt.funAddKeysIn為函式，會先逐筆對arrOhlc呼叫該函式(可回傳Promise)以轉換/擴增輸入資料
+對keysIn(輸入計算所用數值欄位名稱)與methods(指標方法設定)做雙層迴圈，各methods[i]需含method(對應kp之鍵)、deals(輸出設定陣列)、optMethod(傳入calc函式之opt，可選，預設{})
+呼叫kp<a href="arr,keyIn,optMethod">method</a>取得rrs(各期{period,len,vs}結果)後，對每個deal依其keyOut取值並以(值-avg)/std正規化，若deal.keyIn有指定則僅處理keyIn相符者，其餘略過
+除非opt.denyOutput為true，否則會將各期正規化後之序列以檔名<code>${cointpe}_${keyKind}_${keyIn}_${keyOut}_${method}_${period}.json</code>寫入fdSelfData資料夾
+最終以w-statistic計算全期攤平後序列之avg、std、min、max，彙整為單筆結果</p></li></ul></dd>
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="dataConvert.mjs.html">dataConvert.mjs</a>, <a href="dataConvert.mjs.html#line84">line 84</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+    <h5 class="h5-examples">Example</h5>
+    
+    <pre class="prettyprint"><code>import calcMa from './calcMa.mjs'
+
+let arr = []
+for (let i = 0; i &lt; 200; i++) {
+    arr.push({
+        time: new Date(Date.UTC(2020, 0, 1) + i * 4 * 3600 * 1000).toISOString().slice(0, 19),
+        Close: 100 + Math.sin(i * 0.7) * 5 + Math.cos(i * 0.31) * 3,
+    })
+}
+
+let kp = { ma: calcMa }
+
+let methods = [
+    {
+        method: 'ma',
+        deals: [
+            { keyOut: 'param', nm: { avg: 0, std: 1 } },
+        ],
+        optMethod: {},
+    },
+]
+
+dataConvert('demo', 'BTCUSDT', '4hr', 'price', 'ohlc', methods, arr, kp, './tmp/unused', { denyOutput: true, keysIn: ['Close'] })
+    .then((rs) => {
+        console.log(rs)
+        // => [
+        //   {
+        //     method: 'ma',
+        //     keyIn: 'Close',
+        //     keyOut: 'param',
+        //     avg: 99.968791151179,
+        //     std: 1.3207330769565093,
+        //     min: 95.38244060380985,
+        //     max: 104.64005705802747
+        //   }
+        // ]
+    })</code></pre>
+
+
+
+
+    <h5 class="h5-parameters">Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>name</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入名稱字串</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>symbol</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入交易對代碼字串，例如'BTCUSDT'</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>interval</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入K線週期字串，例如'4hr'</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>cointpe</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入幣別類型字串，用於組合輸出檔名，例如'price'</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>keyKind</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入資料種類字串，用於組合輸出檔名，例如'ohlc'</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>methods</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入指標方法設定陣列，各元素為{method,deals,optMethod}，method需存在於kp，deals為{keyIn,keyOut,nm:{avg,std}}之陣列，optMethod為傳入calc函式之opt(可選，預設{})</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>arrOhlc</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入K線陣列</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>kp</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入method名稱對應calc函式之映射物件，函式簽章為(arr,keyIn,optMethod)=&gt;rrs</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>fdSelfData</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入輸出json檔案所在資料夾路徑字串</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>opt</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>{}</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入設定物件，預設{}</p>
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>funAddKeysIn</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入用於逐筆轉換/擴增arrOhlc之函式，可回傳Promise，預設不轉換</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>keysIn</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>['none']</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入計算所用數值欄位名稱字串陣列，預設['none']</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>denyOutput</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>null</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入是否禁止寫出json檔案布林值，為true時不寫檔，預設null(不禁止)</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>回傳Promise，resolve為各method/keyIn/keyOut組合之統計結果陣列，各元素為{method,keyIn,keyOut,avg,std,min,max}</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise</span>
+
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.5</a> on Sat Aug 01 2026 21:47:04 GMT+0800 (台北標準時間) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+
+
+</body>
+</html>

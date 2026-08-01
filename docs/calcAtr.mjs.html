@@ -1,4 +1,51 @@
-import isNumber from 'lodash-es/isNumber.js'
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>calcAtr.mjs - Documentation</title>
+    
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#caEma">caEma</a></li><li><a href="global.html#calcAdx">calcAdx</a></li><li><a href="global.html#calcAtr">calcAtr</a></li><li><a href="global.html#calcAts">calcAts</a></li><li><a href="global.html#calcBbpb">calcBbpb</a></li><li><a href="global.html#calcCandle">calcCandle</a></li><li><a href="global.html#calcCvd">calcCvd</a></li><li><a href="global.html#calcDonchian">calcDonchian</a></li><li><a href="global.html#calcEma">calcEma</a></li><li><a href="global.html#calcIchimoku">calcIchimoku</a></li><li><a href="global.html#calcKdj">calcKdj</a></li><li><a href="global.html#calcKeltner">calcKeltner</a></li><li><a href="global.html#calcKlr">calcKlr</a></li><li><a href="global.html#calcMa">calcMa</a></li><li><a href="global.html#calcMacd">calcMacd</a></li><li><a href="global.html#calcMfi">calcMfi</a></li><li><a href="global.html#calcObv">calcObv</a></li><li><a href="global.html#calcOrig">calcOrig</a></li><li><a href="global.html#calcRsi">calcRsi</a></li><li><a href="global.html#calcSupertrend">calcSupertrend</a></li><li><a href="global.html#calcVec">calcVec</a></li><li><a href="global.html#calcVortex">calcVortex</a></li><li><a href="global.html#calcVwap">calcVwap</a></li><li><a href="global.html#dataCalibrate">dataCalibrate</a></li><li><a href="global.html#dataConvert">dataConvert</a></li></ul>
+    
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">calcAtr.mjs</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import isNumber from 'lodash-es/isNumber.js'
 import get from 'lodash-es/get.js'
 import size from 'lodash-es/size.js'
 import each from 'lodash-es/each.js'
@@ -64,7 +111,7 @@ let calcAtr = (() => {
 
         //plusClose: 偏移 close 為穩定分母 (cp = c + plusClose), 用於 atrRatioMod
         //  原 atrRatio = atr / close, index OHLC 之 close 可 ≈0 → ratio 爆
-        //  atrRatioMod = atr / (c + plusClose), 用 diviProt 額外保護 |分母| < 0.00001 之邊界
+        //  atrRatioMod = atr / (c + plusClose), 用 diviProt 額外保護 |分母| &lt; 0.00001 之邊界
         //  atr 本身 ≥0 不需偏移
         let plusClose = get(opt, 'plusClose', 0)
 
@@ -72,7 +119,7 @@ let calcAtr = (() => {
         let n = size(arr)
 
         //check
-        if (n < len + 1) {
+        if (n &lt; len + 1) {
             return []
         }
 
@@ -83,7 +130,7 @@ let calcAtr = (() => {
 
         //計算每根K棒的True Range(從i=1開始, 因需要前一根Close)
         let trs = new Array(n).fill(0)
-        for (let i = 1; i < n; i++) {
+        for (let i = 1; i &lt; n; i++) {
 
             let h = arr[i][kHigh]
             let l = arr[i][kLow]
@@ -111,7 +158,7 @@ let calcAtr = (() => {
 
         //種子ATR: 用前len根TR的SMA
         let sumTr = 0
-        for (let i = 1; i <= len; i++) {
+        for (let i = 1; i &lt;= len; i++) {
             sumTr += trs[i]
         }
         let atrPrev = sumTr / len
@@ -129,8 +176,8 @@ let calcAtr = (() => {
             //trRank: 當前TR在過去len期中的百分位
             let currentTr = trs[len]
             let countLess = 0
-            for (let j = 1; j <= len; j++) {
-                if (trs[j] < currentTr) countLess++
+            for (let j = 1; j &lt;= len; j++) {
+                if (trs[j] &lt; currentTr) countLess++
             }
             let trRank = countLess / len
 
@@ -146,7 +193,7 @@ let calcAtr = (() => {
         }
 
         //後續ATR, 使用Wilder's smoothing: ATR = (ATR_prev * (n-1) + TR) / n
-        for (let i = len + 1; i < n; i++) {
+        for (let i = len + 1; i &lt; n; i++) {
 
             let close = arr[i][kClose]
             let atr = (atrPrev * (len - 1) + trs[i]) / len
@@ -157,8 +204,8 @@ let calcAtr = (() => {
             //trRank: 當前TR在過去len期中的百分位
             let currentTr = trs[i]
             let countLess = 0
-            for (let j = i - len + 1; j <= i; j++) {
-                if (trs[j] < currentTr) countLess++
+            for (let j = i - len + 1; j &lt;= i; j++) {
+                if (trs[j] &lt; currentTr) countLess++
             }
             let trRank = countLess / len
 
@@ -220,3 +267,28 @@ let calcAtr = (() => {
 
 
 export default calcAtr
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.5</a> on Sat Aug 01 2026 21:47:04 GMT+0800 (台北標準時間) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+
+
+</body>
+</html>
