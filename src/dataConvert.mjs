@@ -12,8 +12,9 @@ import isfun from 'wsemi/src/isfun.mjs'
 import pmSeries from 'wsemi/src/pmSeries.mjs'
 import ispm from 'wsemi/src/ispm.mjs'
 import haskey from 'wsemi/src/haskey.mjs'
-import wsta from 'w-statistic'
-import writeJson from './writeJson.mjs'
+import fsWriteJson from 'wsemi/src/fsWriteJson.mjs'
+import arrAverage from 'w-statistic/src/arrAverage.mjs'
+import arrStd from 'w-statistic/src/arrStd.mjs'
 
 
 /**
@@ -277,9 +278,9 @@ let dataConvert = async (name, symbol, interval, cointpe, keyKind, methods, arrO
                     //fp
                     let fp = path.resolve(fdSelfData, fn)
 
-                    //writeJson
+                    //fsWriteJson
                     //console.log(`writing...`, fn)
-                    writeJson(fp, vs)
+                    fsWriteJson(fp, vs)
 
                 }
                 if (denyOutput === true) {
@@ -294,8 +295,8 @@ let dataConvert = async (name, symbol, interval, cointpe, keyKind, methods, arrO
                 if (true) {
 
                     //avgAll, stdAll, minAll, maxAll
-                    let avgAll = wsta.arrAverage(pss)
-                    let stdAll = wsta.arrStd(pss)
+                    let avgAll = arrAverage(pss)
+                    let stdAll = arrStd(pss)
                     let minAll = min(pss)
                     let maxAll = max(pss)
                     //console.log('keyIn', keyIn, 'method', method, 'keyOut', keyOut)
