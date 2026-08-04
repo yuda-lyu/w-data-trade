@@ -44,10 +44,6 @@ import diviProt from './diviProt.mjs'
  */
 let calcKlr = (() => {
 
-    // import w from 'wsemi'
-    // import pickValue from './pickValue.mjs'
-
-
     let kp = {
         '4hr': 1,
     }

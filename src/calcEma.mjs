@@ -38,9 +38,6 @@ import caEma from './caEma.mjs'
  */
 let calcEma = (() => {
 
-    //import w from 'wsemi'
-
-
     let kp = {
         '1day': 6, // 1 day = 6 * 4 hours
         '2day': 12, // 2 days = 12 * 4 hours

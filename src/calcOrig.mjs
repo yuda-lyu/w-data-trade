@@ -37,9 +37,6 @@ import map from 'lodash-es/map.js'
  */
 let calcOrig = (() => {
 
-    // import w from 'wsemi'
-
-
     let calcOrig = async(arr, key) => {
 
         //rs

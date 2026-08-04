@@ -44,9 +44,6 @@ import caEma from './caEma.mjs'
  */
 let calcMacd = (() => {
 
-    // import w from 'wsemi'
-
-
     let kp = {
         '4hr': 1,
         '8hr': 2,

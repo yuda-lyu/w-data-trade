@@ -48,9 +48,6 @@ import pickValue from './pickValue.mjs'
  */
 let calcVec = (() => {
 
-    // import w from 'wsemi'
-
-
     let kp = {
         '4hr': 1,
         '8hr': 2,

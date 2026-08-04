@@ -47,10 +47,6 @@ import each from 'lodash-es/each.js'
  */
 let calcKdj = (() => {
 
-    // import w from 'wsemi'
-    // import pickValue from './pickValue.mjs'
-
-
     let kp = {
         '1day': 6, // 1 day = 6 * 4 hours
         '2day': 12, // 2 days = 12 * 4 hours

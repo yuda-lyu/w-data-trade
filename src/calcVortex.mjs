@@ -47,10 +47,6 @@ import each from 'lodash-es/each.js'
  */
 let calcVortex = (() => {
 
-    // import w from 'wsemi'
-    // import pickValue from './pickValue.mjs'
-
-
     let kp = {
         '12hr': 3,
         '16hr': 4,
