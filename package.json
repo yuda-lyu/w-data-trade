@@ -1,16 +1,16 @@
 {
   "name": "w-data-trade",
-  "version": "1.0.17",
+  "version": "1.0.18",
   "main": "dist/w-data-trade.umd.js",
   "dependencies": {
-    "w-statistic": "^1.0.36",
-    "wsemi": "^1.8.85"
+    "w-statistic": "^1.0.37",
+    "wsemi": "^1.8.92"
   },
   "devDependencies": {
-    "w-package-tools": "^1.1.15"
+    "w-package-tools": "^1.1.16"
   },
   "scripts": {
-    "test": "mocha \"test/unit-*.test.mjs\" --parallel --timeout 60000",
+    "test": "mocha --parallel \"test/*.test.mjs\" --timeout 180000",
     "deploy": "gh-pages -d docs"
   },
   "repository": {
