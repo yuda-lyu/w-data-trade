@@ -29,7 +29,7 @@
 <nav >
     
     
-    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#caEma">caEma</a></li><li><a href="global.html#calcAdx">calcAdx</a></li><li><a href="global.html#calcAtr">calcAtr</a></li><li><a href="global.html#calcAts">calcAts</a></li><li><a href="global.html#calcBbpb">calcBbpb</a></li><li><a href="global.html#calcCandle">calcCandle</a></li><li><a href="global.html#calcCvd">calcCvd</a></li><li><a href="global.html#calcDonchian">calcDonchian</a></li><li><a href="global.html#calcEma">calcEma</a></li><li><a href="global.html#calcIchimoku">calcIchimoku</a></li><li><a href="global.html#calcKdj">calcKdj</a></li><li><a href="global.html#calcKeltner">calcKeltner</a></li><li><a href="global.html#calcKlr">calcKlr</a></li><li><a href="global.html#calcMa">calcMa</a></li><li><a href="global.html#calcMacd">calcMacd</a></li><li><a href="global.html#calcMfi">calcMfi</a></li><li><a href="global.html#calcObv">calcObv</a></li><li><a href="global.html#calcOrig">calcOrig</a></li><li><a href="global.html#calcRsi">calcRsi</a></li><li><a href="global.html#calcSupertrend">calcSupertrend</a></li><li><a href="global.html#calcVec">calcVec</a></li><li><a href="global.html#calcVortex">calcVortex</a></li><li><a href="global.html#calcVwap">calcVwap</a></li><li><a href="global.html#dataCalibrate">dataCalibrate</a></li><li><a href="global.html#dataConvert">dataConvert</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#barLabelOf">barLabelOf</a></li><li><a href="global.html#caEma">caEma</a></li><li><a href="global.html#calcAdx">calcAdx</a></li><li><a href="global.html#calcAtr">calcAtr</a></li><li><a href="global.html#calcAts">calcAts</a></li><li><a href="global.html#calcBbpb">calcBbpb</a></li><li><a href="global.html#calcCandle">calcCandle</a></li><li><a href="global.html#calcCvd">calcCvd</a></li><li><a href="global.html#calcDonchian">calcDonchian</a></li><li><a href="global.html#calcEma">calcEma</a></li><li><a href="global.html#calcIchimoku">calcIchimoku</a></li><li><a href="global.html#calcKdj">calcKdj</a></li><li><a href="global.html#calcKeltner">calcKeltner</a></li><li><a href="global.html#calcKlr">calcKlr</a></li><li><a href="global.html#calcMa">calcMa</a></li><li><a href="global.html#calcMacd">calcMacd</a></li><li><a href="global.html#calcMfi">calcMfi</a></li><li><a href="global.html#calcObv">calcObv</a></li><li><a href="global.html#calcOrig">calcOrig</a></li><li><a href="global.html#calcRsi">calcRsi</a></li><li><a href="global.html#calcSupertrend">calcSupertrend</a></li><li><a href="global.html#calcVec">calcVec</a></li><li><a href="global.html#calcVortex">calcVortex</a></li><li><a href="global.html#calcVwap">calcVwap</a></li><li><a href="global.html#dataCalibrate">dataCalibrate</a></li><li><a href="global.html#dataConvert">dataConvert</a></li><li><a href="global.html#resetWarned">resetWarned</a></li><li><a href="global.html#resolvePeriods">resolvePeriods</a></li></ul>
     
 </nav>
 
@@ -124,6 +124,170 @@
 
     
         <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    <h4 class="name" id="barLabelOf"><span class="type-signature"></span>barLabelOf<span class="signature">(barsPerDay)</span><span class="type-signature"> &rarr; {String}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+    
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li><p>由每日根數組出單根K線之週期標籤</p>
+<p>標籤與各calc內建週期表之格式一致：整日數為<code>${N}day</code>，整小時數為<code>${N}hr</code>，整分鐘數為<code>${N}m</code>，其餘為<code>${N}s</code>(一根K線之秒數四捨五入至整秒)</p></li></ul></dd>
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="resolvePeriods.mjs.html">resolvePeriods.mjs</a>, <a href="resolvePeriods.mjs.html#line71">line 71</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+    <h5 class="h5-examples">Example</h5>
+    
+    <pre class="prettyprint"><code>console.log(barLabelOf(6), barLabelOf(24), barLabelOf(48), barLabelOf(1), barLabelOf(288))// => 4hr 1hr 30m 1day 5m</code></pre>
+
+
+
+
+    <h5 class="h5-parameters">Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>barsPerDay</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>輸入每日K線根數，有效數字(正數，上限86400)，無效時throw</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>回傳週期標籤字串</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">String</span>
+
+
+
+    </dd>
+</dl>
+
+    
+
+
 
         
             
@@ -479,7 +643,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="calcAdx.mjs.html">calcAdx.mjs</a>, <a href="calcAdx.mjs.html#line45">line 45</a>
+        <a href="calcAdx.mjs.html">calcAdx.mjs</a>, <a href="calcAdx.mjs.html#line50">line 50</a>
     </li></ul></dd>
     
 
@@ -665,7 +829,196 @@
                 </td>
             
 
-            <td class="description last"><p>輸入設定物件，預設{}，本指標目前無可用設定鍵</p></td>
+            <td class="description last"><p>輸入設定物件，預設{}，除下列週期換算相關鍵外本指標無其他可用設定鍵</p>
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>barsPerDay</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+|
+
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>6</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入每日K線根數，有效數字(大於0且至多86400)，各期根數依此自4hr基準(每日6根)等比換算並四捨五入，換算後不足1根之期剔除，預設6(不換算)，非預期之輸入視為未給</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>kp</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入直接採用之週期表物件，鍵為週期標籤，值為正整數根數或參數物件，給予時不換算，預設採內建週期表，非預期之輸入視為未給</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>debug</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>false</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入是否於opt.barsPerDay或opt.kp出現非預期輸入時輸出警告布林值，預設false</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>funLog</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入警告出口函數，以(msg, { fn, reason, key })呼叫，未給則用console.warn，預設未給</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
         </tr>
 
     
@@ -738,7 +1091,7 @@ atrRatio於close為0時回0；atrRatioMod以diviProt保護分母(close+opt.plusC
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="calcAtr.mjs.html">calcAtr.mjs</a>, <a href="calcAtr.mjs.html#line46">line 46</a>
+        <a href="calcAtr.mjs.html">calcAtr.mjs</a>, <a href="calcAtr.mjs.html#line51">line 51</a>
     </li></ul></dd>
     
 
@@ -954,6 +1307,165 @@ atrRatio於close為0時回0；atrRatioMod以diviProt保護分母(close+opt.plusC
 
         <tr>
             
+                <td class="name"><code>barsPerDay</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+|
+
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>6</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入每日K線根數，有效數字(大於0且至多86400)，各期根數依此自4hr基準(每日6根)等比換算並四捨五入，換算後不足1根之期剔除，預設6(不換算)，非預期之輸入視為未給</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>kp</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入直接採用之週期表物件，鍵為週期標籤，值為正整數根數或參數物件，給予時不換算，預設採內建週期表，非預期之輸入視為未給</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>debug</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>false</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入是否於opt.barsPerDay或opt.kp出現非預期輸入時輸出警告布林值，預設false</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>funLog</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入警告出口函數，以(msg, { fn, reason, key })呼叫，未給則用console.warn，預設未給</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
                 <td class="name"><code>plusClose</code></td>
             
 
@@ -1067,7 +1579,7 @@ atsRatio為當根ats相對最近len根(含當根)簡單平均之倍數，baselin
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="calcAts.mjs.html">calcAts.mjs</a>, <a href="calcAts.mjs.html#line42">line 42</a>
+        <a href="calcAts.mjs.html">calcAts.mjs</a>, <a href="calcAts.mjs.html#line47">line 47</a>
     </li></ul></dd>
     
 
@@ -1253,7 +1765,196 @@ atsRatio為當根ats相對最近len根(含當根)簡單平均之倍數，baselin
                 </td>
             
 
-            <td class="description last"><p>輸入設定物件，預設{}，本指標目前無可用設定鍵</p></td>
+            <td class="description last"><p>輸入設定物件，預設{}，除下列週期換算相關鍵外本指標無其他可用設定鍵</p>
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>barsPerDay</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+|
+
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>6</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入每日K線根數，有效數字(大於0且至多86400)，各期根數依此自4hr基準(每日6根)等比換算並四捨五入，換算後不足1根之期剔除，預設6(不換算)，非預期之輸入視為未給</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>kp</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入直接採用之週期表物件，鍵為週期標籤，值為正整數根數或參數物件，給予時不換算，預設採內建週期表，非預期之輸入視為未給</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>debug</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>false</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入是否於opt.barsPerDay或opt.kp出現非預期輸入時輸出警告布林值，預設false</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>funLog</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入警告出口函數，以(msg, { fn, reason, key })呼叫，未給則用console.warn，預設未給</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
         </tr>
 
     
@@ -1327,7 +2028,7 @@ BBwidthMod、BBwidthChangeMod為以diviProt保護分母之修正版本，分母�
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="calcBbpb.mjs.html">calcBbpb.mjs</a>, <a href="calcBbpb.mjs.html#line50">line 50</a>
+        <a href="calcBbpb.mjs.html">calcBbpb.mjs</a>, <a href="calcBbpb.mjs.html#line55">line 55</a>
     </li></ul></dd>
     
 
@@ -1539,6 +2240,165 @@ BBwidthMod、BBwidthChangeMod為以diviProt保護分母之修正版本，分母�
     </thead>
 
     <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>barsPerDay</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+|
+
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>6</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入每日K線根數，有效數字(大於0且至多86400)，各期根數依此自4hr基準(每日6根)等比換算並四捨五入，換算後不足1根之期剔除，預設6(不換算)，非預期之輸入視為未給</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>kp</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入直接採用之週期表物件，鍵為週期標籤，值為正整數根數或參數物件，給予時不換算，預設採內建週期表，非預期之輸入視為未給</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>debug</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>false</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入是否於opt.barsPerDay或opt.kp出現非預期輸入時輸出警告布林值，預設false</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>funLog</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入警告出口函數，以(msg, { fn, reason, key })呼叫，未給則用console.warn，預設未給</p></td>
+        </tr>
+
     
 
         <tr>
@@ -1817,7 +2677,7 @@ engulfStrength僅於當根與前一根方向相反且前一根有範圍時計算
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="calcCandle.mjs.html">calcCandle.mjs</a>, <a href="calcCandle.mjs.html#line42">line 42</a>
+        <a href="calcCandle.mjs.html">calcCandle.mjs</a>, <a href="calcCandle.mjs.html#line47">line 47</a>
     </li></ul></dd>
     
 
@@ -2003,7 +2863,196 @@ engulfStrength僅於當根與前一根方向相反且前一根有範圍時計算
                 </td>
             
 
-            <td class="description last"><p>輸入設定物件，預設{}，本指標目前無可用設定鍵</p></td>
+            <td class="description last"><p>輸入設定物件，預設{}，除下列週期換算相關鍵外本指標無其他可用設定鍵</p>
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>barsPerDay</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+|
+
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>6</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入每日K線根數，有效數字(大於0且至多86400)，各期根數依此自4hr基準(每日6根)等比換算並四捨五入，換算後不足1根之期剔除，預設6(不換算)，非預期之輸入視為未給，本指標為單根型態，不換算根數，僅週期標籤改為該K線週期之標籤</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>kp</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入直接採用之週期表物件，鍵為週期標籤，值為正整數根數或參數物件，給予時不換算，預設採內建週期表，非預期之輸入視為未給</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>debug</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>false</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入是否於opt.barsPerDay或opt.kp出現非預期輸入時輸出警告布林值，預設false</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>funLog</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入警告出口函數，以(msg, { fn, reason, key })呼叫，未給則用console.warn，預設未給</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
         </tr>
 
     
@@ -2077,7 +3126,7 @@ cvdSlope=(cvd(i)-cvd(i-3))/3，固定回看3根(對應12hr)以呈現累積動能
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="calcCvd.mjs.html">calcCvd.mjs</a>, <a href="calcCvd.mjs.html#line46">line 46</a>
+        <a href="calcCvd.mjs.html">calcCvd.mjs</a>, <a href="calcCvd.mjs.html#line51">line 51</a>
     </li></ul></dd>
     
 
@@ -2263,7 +3312,196 @@ cvdSlope=(cvd(i)-cvd(i-3))/3，固定回看3根(對應12hr)以呈現累積動能
                 </td>
             
 
-            <td class="description last"><p>輸入設定物件，預設{}，本指標目前無可用設定鍵</p></td>
+            <td class="description last"><p>輸入設定物件，預設{}，除下列週期換算相關鍵外本指標無其他可用設定鍵</p>
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>barsPerDay</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+|
+
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>6</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入每日K線根數，有效數字(大於0且至多86400)，各期根數依此自4hr基準(每日6根)等比換算並四捨五入，換算後不足1根之期剔除，預設6(不換算)，非預期之輸入視為未給</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>kp</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入直接採用之週期表物件，鍵為週期標籤，值為正整數根數或參數物件，給予時不換算，預設採內建週期表，非預期之輸入視為未給</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>debug</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>false</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入是否於opt.barsPerDay或opt.kp出現非預期輸入時輸出警告布林值，預設false</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>funLog</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入警告出口函數，以(msg, { fn, reason, key })呼叫，未給則用console.warn，預設未給</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
         </tr>
 
     
@@ -2337,7 +3575,7 @@ opt.excludeCurrent=false(預設)時，視窗為[i-len+1,i]含當前根，第1筆
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="calcDonchian.mjs.html">calcDonchian.mjs</a>, <a href="calcDonchian.mjs.html#line52">line 52</a>
+        <a href="calcDonchian.mjs.html">calcDonchian.mjs</a>, <a href="calcDonchian.mjs.html#line57">line 57</a>
     </li></ul></dd>
     
 
@@ -2549,6 +3787,165 @@ opt.excludeCurrent=false(預設)時，視窗為[i-len+1,i]含當前根，第1筆
     </thead>
 
     <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>barsPerDay</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+|
+
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>6</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入每日K線根數，有效數字(大於0且至多86400)，各期根數依此自4hr基準(每日6根)等比換算並四捨五入，換算後不足1根之期剔除，預設6(不換算)，非預期之輸入視為未給</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>kp</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入直接採用之週期表物件，鍵為週期標籤，值為正整數根數或參數物件，給予時不換算，預設採內建週期表，非預期之輸入視為未給</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>debug</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>false</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入是否於opt.barsPerDay或opt.kp出現非預期輸入時輸出警告布林值，預設false</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>funLog</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入警告出口函數，以(msg, { fn, reason, key })呼叫，未給則用console.warn，預設未給</p></td>
+        </tr>
+
     
 
         <tr>
@@ -2827,7 +4224,7 @@ diff=EMA-現值，ratio=diff/現值(現值為0時ratio給0)</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="calcEma.mjs.html">calcEma.mjs</a>, <a href="calcEma.mjs.html#line39">line 39</a>
+        <a href="calcEma.mjs.html">calcEma.mjs</a>, <a href="calcEma.mjs.html#line44">line 44</a>
     </li></ul></dd>
     
 
@@ -3043,6 +4440,165 @@ diff=EMA-現值，ratio=diff/現值(現值為0時ratio給0)</p>
 
         <tr>
             
+                <td class="name"><code>barsPerDay</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+|
+
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>6</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入每日K線根數，有效數字(大於0且至多86400)，各期根數依此自4hr基準(每日6根)等比換算並四捨五入，換算後不足1根之期剔除，預設6(不換算)，非預期之輸入視為未給</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>kp</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入直接採用之週期表物件，鍵為週期標籤，值為正整數根數或參數物件，給予時不換算，預設採內建週期表，非預期之輸入視為未給</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>debug</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>false</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入是否於opt.barsPerDay或opt.kp出現非預期輸入時輸出警告布林值，預設false</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>funLog</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入警告出口函數，以(msg, { fn, reason, key })呼叫，未給則用console.warn，預設未給</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
                 <td class="name"><code>norm</code></td>
             
 
@@ -3164,7 +4720,7 @@ cloudTop=max(SenkouA,SenkouB)，cloudBot=min(SenkouA,SenkouB)，cloudMid=(cloudT
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="calcIchimoku.mjs.html">calcIchimoku.mjs</a>, <a href="calcIchimoku.mjs.html#line71">line 71</a>
+        <a href="calcIchimoku.mjs.html">calcIchimoku.mjs</a>, <a href="calcIchimoku.mjs.html#line76">line 76</a>
     </li></ul></dd>
     
 
@@ -3376,6 +4932,165 @@ cloudTop=max(SenkouA,SenkouB)，cloudBot=min(SenkouA,SenkouB)，cloudMid=(cloudT
     </thead>
 
     <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>barsPerDay</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+|
+
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>6</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入每日K線根數，有效數字(大於0且至多86400)，各期根數依此自4hr基準(每日6根)等比換算並四捨五入，換算後不足1根之期剔除，預設6(不換算)，非預期之輸入視為未給</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>kp</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入直接採用之週期表物件，鍵為週期標籤，值為正整數根數或參數物件，給予時不換算，預設採內建週期表，非預期之輸入視為未給</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>debug</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>false</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入是否於opt.barsPerDay或opt.kp出現非預期輸入時輸出警告布林值，預設false</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>funLog</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入警告出口函數，以(msg, { fn, reason, key })呼叫，未給則用console.warn，預設未給</p></td>
+        </tr>
+
     
 
         <tr>
@@ -3615,7 +5330,7 @@ opt目前未被讀取(本函式尚未提供可調整之設定項)</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="calcKdj.mjs.html">calcKdj.mjs</a>, <a href="calcKdj.mjs.html#line48">line 48</a>
+        <a href="calcKdj.mjs.html">calcKdj.mjs</a>, <a href="calcKdj.mjs.html#line53">line 53</a>
     </li></ul></dd>
     
 
@@ -3801,7 +5516,196 @@ opt目前未被讀取(本函式尚未提供可調整之設定項)</p>
                 </td>
             
 
-            <td class="description last"><p>輸入設定物件，預設{}</p></td>
+            <td class="description last"><p>輸入設定物件，預設{}</p>
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>barsPerDay</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+|
+
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>6</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入每日K線根數，有效數字(大於0且至多86400)，各期根數依此自4hr基準(每日6根)等比換算並四捨五入，換算後不足1根之期剔除，預設6(不換算)，非預期之輸入視為未給</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>kp</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入直接採用之週期表物件，鍵為週期標籤，值為正整數根數或參數物件，給予時不換算，預設採內建週期表，非預期之輸入視為未給</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>debug</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>false</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入是否於opt.barsPerDay或opt.kp出現非預期輸入時輸出警告布林值，預設false</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>funLog</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入警告出口函數，以(msg, { fn, reason, key })呼叫，未給則用console.warn，預設未給</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
         </tr>
 
     
@@ -3884,7 +5788,7 @@ middle=EMA(Close,len)，ATR以Wilder平滑遞推(種子為前len筆TR之算術�
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="calcKeltner.mjs.html">calcKeltner.mjs</a>, <a href="calcKeltner.mjs.html#line56">line 56</a>
+        <a href="calcKeltner.mjs.html">calcKeltner.mjs</a>, <a href="calcKeltner.mjs.html#line61">line 61</a>
     </li></ul></dd>
     
 
@@ -4100,6 +6004,165 @@ middle=EMA(Close,len)，ATR以Wilder平滑遞推(種子為前len筆TR之算術�
 
         <tr>
             
+                <td class="name"><code>barsPerDay</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+|
+
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>6</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入每日K線根數，有效數字(大於0且至多86400)，各期根數依此自4hr基準(每日6根)等比換算並四捨五入，換算後不足1根之期剔除，預設6(不換算)，非預期之輸入視為未給</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>kp</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入直接採用之週期表物件，鍵為週期標籤，值為正整數根數或參數物件，給予時不換算，預設採內建週期表，非預期之輸入視為未給</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>debug</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>false</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入是否於opt.barsPerDay或opt.kp出現非預期輸入時輸出警告布林值，預設false</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>funLog</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入警告出口函數，以(msg, { fn, reason, key })呼叫，未給則用console.warn，預設未給</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
                 <td class="name"><code>plusMiddle</code></td>
             
 
@@ -4213,7 +6276,7 @@ ho=H/O，lo=L/O，co=C/O，hc=H/C，lc=L/C，hl=H/L，六比值皆先將O/H/L/C�
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="calcKlr.mjs.html">calcKlr.mjs</a>, <a href="calcKlr.mjs.html#line45">line 45</a>
+        <a href="calcKlr.mjs.html">calcKlr.mjs</a>, <a href="calcKlr.mjs.html#line50">line 50</a>
     </li></ul></dd>
     
 
@@ -4429,6 +6492,165 @@ ho=H/O，lo=L/O，co=C/O，hc=H/C，lc=L/C，hl=H/L，六比值皆先將O/H/L/C�
 
         <tr>
             
+                <td class="name"><code>barsPerDay</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+|
+
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>6</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入每日K線根數，有效數字(大於0且至多86400)，各期根數依此自4hr基準(每日6根)等比換算並四捨五入，換算後不足1根之期剔除，預設6(不換算)，非預期之輸入視為未給，本指標為單根型態，不換算根數，僅週期標籤改為該K線週期之標籤</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>kp</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入直接採用之週期表物件，鍵為週期標籤，值為正整數根數或參數物件，給予時不換算，預設採內建週期表，非預期之輸入視為未給</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>debug</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>false</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入是否於opt.barsPerDay或opt.kp出現非預期輸入時輸出警告布林值，預設false</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>funLog</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入警告出口函數，以(msg, { fn, reason, key })呼叫，未給則用console.warn，預設未給</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
                 <td class="name"><code>plusClose</code></td>
             
 
@@ -4541,7 +6763,7 @@ ho=H/O，lo=L/O，co=C/O，hc=H/C，lc=L/C，hl=H/L，六比值皆先將O/H/L/C�
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="calcMa.mjs.html">calcMa.mjs</a>, <a href="calcMa.mjs.html#line45">line 45</a>
+        <a href="calcMa.mjs.html">calcMa.mjs</a>, <a href="calcMa.mjs.html#line50">line 50</a>
     </li></ul></dd>
     
 
@@ -4757,6 +6979,165 @@ ho=H/O，lo=L/O，co=C/O，hc=H/C，lc=L/C，hl=H/L，六比值皆先將O/H/L/C�
 
         <tr>
             
+                <td class="name"><code>barsPerDay</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+|
+
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>6</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入每日K線根數，有效數字(大於0且至多86400)，各期根數依此自4hr基準(每日6根)等比換算並四捨五入，換算後不足1根之期剔除，預設6(不換算)，非預期之輸入視為未給</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>kp</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入直接採用之週期表物件，鍵為週期標籤，值為正整數根數或參數物件，給予時不換算，預設採內建週期表，非預期之輸入視為未給</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>debug</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>false</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入是否於opt.barsPerDay或opt.kp出現非預期輸入時輸出警告布林值，預設false</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>funLog</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入警告出口函數，以(msg, { fn, reason, key })呼叫，未給則用console.warn，預設未給</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
                 <td class="name"><code>norm</code></td>
             
 
@@ -4871,7 +7252,7 @@ DIF(快線)為收盤價快線EMA減慢線EMA，DEM(慢線，即訊號線)為DIF�
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="calcMacd.mjs.html">calcMacd.mjs</a>, <a href="calcMacd.mjs.html#line45">line 45</a>
+        <a href="calcMacd.mjs.html">calcMacd.mjs</a>, <a href="calcMacd.mjs.html#line50">line 50</a>
     </li></ul></dd>
     
 
@@ -5057,7 +7438,196 @@ DIF(快線)為收盤價快線EMA減慢線EMA，DEM(慢線，即訊號線)為DIF�
                 </td>
             
 
-            <td class="description last"><p>輸入設定物件，預設{}，目前未讀取任何鍵值(保留參數)</p></td>
+            <td class="description last"><p>輸入設定物件，預設{}，除下列週期換算相關鍵外未讀取其他鍵值(保留參數)</p>
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>barsPerDay</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+|
+
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>6</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入每日K線根數，有效數字(大於0且至多86400)，各期根數依此自4hr基準(每日6根)等比換算並四捨五入，換算後不足1根之期剔除，預設6(不換算)，非預期之輸入視為未給</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>kp</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入直接採用之週期表物件，鍵為週期標籤，值為正整數根數或參數物件，給予時不換算，預設採內建週期表，非預期之輸入視為未給</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>debug</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>false</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入是否於opt.barsPerDay或opt.kp出現非預期輸入時輸出警告布林值，預設false</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>funLog</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入警告出口函數，以(msg, { fn, reason, key })呼叫，未給則用console.warn，預設未給</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
         </tr>
 
     
@@ -5133,7 +7703,7 @@ MFIdiv為MFI與len根前之MFI取正負號比較，與Close之len根漲跌方向
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="calcMfi.mjs.html">calcMfi.mjs</a>, <a href="calcMfi.mjs.html#line44">line 44</a>
+        <a href="calcMfi.mjs.html">calcMfi.mjs</a>, <a href="calcMfi.mjs.html#line49">line 49</a>
     </li></ul></dd>
     
 
@@ -5349,6 +7919,165 @@ MFIdiv為MFI與len根前之MFI取正負號比較，與Close之len根漲跌方向
 
         <tr>
             
+                <td class="name"><code>barsPerDay</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+|
+
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>6</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入每日K線根數，有效數字(大於0且至多86400)，各期根數依此自4hr基準(每日6根)等比換算並四捨五入，換算後不足1根之期剔除，預設6(不換算)，非預期之輸入視為未給</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>kp</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入直接採用之週期表物件，鍵為週期標籤，值為正整數根數或參數物件，給予時不換算，預設採內建週期表，非預期之輸入視為未給</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>debug</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>false</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入是否於opt.barsPerDay或opt.kp出現非預期輸入時輸出警告布林值，預設false</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>funLog</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入警告出口函數，以(msg, { fn, reason, key })呼叫，未給則用console.warn，預設未給</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
                 <td class="name"><code>eps</code></td>
             
 
@@ -5465,7 +8194,7 @@ OBVdiv為obv與len根前之obv取正負號比較，與Close之len根漲跌方向
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="calcObv.mjs.html">calcObv.mjs</a>, <a href="calcObv.mjs.html#line42">line 42</a>
+        <a href="calcObv.mjs.html">calcObv.mjs</a>, <a href="calcObv.mjs.html#line47">line 47</a>
     </li></ul></dd>
     
 
@@ -5651,7 +8380,196 @@ OBVdiv為obv與len根前之obv取正負號比較，與Close之len根漲跌方向
                 </td>
             
 
-            <td class="description last"><p>輸入設定物件，預設{}，目前未讀取任何鍵值(保留參數)</p></td>
+            <td class="description last"><p>輸入設定物件，預設{}，除下列週期換算相關鍵外未讀取其他鍵值(保留參數)</p>
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>barsPerDay</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+|
+
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>6</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入每日K線根數，有效數字(大於0且至多86400)，各期根數依此自4hr基準(每日6根)等比換算並四捨五入，換算後不足1根之期剔除，預設6(不換算)，非預期之輸入視為未給</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>kp</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入直接採用之週期表物件，鍵為週期標籤，值為正整數根數或參數物件，給予時不換算，預設採內建週期表，非預期之輸入視為未給</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>debug</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>false</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入是否於opt.barsPerDay或opt.kp出現非預期輸入時輸出警告布林值，預設false</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>funLog</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入警告出口函數，以(msg, { fn, reason, key })呼叫，未給則用console.warn，預設未給</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
         </tr>
 
     
@@ -5918,7 +8836,7 @@ avgGain與avgLoss皆小於等於opt.eps時RSI給50(完全平盤)，僅avgLoss小
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="calcRsi.mjs.html">calcRsi.mjs</a>, <a href="calcRsi.mjs.html#line46">line 46</a>
+        <a href="calcRsi.mjs.html">calcRsi.mjs</a>, <a href="calcRsi.mjs.html#line51">line 51</a>
     </li></ul></dd>
     
 
@@ -6134,6 +9052,165 @@ avgGain與avgLoss皆小於等於opt.eps時RSI給50(完全平盤)，僅avgLoss小
 
         <tr>
             
+                <td class="name"><code>barsPerDay</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+|
+
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>6</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入每日K線根數，有效數字(大於0且至多86400)，各期根數依此自4hr基準(每日6根)等比換算並四捨五入，換算後不足1根之期剔除，預設6(不換算)，非預期之輸入視為未給</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>kp</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入直接採用之週期表物件，鍵為週期標籤，值為正整數根數或參數物件，給予時不換算，預設採內建週期表，非預期之輸入視為未給</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>debug</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>false</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入是否於opt.barsPerDay或opt.kp出現非預期輸入時輸出警告布林值，預設false</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>funLog</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入警告出口函數，以(msg, { fn, reason, key })呼叫，未給則用console.warn，預設未給</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
                 <td class="name"><code>seed</code></td>
             
 
@@ -6293,7 +9370,7 @@ stDistanceMod=diviProt(Close+opt.plusClose-line, Close+opt.plusClose)，opt.plus
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="calcSupertrend.mjs.html">calcSupertrend.mjs</a>, <a href="calcSupertrend.mjs.html#line48">line 48</a>
+        <a href="calcSupertrend.mjs.html">calcSupertrend.mjs</a>, <a href="calcSupertrend.mjs.html#line53">line 53</a>
     </li></ul></dd>
     
 
@@ -6509,6 +9586,165 @@ stDistanceMod=diviProt(Close+opt.plusClose-line, Close+opt.plusClose)，opt.plus
 
         <tr>
             
+                <td class="name"><code>barsPerDay</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+|
+
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>6</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入每日K線根數，有效數字(大於0且至多86400)，各期根數依此自4hr基準(每日6根)等比換算並四捨五入，換算後不足1根之期剔除，預設6(不換算)，非預期之輸入視為未給</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>kp</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入直接採用之週期表物件，鍵為週期標籤，值為正整數根數或參數物件，給予時不換算，預設採內建週期表，非預期之輸入視為未給</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>debug</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>false</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入是否於opt.barsPerDay或opt.kp出現非預期輸入時輸出警告布林值，預設false</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>funLog</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入警告出口函數，以(msg, { fn, reason, key })呼叫，未給則用console.warn，預設未給</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
                 <td class="name"><code>plusClose</code></td>
             
 
@@ -6621,7 +9857,7 @@ stDistanceMod=diviProt(Close+opt.plusClose-line, Close+opt.plusClose)，opt.plus
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="calcVec.mjs.html">calcVec.mjs</a>, <a href="calcVec.mjs.html#line49">line 49</a>
+        <a href="calcVec.mjs.html">calcVec.mjs</a>, <a href="calcVec.mjs.html#line54">line 54</a>
     </li></ul></dd>
     
 
@@ -6837,6 +10073,165 @@ stDistanceMod=diviProt(Close+opt.plusClose-line, Close+opt.plusClose)，opt.plus
 
         <tr>
             
+                <td class="name"><code>barsPerDay</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+|
+
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>6</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入每日K線根數，有效數字(大於0且至多86400)，各期根數依此自4hr基準(每日6根)等比換算並四捨五入，換算後不足1根之期剔除，預設6(不換算)，非預期之輸入視為未給</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>kp</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入直接採用之週期表物件，鍵為週期標籤，值為正整數根數或參數物件，給予時不換算，預設採內建週期表，非預期之輸入視為未給</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>debug</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>false</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入是否於opt.barsPerDay或opt.kp出現非預期輸入時輸出警告布林值，預設false</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>funLog</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入警告出口函數，以(msg, { fn, reason, key })呼叫，未給則用console.warn，預設未給</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
                 <td class="name"><code>norm</code></td>
             
 
@@ -6950,7 +10345,7 @@ sum(TR)為0(視窗內無波動)時，VI+與VI-皆直接給0以避免除以0</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="calcVortex.mjs.html">calcVortex.mjs</a>, <a href="calcVortex.mjs.html#line48">line 48</a>
+        <a href="calcVortex.mjs.html">calcVortex.mjs</a>, <a href="calcVortex.mjs.html#line53">line 53</a>
     </li></ul></dd>
     
 
@@ -7136,7 +10531,196 @@ sum(TR)為0(視窗內無波動)時，VI+與VI-皆直接給0以避免除以0</p>
                 </td>
             
 
-            <td class="description last"><p>輸入設定物件，預設{}，目前函式內部未使用</p></td>
+            <td class="description last"><p>輸入設定物件，預設{}，除下列週期換算相關鍵外函式內部未使用其他鍵值</p>
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>barsPerDay</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+|
+
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>6</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入每日K線根數，有效數字(大於0且至多86400)，各期根數依此自4hr基準(每日6根)等比換算並四捨五入，換算後不足1根之期剔除，預設6(不換算)，非預期之輸入視為未給</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>kp</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入直接採用之週期表物件，鍵為週期標籤，值為正整數根數或參數物件，給予時不換算，預設採內建週期表，非預期之輸入視為未給</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>debug</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>false</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入是否於opt.barsPerDay或opt.kp出現非預期輸入時輸出警告布林值，預設false</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>funLog</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入警告出口函數，以(msg, { fn, reason, key })呼叫，未給則用console.warn，預設未給</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
         </tr>
 
     
@@ -7210,7 +10794,7 @@ vwapDist於Close為0時給0；vwapDistATR於ATR為0時給0</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="calcVwap.mjs.html">calcVwap.mjs</a>, <a href="calcVwap.mjs.html#line47">line 47</a>
+        <a href="calcVwap.mjs.html">calcVwap.mjs</a>, <a href="calcVwap.mjs.html#line52">line 52</a>
     </li></ul></dd>
     
 
@@ -7396,7 +10980,196 @@ vwapDist於Close為0時給0；vwapDistATR於ATR為0時給0</p>
                 </td>
             
 
-            <td class="description last"><p>輸入設定物件，預設{}，目前函式內部未使用</p></td>
+            <td class="description last"><p>輸入設定物件，預設{}，除下列週期換算相關鍵外函式內部未使用其他鍵值</p>
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>barsPerDay</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+|
+
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>6</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入每日K線根數，有效數字(大於0且至多86400)，各期根數依此自4hr基準(每日6根)等比換算並四捨五入，換算後不足1根之期剔除，預設6(不換算)，非預期之輸入視為未給</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>kp</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入直接採用之週期表物件，鍵為週期標籤，值為正整數根數或參數物件，給予時不換算，預設採內建週期表，非預期之輸入視為未給</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>debug</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>false</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入是否於opt.barsPerDay或opt.kp出現非預期輸入時輸出警告布林值，預設false</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>funLog</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入警告出口函數，以(msg, { fn, reason, key })呼叫，未給則用console.warn，預設未給</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
         </tr>
 
     
@@ -8887,6 +12660,529 @@ dataConvert('demo', 'BTCUSDT', '4hr', 'price', 'ohlc', methods, arr, kp, './tmp/
 
 
         
+            
+
+    
+
+    <h4 class="name" id="resetWarned"><span class="type-signature"></span>resetWarned<span class="signature">()</span><span class="type-signature"> &rarr; {undefined}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+    
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li><p>重設已警告過之opt鍵紀錄，僅供測試使用</p></li></ul></dd>
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="resolvePeriods.mjs.html">resolvePeriods.mjs</a>, <a href="resolvePeriods.mjs.html#line52">line 52</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>無回傳值</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">undefined</span>
+
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="resolvePeriods"><span class="type-signature"></span>resolvePeriods<span class="signature">(kp, opt<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Object}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+    
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li><p>依實際K線週期換算各calc之內建週期表</p>
+<p>各calc之內建週期表(kp)以4hr K線為基準寫定(每日6根)，週期標籤為時間語意('1day'、'12hr'…)而值為根數；本函式使同一標籤於其他K線週期仍對應同一段時間
+換算規則：以opt.barsPerDay(每日根數)對基準6之比值等比換算各期之根數(數值型之值，或參數物件內之len、tenkan、kijun、senkouB欄位)並四捨五入(.5進位)；換算後不足1根之期剔除(該週期短於一根K線)；倍數類欄位(如mult)不換算
+相鄰週期四捨五入後可能得到相同根數(如12hr K線上'12hr'與'16hr'皆為1根)，本函式不去重，各期標籤維持時間語意
+單根型態之表(僅一期且根數為1，如K線型態與單根比值類)不換算根數，只把標籤改為該K線週期之標籤(由barsPerDay推得，見barLabelOf)
+opt.barsPerDay未給或為6時原樣回傳(與既有輸出完全相同)；opt.kp給予時直接採用該表不換算，優先於opt.barsPerDay</p>
+<p>輸入檢核：kp為必須參數，無效時throw；opt.barsPerDay、opt.kp皆為opt類參數，給了非預期之輸入(不屬有效數字或正整數、超出範圍，含Infinity)視為未給、改用預設不拋錯，opt.debug為true時另輸出警告
+換算後全部週期皆不足1根時無從得出結果，throw(訊息不含傳入之值)</p></li></ul></dd>
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="resolvePeriods.mjs.html">resolvePeriods.mjs</a>, <a href="resolvePeriods.mjs.html#line183">line 183</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+    <h5 class="h5-examples">Example</h5>
+    
+    <pre class="prettyprint"><code>let kp = { '12hr': 3, '1day': 6, '7day': 42 }console.log(resolvePeriods(kp))// => { '12hr': 3, '1day': 6, '7day': 42 }console.log(resolvePeriods(kp, { barsPerDay: 24 }))// => { '12hr': 12, '1day': 24, '7day': 168 }console.log(resolvePeriods(kp, { barsPerDay: 1 }))// => { '1day': 1, '7day': 7 }console.log(resolvePeriods({ '1day': { len: 6, mult: 2 } }, { barsPerDay: 24 }))// => { '1day': { len: 24, mult: 2 } }console.log(resolvePeriods({ '4hr': 1 }, { barsPerDay: 24 }))// => { '1hr': 1 }console.log(resolvePeriods(kp, { kp: { '3day': 18 } }))// => { '3day': 18 }</code></pre>
+
+
+
+
+    <h5 class="h5-parameters">Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>kp</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入內建週期表物件，鍵為週期標籤，值為根數或參數物件，須為非空物件，無效時throw</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>opt</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>{}</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入設定物件，預設{}</p>
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>barsPerDay</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+|
+
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>6</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入每日K線根數，有效數字(數值或數字字串，大於0且至多86400)，4hr為6、1hr為24、30m為48、1day為1，預設6(不換算)，非預期之輸入視為未給</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>kp</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入直接採用之週期表物件，鍵為週期標籤，值為正整數根數或參數物件(根數類欄位須為正整數)，給予時不換算，預設採內建週期表，非預期之輸入(含任一值無效)視為未給</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>debug</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>false</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入是否於opt.barsPerDay或opt.kp出現非預期輸入時輸出警告布林值，非布林視為false，同一個鍵每個行程只警告一次，預設false</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>funLog</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入警告出口函數，以(msg, { fn, reason, key })呼叫，未給則用console.warn，預設未給</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>回傳換算後之週期表物件(新物件，鍵序與輸入一致)</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Object</span>
+
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
     
 
     
@@ -8906,7 +13202,7 @@ dataConvert('demo', 'BTCUSDT', '4hr', 'price', 'ohlc', methods, arr, kp, './tmp/
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.5</a> on Thu Nov 05 2026 15:47:56 GMT+0800 (台北標準時間) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.5</a> on Sun Nov 08 2026 16:49:02 GMT+0800 (台北標準時間) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
 <script>prettyPrint();</script>
