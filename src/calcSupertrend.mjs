@@ -3,6 +3,7 @@ import size from 'lodash-es/size.js'
 import get from 'lodash-es/get.js'
 import each from 'lodash-es/each.js'
 import diviProt from './diviProt.mjs'
+import resolvePeriods from './resolvePeriods.mjs'
 
 
 /**
@@ -23,6 +24,10 @@ import diviProt from './diviProt.mjs'
  * @param {Array} arr 輸入K線陣列，各元素需含time、High、Low、Close等欄位
  * @param {String} key 輸入計算所用數值欄位名稱字串，目前未實際使用(內部固定採用High、Low、Close)
  * @param {Object} [opt={}] 輸入設定物件，預設{}
+ * @param {Number|String} [opt.barsPerDay=6] 輸入每日K線根數，有效數字(大於0且至多86400)，各期根數依此自4hr基準(每日6根)等比換算並四捨五入，換算後不足1根之期剔除，預設6(不換算)，非預期之輸入視為未給
+ * @param {Object} [opt.kp] 輸入直接採用之週期表物件，鍵為週期標籤，值為正整數根數或參數物件，給予時不換算，預設採內建週期表，非預期之輸入視為未給
+ * @param {Boolean} [opt.debug=false] 輸入是否於opt.barsPerDay或opt.kp出現非預期輸入時輸出警告布林值，預設false
+ * @param {Function} [opt.funLog] 輸入警告出口函數，以(msg, { fn, reason, key })呼叫，未給則用console.warn，預設未給
  * @param {Number} [opt.plusClose=0] 輸入stDistanceMod計算時對Close之偏移量，用以避免Close接近0時除法爆炸，預設0
  * @returns {Promise} 回傳Promise，resolve為各期結果陣列，各元素為{period,len,vs}，vs內各元素為{time,stDistance,stDistanceMod}
  * @example
@@ -52,7 +57,7 @@ let calcSupertrend = (() => {
     //mult = ATR 通道厚度倍數 (k)
     //設計原則: period 越長 → ATR 反應越平滑 + 通道越厚, 兩者同向降翻轉敏感度
     //錨點: 1day=(6,3) 對應 Olivier Seban 原版 (10,3); 4day=(24,4) 對應 d12 grid 最佳 (20,4)
-    let kp = {
+    let KP = { //內建週期表(以4hr K線為基準: 每日6根), 實際週期表由resolvePeriods依opt.barsPerDay或opt.kp換算
         '12hr': { len: 3, mult: 2 },
         '16hr': { len: 4, mult: 2 },
         '20hr': { len: 5, mult: 2.5 },
@@ -229,6 +234,9 @@ let calcSupertrend = (() => {
     }
 
     let caSupertrends = (arr, opt = {}) => {
+
+        //kp, 週期表(預設不換算; opt.barsPerDay給每日根數即等比換算, opt.kp直接覆寫)
+        let kp = resolvePeriods(KP, opt)
 
         //rrs
         let rrs = []

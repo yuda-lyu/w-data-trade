@@ -2,6 +2,7 @@ import dataCalibrate from './dataCalibrate.mjs'
 import dataConvert from './dataConvert.mjs'
 import pickValue from './pickValue.mjs'
 import diviProt from './diviProt.mjs'
+import resolvePeriods from './resolvePeriods.mjs'
 import caEma from './caEma.mjs'
 import calcAdx from './calcAdx.mjs'
 import calcAtr from './calcAtr.mjs'
@@ -32,6 +33,7 @@ let r = {
     dataCalibrate,
     pickValue,
     diviProt,
+    resolvePeriods,
     caEma,
     calcAdx,
     calcAtr,

@@ -1,0 +1,277 @@
+import each from 'lodash-es/each.js'
+import get from 'lodash-es/get.js'
+import isPlainObject from 'lodash-es/isPlainObject.js'
+import size from 'lodash-es/size.js'
+import isfun from 'wsemi/src/isfun.mjs'
+import isenum from 'wsemi/src/isenum.mjs'
+import iseint from 'wsemi/src/iseint.mjs'
+
+
+//BARS_PER_DAY_BASE, 各calc內建週期表以4hr K線為基準寫定: 每日6根('1day'=6、'12hr'=3、'4day'=24…)
+let BARS_PER_DAY_BASE = 6
+
+//BARS_PER_DAY_MAX, opt.barsPerDay之上限(每日86400根即1秒K線), 超過者視為非預期輸入
+let BARS_PER_DAY_MAX = 86400
+
+//SCALE_KEYS, 週期表之參數物件內以「根數」計之欄位(依K線週期等比換算), 其餘欄位(如mult倍數)不換算
+let SCALE_KEYS = ['len', 'tenkan', 'kijun', 'senkouB']
+
+//warned, 已警告過之opt鍵(每個行程每個鍵只警告一次, 逐筆呼叫不洗版)
+let warned = new Set()
+
+
+//warnInvalid, opt.debug為true時輸出警告, 警告為固定詞彙, 只含函式名、鍵名、種類描述與所採之預設, 不含傳入之值
+let warnInvalid = (opt, key, desc, def) => {
+    try {
+        if (get(opt, 'debug', false) !== true) {
+            return
+        }
+        if (warned.has(key)) {
+            return
+        }
+        warned.add(key)
+        let msg = `[w-data-trade resolvePeriods] invalid ${key}: must be ${desc}, using default ${def}`
+        let funLog = get(opt, 'funLog', null)
+        if (isfun(funLog)) {
+            funLog(msg, { fn: 'resolvePeriods', reason: 'invalid', key })
+        }
+        else {
+            console.warn(msg)
+        }
+    }
+    catch (err) {} //警告出口拋錯一律忽略
+}
+
+
+/**
+ * 重設已警告過之opt鍵紀錄，僅供測試使用
+ *
+ * @function
+ * @returns {undefined} 無回傳值
+ */
+let resetWarned = () => {
+    warned.clear()
+}
+
+
+/**
+ * 由每日根數組出單根K線之週期標籤
+ *
+ * 標籤與各calc內建週期表之格式一致：整日數為`${N}day`，整小時數為`${N}hr`，整分鐘數為`${N}m`，其餘為`${N}s`(一根K線之秒數四捨五入至整秒)
+ *
+ * @function
+ * @param {Number} barsPerDay 輸入每日K線根數，有效數字(正數，上限86400)，無效時throw
+ * @returns {String} 回傳週期標籤字串
+ * @example
+ *
+ * console.log(barLabelOf(6), barLabelOf(24), barLabelOf(48), barLabelOf(1), barLabelOf(288))
+ * // => 4hr 1hr 30m 1day 5m
+ *
+ */
+let barLabelOf = (barsPerDay) => {
+
+    //check
+    if (!isenum(barsPerDay, { gt: 0, max: BARS_PER_DAY_MAX })) {
+        throw new Error(`invalid barsPerDay: must be a positive number up to ${BARS_PER_DAY_MAX}`)
+    }
+    barsPerDay = Number(barsPerDay)
+
+    //sec, 一根K線之秒數(取整秒以避開浮點誤差)
+    let sec = Math.max(1, Math.round(86400 / barsPerDay))
+
+    if (sec % 86400 === 0) {
+        return `${sec / 86400}day`
+    }
+    if (sec % 3600 === 0) {
+        return `${sec / 3600}hr`
+    }
+    if (sec % 60 === 0) {
+        return `${sec / 60}m`
+    }
+    return `${sec}s`
+}
+
+
+//chkKp, 檢核並正規化opt.kp, 有效回傳新物件(數字字串轉為數值), 非預期回傳null
+let chkKp = (kpOpt) => {
+
+    //check
+    if (!isPlainObject(kpOpt) || size(kpOpt) === 0) {
+        return null
+    }
+
+    let r = {}
+    let ok = true
+    each(kpOpt, (v, period) => {
+
+        //數值: 正整數根數
+        if (iseint(v, { min: 1 })) {
+            r[period] = Number(v)
+            return true
+        }
+
+        //參數物件: 根數類欄位須為正整數, 其餘欄位(如mult)原樣保留由calc自行檢核
+        if (isPlainObject(v)) {
+            let o = { ...v }
+            each(SCALE_KEYS, (k) => {
+                if (v[k] !== undefined) {
+                    if (iseint(v[k], { min: 1 })) {
+                        o[k] = Number(v[k])
+                    }
+                    else {
+                        ok = false
+                    }
+                }
+            })
+            if (ok) {
+                r[period] = o
+            }
+            return ok
+        }
+
+        ok = false
+        return false
+    })
+
+    return ok ? r : null
+}
+
+
+/**
+ * 依實際K線週期換算各calc之內建週期表
+ *
+ * 各calc之內建週期表(kp)以4hr K線為基準寫定(每日6根)，週期標籤為時間語意('1day'、'12hr'…)而值為根數；本函式使同一標籤於其他K線週期仍對應同一段時間
+ * 換算規則：以opt.barsPerDay(每日根數)對基準6之比值等比換算各期之根數(數值型之值，或參數物件內之len、tenkan、kijun、senkouB欄位)並四捨五入(.5進位)；換算後不足1根之期剔除(該週期短於一根K線)；倍數類欄位(如mult)不換算
+ * 相鄰週期四捨五入後可能得到相同根數(如12hr K線上'12hr'與'16hr'皆為1根)，本函式不去重，各期標籤維持時間語意
+ * 單根型態之表(僅一期且根數為1，如K線型態與單根比值類)不換算根數，只把標籤改為該K線週期之標籤(由barsPerDay推得，見barLabelOf)
+ * opt.barsPerDay未給或為6時原樣回傳(與既有輸出完全相同)；opt.kp給予時直接採用該表不換算，優先於opt.barsPerDay
+ *
+ * 輸入檢核：kp為必須參數，無效時throw；opt.barsPerDay、opt.kp皆為opt類參數，給了非預期之輸入(不屬有效數字或正整數、超出範圍，含Infinity)視為未給、改用預設不拋錯，opt.debug為true時另輸出警告
+ * 換算後全部週期皆不足1根時無從得出結果，throw(訊息不含傳入之值)
+ *
+ * @function
+ * @param {Object} kp 輸入內建週期表物件，鍵為週期標籤，值為根數或參數物件，須為非空物件，無效時throw
+ * @param {Object} [opt={}] 輸入設定物件，預設{}
+ * @param {Number|String} [opt.barsPerDay=6] 輸入每日K線根數，有效數字(數值或數字字串，大於0且至多86400)，4hr為6、1hr為24、30m為48、1day為1，預設6(不換算)，非預期之輸入視為未給
+ * @param {Object} [opt.kp] 輸入直接採用之週期表物件，鍵為週期標籤，值為正整數根數或參數物件(根數類欄位須為正整數)，給予時不換算，預設採內建週期表，非預期之輸入(含任一值無效)視為未給
+ * @param {Boolean} [opt.debug=false] 輸入是否於opt.barsPerDay或opt.kp出現非預期輸入時輸出警告布林值，非布林視為false，同一個鍵每個行程只警告一次，預設false
+ * @param {Function} [opt.funLog] 輸入警告出口函數，以(msg, { fn, reason, key })呼叫，未給則用console.warn，預設未給
+ * @returns {Object} 回傳換算後之週期表物件(新物件，鍵序與輸入一致)
+ * @example
+ *
+ * let kp = { '12hr': 3, '1day': 6, '7day': 42 }
+ *
+ * console.log(resolvePeriods(kp))
+ * // => { '12hr': 3, '1day': 6, '7day': 42 }
+ *
+ * console.log(resolvePeriods(kp, { barsPerDay: 24 }))
+ * // => { '12hr': 12, '1day': 24, '7day': 168 }
+ *
+ * console.log(resolvePeriods(kp, { barsPerDay: 1 }))
+ * // => { '1day': 1, '7day': 7 }
+ *
+ * console.log(resolvePeriods({ '1day': { len: 6, mult: 2 } }, { barsPerDay: 24 }))
+ * // => { '1day': { len: 24, mult: 2 } }
+ *
+ * console.log(resolvePeriods({ '4hr': 1 }, { barsPerDay: 24 }))
+ * // => { '1hr': 1 }
+ *
+ * console.log(resolvePeriods(kp, { kp: { '3day': 18 } }))
+ * // => { '3day': 18 }
+ *
+ */
+let resolvePeriods = (kp, opt = {}) => {
+
+    //check, kp為內建週期表(必須參數)
+    if (!isPlainObject(kp) || size(kp) === 0) {
+        throw new Error(`invalid kp: must be a non-empty object`)
+    }
+    each(kp, (v, period) => {
+        if (!(iseint(v, { min: 1 }) || isPlainObject(v))) {
+            throw new Error(`invalid kp[${period}]: must be a positive integer or an object`)
+        }
+    })
+
+    //opt各鍵只讀一次
+    let kpOpt = get(opt, 'kp', null)
+    let barsPerDayOpt = get(opt, 'barsPerDay', null)
+
+    //opt.kp, 直接覆寫, 非預期之輸入視為未給
+    if (kpOpt !== null && kpOpt !== undefined) {
+        let r = chkKp(kpOpt)
+        if (r !== null) {
+            return r
+        }
+        warnInvalid(opt, 'opt.kp', 'a non-empty object of positive integers or objects whose len, tenkan, kijun and senkouB are positive integers', 'the built-in table')
+    }
+
+    //opt.barsPerDay, 非預期之輸入視為未給
+    let barsPerDay = BARS_PER_DAY_BASE
+    if (barsPerDayOpt !== null && barsPerDayOpt !== undefined) {
+        if (isenum(barsPerDayOpt, { gt: 0, max: BARS_PER_DAY_MAX })) {
+            barsPerDay = Number(barsPerDayOpt) //檢測之值即使用之值
+        }
+        else {
+            warnInvalid(opt, 'opt.barsPerDay', `a positive number up to ${BARS_PER_DAY_MAX}`, BARS_PER_DAY_BASE)
+        }
+    }
+
+    //identity, 基準週期原樣回傳(新物件, 參數物件亦複製, 避免呼叫端改動結果時牽動內建週期表)
+    if (barsPerDay === BARS_PER_DAY_BASE) {
+        let r = {}
+        each(kp, (v, period) => {
+            r[period] = isPlainObject(v) ? { ...v } : v
+        })
+        return r
+    }
+
+    //perBar, 單根型態(僅一期且根數為1)只改標籤
+    let keys = Object.keys(kp)
+    if (keys.length === 1 && kp[keys[0]] === 1) {
+        return { [barLabelOf(barsPerDay)]: 1 }
+    }
+
+    //scale, 先乘後除使整除與.5邊界不受浮點誤差影響
+    let scale = (v) => {
+        return (v * barsPerDay) / BARS_PER_DAY_BASE
+    }
+
+    //r
+    let r = {}
+    each(kp, (v, period) => {
+        if (isPlainObject(v)) {
+            let o = { ...v }
+            let drop = false
+            each(SCALE_KEYS, (k) => {
+                if (iseint(v[k], { min: 1 })) {
+                    let x = scale(v[k])
+                    if (x < 1) {
+                        drop = true //週期短於一根K線
+                    }
+                    o[k] = Math.round(x)
+                }
+            })
+            if (!drop) {
+                r[period] = o
+            }
+        }
+        else {
+            let x = scale(v)
+            if (x < 1) {
+                return //週期短於一根K線, 剔除
+            }
+            r[period] = Math.round(x)
+        }
+    })
+
+    //check
+    if (size(r) === 0) {
+        throw new Error(`invalid opt.barsPerDay: must keep at least one period of at least 1 bar`)
+    }
+
+    return r
+}
+
+
+export { BARS_PER_DAY_BASE, BARS_PER_DAY_MAX, SCALE_KEYS, barLabelOf, resetWarned }
+export default resolvePeriods
