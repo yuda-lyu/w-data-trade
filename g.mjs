@@ -16,7 +16,7 @@ async function test() {
     ]
 
     //calcMa, 各期移動平均, 回傳 [{ period, len, vs }]
-    //  len 為該期涵蓋之 K 線根數(1day = 6 根 4hr K 線), 資料不足該期長度時 vs 為空陣列
+    //  len 為該期之根數, 期別標籤為根數 × 每根時長(預設每根 4hr, '1day' 即 6 根), 資料不足該期長度時 vs 為空陣列
     //  vs 內每筆為 { time, param }, param 為自該根收盤往前 len 根之算術平均
     let rs = await wdt.calcMa(arr, 'Close')
     console.log(rs.map((v) => {

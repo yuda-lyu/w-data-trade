@@ -14,6 +14,7 @@ import isearr from 'wsemi/src/isearr.mjs'
 import iseobj from 'wsemi/src/iseobj.mjs'
 import isestr from 'wsemi/src/isestr.mjs'
 import haskey from 'wsemi/src/haskey.mjs'
+import { chkIntervalSec } from './resolvePeriods.mjs'
 
 
 /**
@@ -22,6 +23,7 @@ import haskey from 'wsemi/src/haskey.mjs'
  * 本專案用例: src=溢價指數(index) OHLC，ref=價格(price) OHLC，校正index系變換偏移量
  * 搜尋為逐維座標下降: 每維先粗掃(現值+0+正負mags量級)，再以粗掃最佳為中心做倍率細化與微調
  * 防churn: 需(score0-scoreBest)/score0 > threshold，且(score0-scoreBest) > thresholdAbs，兩者皆達門檻才採納搜尋結果，否則optMethod維持optMethodInit
+ * optMethodInit與opt.optMethodRef之intervalSec(每根秒數，見resolvePeriods)給了而無效時，於任何計算(calcFn之呼叫)之前即reject(訊息同calc)；未給時行為與既有相同；intervalSec為固定之每根時長，不是校正參數，須以opt.params排除(預設params為optMethodInit全部鍵)
  *
  * Unit Test: {@link https://github.com/yuda-lyu/w-data-trade/blob/master/test/unit-dataCalibrate.test.mjs Github}
  * @function
@@ -135,6 +137,14 @@ let dataCalibrate = async (calcFn, arrSrc, arrRef, pairs, optMethodInit, opt = {
     if (!isestr(keyIn)) {
         throw new Error(`invalid opt.keyIn[${keyIn}]`)
     }
+
+    //check, optMethodInit與optMethodRef之intervalSec(每根秒數)先行檢核, 給了而無效即拒(與calc同一檢核, 先於任何計算)
+    each([optMethodInit, optMethodRef], (om) => {
+        let intervalSecOpt = get(om, 'intervalSec', null)
+        if (intervalSecOpt !== null && intervalSecOpt !== undefined) {
+            chkIntervalSec(intervalSecOpt)
+        }
+    })
 
     //pool: 跑 calc 後彙集指定 keyOut 之全期有限值
     let pool = (rrs, keyOut) => {

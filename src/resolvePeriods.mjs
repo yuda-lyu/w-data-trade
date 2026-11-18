@@ -3,18 +3,23 @@ import get from 'lodash-es/get.js'
 import isPlainObject from 'lodash-es/isPlainObject.js'
 import size from 'lodash-es/size.js'
 import isfun from 'wsemi/src/isfun.mjs'
-import isenum from 'wsemi/src/isenum.mjs'
 import iseint from 'wsemi/src/iseint.mjs'
 
 
-//BARS_PER_DAY_BASE, 各calc內建週期表以4hr K線為基準寫定: 每日6根('1day'=6、'12hr'=3、'4day'=24…)
-let BARS_PER_DAY_BASE = 6
+//INTERVAL_SEC_BASE, 各calc內建週期表之標籤所依之每根秒數(4hr=14400秒, 標籤之時間跨度 = 根數 × 14400秒), 亦為opt.intervalSec之預設
+let INTERVAL_SEC_BASE = 14400
 
-//BARS_PER_DAY_MAX, opt.barsPerDay之上限(每日86400根即1秒K線), 超過者視為非預期輸入
-let BARS_PER_DAY_MAX = 86400
+//INTERVAL_SEC_MAX, opt.intervalSec之上限(365日)
+let INTERVAL_SEC_MAX = 31536000
 
-//SCALE_KEYS, 週期表之參數物件內以「根數」計之欄位(依K線週期等比換算), 其餘欄位(如mult倍數)不換算
+//SCALE_KEYS, 週期表之參數物件內以「根數」計之欄位(opt.kp檢核其須為正整數), 其餘欄位(如mult倍數)為無因次值, 不檢核
 let SCALE_KEYS = ['len', 'tenkan', 'kijun', 'senkouB']
+
+//UNIT_SEC, 期別標籤之單位與其秒數
+let UNIT_SEC = { day: 86400, hr: 3600, m: 60 }
+
+//RE_LABEL, 期別標籤之格式: 正整數(無前導零)接單位day、hr或m
+let RE_LABEL = /^([1-9][0-9]*)(day|hr|m)$/
 
 //warned, 已警告過之opt鍵(每個行程每個鍵只警告一次, 逐筆呼叫不洗版)
 let warned = new Set()
@@ -55,40 +60,106 @@ let resetWarned = () => {
 
 
 /**
- * 由每日根數組出單根K線之週期標籤
+ * 由時間跨度之秒數組出期別標籤(根數為本之標籤規則，各calc之期別標籤皆經此產生)
  *
- * 標籤與各calc內建週期表之格式一致：整日數為`${N}day`，整小時數為`${N}hr`，整分鐘數為`${N}m`，其餘為`${N}s`(一根K線之秒數四捨五入至整秒)
+ * 規則：秒數為86400之整數倍者為`${N}day`，否則為3600之整數倍者為`${N}hr`，否則為60之整數倍者為`${N}m`(N為正整數、無前導零)
+ * 每個秒數恰有一種標籤，不同秒數之標籤必不同(標籤與秒數一一對應)，故同一每根時長下根數不同之期別不會同名
+ * 秒數非60之正整數倍(含非整分鐘、0、負數、非安全整數、非數值)無法以上列單位表示，throw
  *
  * @function
- * @param {Number} barsPerDay 輸入每日K線根數，有效數字(正數，上限86400)，無效時throw
- * @returns {String} 回傳週期標籤字串
+ * @param {Number} sec 輸入時間跨度之秒數，60之正整數倍之數值(不接受字串)，無效時throw
+ * @returns {String} 回傳期別標籤字串
  * @example
  *
- * console.log(barLabelOf(6), barLabelOf(24), barLabelOf(48), barLabelOf(1), barLabelOf(288))
- * // => 4hr 1hr 30m 1day 5m
+ * console.log(spanLabelOf(14400), spanLabelOf(43200), spanLabelOf(86400), spanLabelOf(259200), spanLabelOf(5400))
+ * // => 4hr 12hr 1day 3day 90m
  *
  */
-let barLabelOf = (barsPerDay) => {
+let spanLabelOf = (sec) => {
 
     //check
-    if (!isenum(barsPerDay, { gt: 0, max: BARS_PER_DAY_MAX })) {
-        throw new Error(`invalid barsPerDay: must be a positive number up to ${BARS_PER_DAY_MAX}`)
+    if (!(Number.isSafeInteger(sec) && sec > 0 && sec % 60 === 0)) {
+        throw new Error(`invalid sec: must be a positive integer multiple of 60`)
     }
-    barsPerDay = Number(barsPerDay)
 
-    //sec, 一根K線之秒數(取整秒以避開浮點誤差)
-    let sec = Math.max(1, Math.round(86400 / barsPerDay))
+    if (sec % UNIT_SEC.day === 0) {
+        return `${sec / UNIT_SEC.day}day`
+    }
+    if (sec % UNIT_SEC.hr === 0) {
+        return `${sec / UNIT_SEC.hr}hr`
+    }
+    return `${sec / UNIT_SEC.m}m`
+}
 
-    if (sec % 86400 === 0) {
-        return `${sec / 86400}day`
+
+/**
+ * 解析期別標籤為時間跨度之秒數(spanLabelOf之反函數)
+ *
+ * 只接受spanLabelOf會產生之標準寫法(如'12hr'、'1day'、'90m')；非標準寫法(如'24hr'應為'1day'、'60m'應為'1hr'、前導零、小數、大寫、其他單位)與非字串回傳null
+ *
+ * @function
+ * @param {String} label 輸入期別標籤字串
+ * @returns {Number|null} 回傳秒數，非標準標籤回傳null
+ * @example
+ *
+ * console.log(spanSecOf('12hr'), spanSecOf('3day'), spanSecOf('24hr'), spanSecOf('none'))
+ * // => 43200 259200 null null
+ *
+ */
+let spanSecOf = (label) => {
+    if (typeof label !== 'string') {
+        return null
     }
-    if (sec % 3600 === 0) {
-        return `${sec / 3600}hr`
+    let m = RE_LABEL.exec(label)
+    if (m === null) {
+        return null
     }
-    if (sec % 60 === 0) {
-        return `${sec / 60}m`
+    let sec = Number(m[1]) * UNIT_SEC[m[2]]
+    if (!Number.isSafeInteger(sec)) {
+        return null
     }
-    return `${sec}s`
+    if (spanLabelOf(sec) !== label) {
+        return null //非標準寫法
+    }
+    return sec
+}
+
+
+/**
+ * 檢核opt.intervalSec(每根K線之秒數)並轉為數值
+ *
+ * 有效值為60之正整數倍且至多31536000(365日)之整數(數值或數字字串，檢測之值即使用之值)；其餘一律throw(訊息不含傳入之值)
+ * 不採「非預期視為未給」：每根秒數錯誤時若改用預設4hr，期別標籤(即參數鍵名)會靜默錯置，故拋錯
+ *
+ * @function
+ * @param {Number|String} v 輸入每根K線之秒數
+ * @returns {Number} 回傳秒數
+ * @example
+ *
+ * console.log(chkIntervalSec(86400), chkIntervalSec('3600'))
+ * // => 86400 3600
+ *
+ */
+let chkIntervalSec = (v) => {
+    if (!iseint(v, { min: 60, max: INTERVAL_SEC_MAX }) || Number(v) % 60 !== 0) {
+        throw new Error(`invalid opt.intervalSec: must be a positive integer multiple of 60 up to ${INTERVAL_SEC_MAX}`)
+    }
+    return Number(v)
+}
+
+
+//relabel, 根數為本: 各期之值(根數或參數物件)不變, 期別標籤改為「標籤所代表之根數 × 每根秒數」之時間跨度; 標籤所代表之根數 = 標籤秒數 ÷ 14400(各calc內建表之標籤皆為4hr之整數倍, 與其len一致)
+let relabel = (kp, intervalSec) => {
+    let r = {}
+    each(kp, (v, period) => {
+        let sec = spanSecOf(period)
+        if (sec === null || sec % INTERVAL_SEC_BASE !== 0) {
+            throw new Error(`invalid kp[${period}]: must be labeled with a time span that is a multiple of 4hr`)
+        }
+        let label = spanLabelOf((sec / INTERVAL_SEC_BASE) * intervalSec)
+        r[label] = isPlainObject(v) ? { ...v } : v //新物件, 參數物件亦複製
+    })
+    return r
 }
 
 
@@ -138,25 +209,25 @@ let chkKp = (kpOpt) => {
 
 
 /**
- * 依實際K線週期換算各calc之內建週期表
+ * 依每根K線之時長取得各calc之實際週期表(根數為本)
  *
- * 各calc之內建週期表(kp)以4hr K線為基準寫定(每日6根)，週期標籤為時間語意('1day'、'12hr'…)而值為根數；本函式使同一標籤於其他K線週期仍對應同一段時間
- * 換算規則：以opt.barsPerDay(每日根數)對基準6之比值等比換算各期之根數(數值型之值，或參數物件內之len、tenkan、kijun、senkouB欄位)並四捨五入(.5進位)；換算後不足1根之期剔除(該週期短於一根K線)；倍數類欄位(如mult)不換算
- * 相鄰週期四捨五入後可能得到相同根數(如12hr K線上'12hr'與'16hr'皆為1根)，本函式不去重，各期標籤維持時間語意
- * 單根型態之表(僅一期且根數為1，如K線型態與單根比值類)不換算根數，只把標籤改為該K線週期之標籤(由barsPerDay推得，見barLabelOf)
- * opt.barsPerDay未給或為6時原樣回傳(與既有輸出完全相同)；opt.kp給予時直接採用該表不換算，優先於opt.barsPerDay
+ * 各calc之內建週期表(kp)之值為根數(或內含根數欄位之參數物件)，界定的是線型(幾根)；標籤以每根4hr寫定，其時間跨度 = 根數 × 4hr('4hr'=1根、'12hr'=3根、'1day'=6根、'30day'=180根)
+ * 給opt.intervalSec(每根秒數)：各期之值原樣保留，任何每根時長下根數不變、不剔除任何期；期別標籤改為「根數 × 每根秒數」之時間跨度(標籤規則見spanLabelOf)，例：每根1day時'4hr'(1根)為'1day'、'12hr'(3根)為'3day'、'1day'(6根)為'6day'；多參數之表(如{ tenkan, kijun, senkouB })以標籤所代表之根數同比例換算標籤；單根型態之表(僅一期且根數為1)於每根1day時為'1day'
+ * opt.intervalSec未給時視為每根4hr(14400)：各期原樣回傳(新物件)；給14400時標籤亦逐一重現內建表之標籤，與未給之輸出完全相同
+ * opt.kp給予時直接採用該表(標籤與值皆原樣，同時給opt.intervalSec亦不換算標籤)，優先於opt.intervalSec之換算；自訂週期表之標籤由呼叫端自負其義，不保證等於根數×每根時長(periodInfo不適用)
+ * opt內之其他鍵(含已移除之舊選項barsPerDay)視為未知鍵，忽略
  *
- * 輸入檢核：kp為必須參數，無效時throw；opt.barsPerDay、opt.kp皆為opt類參數，給了非預期之輸入(不屬有效數字或正整數、超出範圍，含Infinity)視為未給、改用預設不拋錯，opt.debug為true時另輸出警告
- * 換算後全部週期皆不足1根時無從得出結果，throw(訊息不含傳入之值)
+ * 輸入檢核：kp為必須參數，無效時throw；opt.intervalSec給了而無效時throw(見chkIntervalSec，錯誤之每根秒數會使標籤即鍵名靜默錯置，故不改用預設，且先於其他處理)；opt.kp為opt類參數，給了非預期之輸入(含任一值無效)視為未給、改用內建表不拋錯，opt.debug為true時另輸出警告
+ * 根數為本時(給opt.intervalSec，含14400)kp之標籤須為4hr之整數倍之標準標籤(各calc之內建表皆是)，否則throw；未給opt.intervalSec時不檢核標籤、原樣回傳(訊息皆不含傳入之值)
  *
  * @function
- * @param {Object} kp 輸入內建週期表物件，鍵為週期標籤，值為根數或參數物件，須為非空物件，無效時throw
+ * @param {Object} kp 輸入內建週期表物件，鍵為週期標籤(以每根4hr寫定)，值為根數或參數物件，須為非空物件，無效時throw
  * @param {Object} [opt={}] 輸入設定物件，預設{}
- * @param {Number|String} [opt.barsPerDay=6] 輸入每日K線根數，有效數字(數值或數字字串，大於0且至多86400)，4hr為6、1hr為24、30m為48、1day為1，預設6(不換算)，非預期之輸入視為未給
- * @param {Object} [opt.kp] 輸入直接採用之週期表物件，鍵為週期標籤，值為正整數根數或參數物件(根數類欄位須為正整數)，給予時不換算，預設採內建週期表，非預期之輸入(含任一值無效)視為未給
- * @param {Boolean} [opt.debug=false] 輸入是否於opt.barsPerDay或opt.kp出現非預期輸入時輸出警告布林值，非布林視為false，同一個鍵每個行程只警告一次，預設false
+ * @param {Number|String} [opt.intervalSec=14400] 輸入每根K線之秒數，60之正整數倍且至多31536000(數值或數字字串)，4hr為14400、1hr為3600、15m為900、1day為86400，給予時根數不變、標籤依根數×每根秒數換算，預設14400(與內建表相同)，給了而無效時throw
+ * @param {Object} [opt.kp] 輸入直接採用之週期表物件，鍵為週期標籤，值為正整數根數或參數物件(根數類欄位須為正整數)，給予時標籤與值皆原樣採用，預設採內建週期表，非預期之輸入(含任一值無效)視為未給
+ * @param {Boolean} [opt.debug=false] 輸入是否於opt.kp出現非預期輸入時輸出警告布林值，非布林視為false，同一個鍵每個行程只警告一次，預設false
  * @param {Function} [opt.funLog] 輸入警告出口函數，以(msg, { fn, reason, key })呼叫，未給則用console.warn，預設未給
- * @returns {Object} 回傳換算後之週期表物件(新物件，鍵序與輸入一致)
+ * @returns {Object} 回傳週期表物件(新物件，鍵序與輸入一致)
  * @example
  *
  * let kp = { '12hr': 3, '1day': 6, '7day': 42 }
@@ -164,17 +235,17 @@ let chkKp = (kpOpt) => {
  * console.log(resolvePeriods(kp))
  * // => { '12hr': 3, '1day': 6, '7day': 42 }
  *
- * console.log(resolvePeriods(kp, { barsPerDay: 24 }))
- * // => { '12hr': 12, '1day': 24, '7day': 168 }
+ * console.log(resolvePeriods(kp, { intervalSec: 86400 }))
+ * // => { '3day': 3, '6day': 6, '42day': 42 }
  *
- * console.log(resolvePeriods(kp, { barsPerDay: 1 }))
- * // => { '1day': 1, '7day': 7 }
+ * console.log(resolvePeriods(kp, { intervalSec: 3600 }))
+ * // => { '3hr': 3, '6hr': 6, '42hr': 42 }
  *
- * console.log(resolvePeriods({ '1day': { len: 6, mult: 2 } }, { barsPerDay: 24 }))
- * // => { '1day': { len: 24, mult: 2 } }
+ * console.log(resolvePeriods({ '4day': { tenkan: 4, kijun: 12, senkouB: 24 } }, { intervalSec: 86400 }))
+ * // => { '24day': { tenkan: 4, kijun: 12, senkouB: 24 } }
  *
- * console.log(resolvePeriods({ '4hr': 1 }, { barsPerDay: 24 }))
- * // => { '1hr': 1 }
+ * console.log(resolvePeriods({ '4hr': 1 }, { intervalSec: 86400 }))
+ * // => { '1day': 1 }
  *
  * console.log(resolvePeriods(kp, { kp: { '3day': 18 } }))
  * // => { '3day': 18 }
@@ -194,9 +265,15 @@ let resolvePeriods = (kp, opt = {}) => {
 
     //opt各鍵只讀一次
     let kpOpt = get(opt, 'kp', null)
-    let barsPerDayOpt = get(opt, 'barsPerDay', null)
+    let intervalSecOpt = get(opt, 'intervalSec', null)
 
-    //opt.kp, 直接覆寫, 非預期之輸入視為未給
+    //opt.intervalSec, 給了即檢核, 無效即拋(先於其他處理); 檢測之值即使用之值
+    let intervalSec = null
+    if (intervalSecOpt !== null && intervalSecOpt !== undefined) {
+        intervalSec = chkIntervalSec(intervalSecOpt)
+    }
+
+    //opt.kp, 直接採用, 非預期之輸入視為未給
     if (kpOpt !== null && kpOpt !== undefined) {
         let r = chkKp(kpOpt)
         if (r !== null) {
@@ -205,73 +282,19 @@ let resolvePeriods = (kp, opt = {}) => {
         warnInvalid(opt, 'opt.kp', 'a non-empty object of positive integers or objects whose len, tenkan, kijun and senkouB are positive integers', 'the built-in table')
     }
 
-    //opt.barsPerDay, 非預期之輸入視為未給
-    let barsPerDay = BARS_PER_DAY_BASE
-    if (barsPerDayOpt !== null && barsPerDayOpt !== undefined) {
-        if (isenum(barsPerDayOpt, { gt: 0, max: BARS_PER_DAY_MAX })) {
-            barsPerDay = Number(barsPerDayOpt) //檢測之值即使用之值
-        }
-        else {
-            warnInvalid(opt, 'opt.barsPerDay', `a positive number up to ${BARS_PER_DAY_MAX}`, BARS_PER_DAY_BASE)
-        }
+    //relabel, 根數為本: 根數不變、標籤依根數×每根秒數換算
+    if (intervalSec !== null) {
+        return relabel(kp, intervalSec)
     }
 
-    //identity, 基準週期原樣回傳(新物件, 參數物件亦複製, 避免呼叫端改動結果時牽動內建週期表)
-    if (barsPerDay === BARS_PER_DAY_BASE) {
-        let r = {}
-        each(kp, (v, period) => {
-            r[period] = isPlainObject(v) ? { ...v } : v
-        })
-        return r
-    }
-
-    //perBar, 單根型態(僅一期且根數為1)只改標籤
-    let keys = Object.keys(kp)
-    if (keys.length === 1 && kp[keys[0]] === 1) {
-        return { [barLabelOf(barsPerDay)]: 1 }
-    }
-
-    //scale, 先乘後除使整除與.5邊界不受浮點誤差影響
-    let scale = (v) => {
-        return (v * barsPerDay) / BARS_PER_DAY_BASE
-    }
-
-    //r
+    //identity, 未給opt.intervalSec: 原樣回傳(新物件, 參數物件亦複製, 避免呼叫端改動結果時牽動內建週期表)
     let r = {}
     each(kp, (v, period) => {
-        if (isPlainObject(v)) {
-            let o = { ...v }
-            let drop = false
-            each(SCALE_KEYS, (k) => {
-                if (iseint(v[k], { min: 1 })) {
-                    let x = scale(v[k])
-                    if (x < 1) {
-                        drop = true //週期短於一根K線
-                    }
-                    o[k] = Math.round(x)
-                }
-            })
-            if (!drop) {
-                r[period] = o
-            }
-        }
-        else {
-            let x = scale(v)
-            if (x < 1) {
-                return //週期短於一根K線, 剔除
-            }
-            r[period] = Math.round(x)
-        }
+        r[period] = isPlainObject(v) ? { ...v } : v
     })
-
-    //check
-    if (size(r) === 0) {
-        throw new Error(`invalid opt.barsPerDay: must keep at least one period of at least 1 bar`)
-    }
-
     return r
 }
 
 
-export { BARS_PER_DAY_BASE, BARS_PER_DAY_MAX, SCALE_KEYS, barLabelOf, resetWarned }
+export { INTERVAL_SEC_BASE, INTERVAL_SEC_MAX, SCALE_KEYS, spanLabelOf, spanSecOf, chkIntervalSec, resetWarned }
 export default resolvePeriods

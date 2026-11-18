@@ -16,9 +16,9 @@ import resolvePeriods from './resolvePeriods.mjs'
  * @param {Array} arr 輸入K線陣列，各元素需含time、QuoteAssetVolume、NumberOfTrades欄位
  * @param {String} key 輸入計算所用數值欄位名稱字串，本指標固定讀取QuoteAssetVolume/NumberOfTrades欄位，key目前未被使用，僅為與其他指標介面一致而保留
  * @param {Object} [opt={}] 輸入設定物件，預設{}，除下列週期換算相關鍵外本指標無其他可用設定鍵
- * @param {Number|String} [opt.barsPerDay=6] 輸入每日K線根數，有效數字(大於0且至多86400)，各期根數依此自4hr基準(每日6根)等比換算並四捨五入，換算後不足1根之期剔除，預設6(不換算)，非預期之輸入視為未給
+ * @param {Number|String} [opt.intervalSec=14400] 輸入每根K線之秒數，60之正整數倍且至多31536000(數值或數字字串)，各期根數不變(根數為本)，期別標籤為根數×每根秒數之時間跨度(例：每根1day時3根之期為'3day')，預設14400(每根4hr，標籤與根數皆同內建表)，無效時reject
  * @param {Object} [opt.kp] 輸入直接採用之週期表物件，鍵為週期標籤，值為正整數根數或參數物件，給予時不換算，預設採內建週期表，非預期之輸入視為未給
- * @param {Boolean} [opt.debug=false] 輸入是否於opt.barsPerDay或opt.kp出現非預期輸入時輸出警告布林值，預設false
+ * @param {Boolean} [opt.debug=false] 輸入是否於opt.kp出現非預期輸入時輸出警告布林值，預設false
  * @param {Function} [opt.funLog] 輸入警告出口函數，以(msg, { fn, reason, key })呼叫，未給則用console.warn，預設未給
  * @returns {Promise} 回傳Promise，resolve為各期結果陣列，各元素為{period,len,vs}，vs內各元素為{time,atsRatio,atsChange}
  * @example
@@ -49,10 +49,10 @@ let calcAts = (() => {
     //ATS (Average Trade Size) = QuoteAssetVolume / NumberOfTrades = 平均單筆成交額 (USDT)
     //反映「大戶介入 vs 散戶 FOMO」之單筆規模維度, 與既有 volumn 系列完全互補
     //
-    //len = baseline SMA 視窗期數 (n × 4hr)
+    //len = baseline SMA 視窗期數 (n 根; 每根4hr時為 n × 4hr)
     //atsRatio  = ats[i] / SMA(ats, len)       (相對 N 期均值倍數, 跨時期可比, 對應 d12 vol_volumeSpike 的 atsSpike)
     //atsChange = (ats[i] - ats[i-1]) / ats[i-1]  (相對前一根%變化, 抓突發大單事件)
-    let KP = { //內建週期表(以4hr K線為基準: 每日6根), 實際週期表由resolvePeriods依opt.barsPerDay或opt.kp換算
+    let KP = { //內建週期表(值為根數; 標籤以每根4hr寫定: '12hr'=3根、'1day'=6根), 實際週期表由resolvePeriods依opt.intervalSec(根數不變、標籤換算)或opt.kp決定
         '12hr': 3,
         '16hr': 4,
         '20hr': 5,
@@ -120,7 +120,8 @@ let calcAts = (() => {
             let ats = atss[i]
             let baseline = sumAts / len
             let atsRatio = baseline !== 0 ? ats / baseline : 1
-            let atsPrev = atss[i - 1]
+            //i = 0 (len = 1) 無前根可比, atsChange 為 0 (同 atrChange、BBwidthChange、dcWidthChange 首筆無前值為 0 之慣例); 否則 atss[-1] 為 undefined 使結果為 NaN
+            let atsPrev = i >= 1 ? atss[i - 1] : 0
             let atsChange = atsPrev !== 0 ? (ats - atsPrev) / atsPrev : 0
 
             rs.push({
@@ -155,7 +156,7 @@ let calcAts = (() => {
 
     let caAtss = (arr, opt = {}) => {
 
-        //kp, 週期表(預設不換算; opt.barsPerDay給每日根數即等比換算, opt.kp直接覆寫)
+        //kp, 週期表(resolvePeriods: opt.intervalSec根數不變、標籤依根數×每根時長換算, 未給時同內建表; opt.kp直接採用)
         let kp = resolvePeriods(KP, opt)
 
         //rrs

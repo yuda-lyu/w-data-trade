@@ -139,6 +139,60 @@ describe('calcAts', function() {
         assertNear(vs[0].atsChange, 0, 1e-12, 'atsPrev=0 之 atsChange 特例')
     })
 
+    it('len = 1 (opt.kp 自訂 1 根): 首筆無前根可比, atsChange 為 0 而非 NaN; 其後各筆依定義', async function() {
+        // 規格: 變化量欄位首筆無前值為 0 (同 atrChange、BBwidthChange、dcWidthChange 之慣例); atsChange = atsPrev!==0 ? (ats-atsPrev)/atsPrev : 0
+        // ats = [5,6,4,8,5] (各筆相異); len=1 時 baseline = ats[i], atsRatio 恆為 1
+        let ts = genTimes(5)
+        let qv = [10, 24, 12, 40, 25]
+        let nt = [2, 4, 3, 5, 5]
+        let arr = ts.map((t, i) => {
+            return bar(t, qv[i], nt[i])
+        })
+        let rrs = await calcAts(arr, 'Close', { kp: { x: 1 } })
+        assert.strictEqual(rrs.length, 1)
+        assert.strictEqual(rrs[0].len, 1)
+        let vs = rrs[0].vs
+        assert.strictEqual(vs.length, 5)
+        assert.ok(!Number.isNaN(vs[0].atsChange), '首筆 atsChange 不得為 NaN')
+        assert.strictEqual(vs[0].atsChange, 0)
+        assertNear(vs[1].atsChange, 0.2, 1e-12, 'i=1 atsChange')
+        assertNear(vs[2].atsChange, -1 / 3, 1e-12, 'i=2 atsChange')
+        assertNear(vs[3].atsChange, 1, 1e-12, 'i=3 atsChange')
+        assertNear(vs[4].atsChange, -0.375, 1e-12, 'i=4 atsChange')
+        vs.forEach((v, i) => {
+            assertNear(v.atsRatio, 1, 1e-12, `i=${i} atsRatio`)
+            assert.strictEqual(v.time, ts[i])
+        })
+    })
+
+    it('len = 1 且首根 ats 為 0 (NumberOfTrades=0): 首筆 atsChange 為 0; 全部輸出皆為有限值', async function() {
+        // ats = [0,2,2]: i=0 無前根 => 0; i=1 atsPrev=0 => 特例 0; i=2 => (2-2)/2=0
+        let ts = genTimes(3)
+        let arr = ts.map((t, i) => {
+            return bar(t, [100, 10, 10][i], [0, 5, 5][i])
+        })
+        let vs = (await calcAts(arr, 'Close', { kp: { x: 1 } }))[0].vs
+        assert.deepStrictEqual(vs.map((v) => v.atsChange), [0, 0, 0])
+        vs.forEach((v) => {
+            assert.ok(Number.isFinite(v.atsRatio) && Number.isFinite(v.atsChange))
+        })
+    })
+
+    it('len = 2: 首筆(輸入索引 1)之 atsChange 仍以前一根(索引 0)計算, 不因 len = 1 之修正而歸 0', async function() {
+        // ats = [5,6,4,8,5]: 首筆 i=1: (6-5)/5=0.2; baseline=(5+6)/2=5.5, atsRatio=6/5.5
+        let ts = genTimes(5)
+        let qv = [10, 24, 12, 40, 25]
+        let nt = [2, 4, 3, 5, 5]
+        let arr = ts.map((t, i) => {
+            return bar(t, qv[i], nt[i])
+        })
+        let vs = (await calcAts(arr, 'Close', { kp: { x: 2 } }))[0].vs
+        assert.strictEqual(vs.length, 4)
+        assertNear(vs[0].atsChange, 0.2, 1e-12, 'i=1 atsChange')
+        assertNear(vs[0].atsRatio, 6 / 5.5, 1e-12, 'i=1 atsRatio')
+        assert.strictEqual(vs[0].time, ts[1])
+    })
+
     it('資料筆數不足 (n < len+1) 時該期回傳空陣列', async function() {
         let arr = genOhlc(3) // 3 < 12hr(3)+1=4, 亦小於其餘所有 period 之門檻
         let rrs = await calcAts(arr, 'Close')

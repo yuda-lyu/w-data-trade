@@ -15,6 +15,7 @@ import haskey from 'wsemi/src/haskey.mjs'
 import fsWriteJson from 'wsemi/src/fsWriteJson.mjs'
 import arrAverage from 'w-statistic/src/arrAverage.mjs'
 import arrStd from 'w-statistic/src/arrStd.mjs'
+import { INTERVAL_SEC_BASE, chkIntervalSec } from './resolvePeriods.mjs'
 
 
 /**
@@ -24,6 +25,8 @@ import arrStd from 'w-statistic/src/arrStd.mjs'
  * 對keysIn(輸入計算所用數值欄位名稱)與methods(指標方法設定)做雙層迴圈，各methods[i]需含method(對應kp之鍵)、deals(輸出設定陣列)、optMethod(傳入calc函式之opt，可選，預設{})
  * 呼叫kp[method](arr,keyIn,optMethod)取得rrs(各期{period,len,vs}結果)後，對每個deal依其keyOut取值並以(值-avg)/std正規化，若deal.keyIn有指定則僅處理keyIn相符者，其餘略過
  * 除非opt.denyOutput為true，否則會將各期正規化後之序列以檔名`${cointpe}_${keyKind}_${keyIn}_${keyOut}_${method}_${period}.json`寫入fdSelfData資料夾
+ * 全部檢核先於任何計算(含opt.funAddKeysIn與calc)與寫檔：keysIn各元素、methods各元素(須為物件，method須為字串且存在於kp，deals須為非空陣列，各deal之keyOut須為字串、nm須為物件，deal.keyIn有指定而不在keysIn內之deal不會被處理故不檢核)、各methods[i].optMethod之intervalSec(每根秒數，見resolvePeriods)；任一無效即reject且不寫出任何檔
+ * 同一次呼叫內各method之optMethod.intervalSec須相同(未給視為14400，數字字串與數值視為同值)，否則reject `invalid methods[i].optMethod.intervalSec: must be the same in every method`(i為第一個與先前不一致者之索引)，以免不同每根時長之序列靜默寫進同一資料夾；各method之optMethod.intervalSec皆未給時行為與既有相同
  * 最終以w-statistic計算全期攤平後序列之avg、std、min、max，彙整為單筆結果
  *
  * @function
@@ -118,6 +121,104 @@ let dataConvert = async (name, symbol, interval, cointpe, keyKind, methods, arrO
     let keysIn = get(opt, 'keysIn')
     let denyOutput = get(opt, 'denyOutput', null)
 
+    //keysIn
+    if (!isearr(keysIn)) {
+        keysIn = ['none']
+    }
+
+    //check, 全部檢核先於任何計算(opt.funAddKeysIn與calc)與寫檔: 任一無效即拒, 輸出夾不留任何檔
+    //  訊息與先前於逐method迴圈內檢核時相同; deal.keyIn有指定而不在keysIn內之deal不會被處理, 故不檢核(與先前相同)
+    each(keysIn, (keyIn) => {
+        if (!isestr(keyIn)) {
+            throw new Error(`invalid keyIn[${keyIn}]`)
+        }
+    })
+    let intervalSecFirst = null
+    each(methods, (m, i) => {
+
+        //check
+        if (!iseobj(m)) {
+            console.log('methods', methods)
+            console.log('m', m)
+            throw new Error(`invalid m[${m}]`)
+        }
+
+        //method
+        let method = get(m, 'method')
+
+        //check
+        if (!isestr(method)) {
+            console.log('methods', methods)
+            console.log('m', m)
+            throw new Error(`invalid m.method[${method}]`)
+        }
+
+        //check
+        if (!haskey(kp, method)) {
+            console.log('kp', kp)
+            console.log('methods', methods)
+            console.log('m', m)
+            throw new Error(`invalid m.method[${method}] in kp`)
+        }
+
+        //deals
+        let deals = get(m, 'deals')
+
+        //check
+        if (!isearr(deals)) {
+            console.log('methods', methods)
+            console.log('m', m)
+            throw new Error(`invalid m.deals[${deals}]`)
+        }
+
+        //check, 各deal
+        each(deals, (deal) => {
+
+            //_keyIn
+            let _keyIn = get(deal, 'keyIn')
+
+            //check, 有指定keyIn且不在keysIn內者不會被處理
+            if (isestr(_keyIn) && !keysIn.includes(_keyIn)) {
+                return
+            }
+
+            //keyOut
+            let keyOut = get(deal, 'keyOut')
+
+            //check
+            if (!isestr(keyOut)) {
+                console.log('deals', deals)
+                console.log('deal', deal)
+                throw new Error(`invalid deal.keyOut[${keyOut}]`)
+            }
+
+            //nm
+            let nm = get(deal, 'nm')
+
+            //check
+            if (!iseobj(nm)) {
+                console.log('deals', deals)
+                console.log('deal', deal)
+                throw new Error(`invalid deal.nm[${nm}]`)
+            }
+
+        })
+
+        //check, optMethod.intervalSec(每根秒數): 給了而無效即拒(訊息同calc); 各method須同一每根秒數(未給視為14400, 檢測之值即使用之值), 否則不同每根時長之序列會寫進同一資料夾
+        let intervalSecOpt = get(get(m, 'optMethod', {}), 'intervalSec', null)
+        let intervalSec = INTERVAL_SEC_BASE
+        if (intervalSecOpt !== null && intervalSecOpt !== undefined) {
+            intervalSec = chkIntervalSec(intervalSecOpt)
+        }
+        if (intervalSecFirst === null) {
+            intervalSecFirst = intervalSec
+        }
+        else if (intervalSecFirst !== intervalSec) {
+            throw new Error(`invalid methods[${i}].optMethod.intervalSec: must be the same in every method`)
+        }
+
+    })
+
     //arr
     let arr = arrOhlc
 
@@ -133,11 +234,6 @@ let dataConvert = async (name, symbol, interval, cointpe, keyKind, methods, arrO
         })
         arr = ts
         // console.log('arr', arr)
-    }
-
-    //keysIn
-    if (!isearr(keysIn)) {
-        keysIn = ['none']
     }
 
     //nor: 正規化 rrs 各期之 keyOut 為 param 序列, 每期呼叫 funPeriod(可選, 不傳=純轉換不落地), 回傳攤平之全期 param
@@ -183,47 +279,11 @@ let dataConvert = async (name, symbol, interval, cointpe, keyKind, methods, arrO
     let rs = []
     await pmSeries(keysIn, async (keyIn) => {
 
-        //check
-        if (!isestr(keyIn)) {
-            throw new Error(`invalid keyIn[${keyIn}]`)
-        }
-
         await pmSeries(methods, async (m) => {
 
-            //check
-            if (!iseobj(m)) {
-                console.log('methods', methods)
-                console.log('m', m)
-                throw new Error(`invalid m[${m}]`)
-            }
-
-            //method
+            //method, deals, 各檢核已於上方先行完成(先於任何計算與寫檔)
             let method = get(m, 'method')
-
-            //check
-            if (!isestr(method)) {
-                console.log('methods', methods)
-                console.log('m', m)
-                throw new Error(`invalid m.method[${method}]`)
-            }
-
-            //check
-            if (!haskey(kp, method)) {
-                console.log('kp', kp)
-                console.log('methods', methods)
-                console.log('m', m)
-                throw new Error(`invalid m.method[${method}] in kp`)
-            }
-
-            //deals
             let deals = get(m, 'deals')
-
-            //check
-            if (!isearr(deals)) {
-                console.log('methods', methods)
-                console.log('m', m)
-                throw new Error(`invalid m.deals[${deals}]`)
-            }
 
             //optMethod: 由 opt 內 method 區塊指定 (例: opt_index_ohlc_klr 加 plusClose=0.5)
             //讓不同 cointpe + 指標可以有客製 opt (price 端可不傳, 維持 {} 預設)
@@ -245,25 +305,9 @@ let dataConvert = async (name, symbol, interval, cointpe, keyKind, methods, arrO
                     }
                 }
 
-                //keyOut
+                //keyOut, nm, 各檢核已於上方先行完成(先於任何計算與寫檔)
                 let keyOut = get(deal, 'keyOut')
-
-                //check
-                if (!isestr(keyOut)) {
-                    console.log('deals', deals)
-                    console.log('deal', deal)
-                    throw new Error(`invalid deal.keyOut[${keyOut}]`)
-                }
-
-                //nm
                 let nm = get(deal, 'nm')
-
-                //check
-                if (!iseobj(nm)) {
-                    console.log('deals', deals)
-                    console.log('deal', deal)
-                    throw new Error(`invalid deal.nm[${nm}]`)
-                }
 
                 //corr
                 let avg = get(nm, `avg`, 0)

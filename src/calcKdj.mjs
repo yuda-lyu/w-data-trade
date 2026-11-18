@@ -8,7 +8,7 @@ import resolvePeriods from './resolvePeriods.mjs'
 /**
  * 計算各週期之KDJ隨機指標(Stochastic Oscillator KDJ)
  *
- * 各週期len即RSV回看期數(以4hr K線為基準，1day=6根)，資料筆數不足該期len時，該期vs為空陣列
+ * 各週期len即RSV回看期數(根數為本，任何每根時長下不變；期別標籤為根數×每根時長，每根4hr時'1day'即6根)，資料筆數不足該期len時，該期vs為空陣列
  * K/D以EMA平滑遞推(kAlpha=dAlpha=1/3)，K與D初始值(seed)皆為50
  * RSV=(Close-Ln)/(Hn-Ln)*100，Hn/Ln為視窗內(最近len根)之最高High/最低Low，Hn===Ln時RSV取中性值50(避免除以0)
  * 輸出自輸入索引len-1起(視窗未滿之根不輸出)，其後逐根對齊至最後一根
@@ -19,9 +19,9 @@ import resolvePeriods from './resolvePeriods.mjs'
  * @param {Array} arr 輸入K線陣列，各元素需含time、High、Low、Close欄位
  * @param {String} key 輸入計算所用數值欄位名稱字串，例如'Close'(僅供介面一致性，本函式實際計算取用High/Low/Close)
  * @param {Object} [opt={}] 輸入設定物件，預設{}
- * @param {Number|String} [opt.barsPerDay=6] 輸入每日K線根數，有效數字(大於0且至多86400)，各期根數依此自4hr基準(每日6根)等比換算並四捨五入，換算後不足1根之期剔除，預設6(不換算)，非預期之輸入視為未給
+ * @param {Number|String} [opt.intervalSec=14400] 輸入每根K線之秒數，60之正整數倍且至多31536000(數值或數字字串)，各期根數不變(根數為本)，期別標籤為根數×每根秒數之時間跨度(例：每根1day時3根之期為'3day')，預設14400(每根4hr，標籤與根數皆同內建表)，無效時reject
  * @param {Object} [opt.kp] 輸入直接採用之週期表物件，鍵為週期標籤，值為正整數根數或參數物件，給予時不換算，預設採內建週期表，非預期之輸入視為未給
- * @param {Boolean} [opt.debug=false] 輸入是否於opt.barsPerDay或opt.kp出現非預期輸入時輸出警告布林值，預設false
+ * @param {Boolean} [opt.debug=false] 輸入是否於opt.kp出現非預期輸入時輸出警告布林值，預設false
  * @param {Function} [opt.funLog] 輸入警告出口函數，以(msg, { fn, reason, key })呼叫，未給則用console.warn，預設未給
  * @returns {Promise} 回傳Promise，resolve為各期結果陣列，各元素為{period,len,vs}，vs內各元素為{time,K,D,J,KminusD}
  * @example
@@ -52,7 +52,7 @@ import resolvePeriods from './resolvePeriods.mjs'
  */
 let calcKdj = (() => {
 
-    let KP = { //內建週期表(以4hr K線為基準: 每日6根), 實際週期表由resolvePeriods依opt.barsPerDay或opt.kp換算
+    let KP = { //內建週期表(值為根數; 標籤以每根4hr寫定: '12hr'=3根、'1day'=6根), 實際週期表由resolvePeriods依opt.intervalSec(根數不變、標籤換算)或opt.kp決定
         '1day': 6, // 1 day = 6 * 4 hours
         '2day': 12, // 2 days = 12 * 4 hours
         '4day': 24, // 4 days = 24 * 4 hours
@@ -178,7 +178,7 @@ let calcKdj = (() => {
 
     let caKdjs = (arr, opt = {}) => {
 
-        //kp, 週期表(預設不換算; opt.barsPerDay給每日根數即等比換算, opt.kp直接覆寫)
+        //kp, 週期表(resolvePeriods: opt.intervalSec根數不變、標籤依根數×每根時長換算, 未給時同內建表; opt.kp直接採用)
         let kp = resolvePeriods(KP, opt)
 
         //rrs

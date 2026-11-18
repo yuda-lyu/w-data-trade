@@ -3,6 +3,7 @@ import dataConvert from './dataConvert.mjs'
 import pickValue from './pickValue.mjs'
 import diviProt from './diviProt.mjs'
 import resolvePeriods from './resolvePeriods.mjs'
+import periodInfo from './periodInfo.mjs'
 import caEma from './caEma.mjs'
 import calcAdx from './calcAdx.mjs'
 import calcAtr from './calcAtr.mjs'
@@ -34,6 +35,7 @@ let r = {
     pickValue,
     diviProt,
     resolvePeriods,
+    periodInfo,
     caEma,
     calcAdx,
     calcAtr,
