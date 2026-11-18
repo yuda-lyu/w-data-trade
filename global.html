@@ -29,7 +29,7 @@
 <nav >
     
     
-    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#barLabelOf">barLabelOf</a></li><li><a href="global.html#caEma">caEma</a></li><li><a href="global.html#calcAdx">calcAdx</a></li><li><a href="global.html#calcAtr">calcAtr</a></li><li><a href="global.html#calcAts">calcAts</a></li><li><a href="global.html#calcBbpb">calcBbpb</a></li><li><a href="global.html#calcCandle">calcCandle</a></li><li><a href="global.html#calcCvd">calcCvd</a></li><li><a href="global.html#calcDonchian">calcDonchian</a></li><li><a href="global.html#calcEma">calcEma</a></li><li><a href="global.html#calcIchimoku">calcIchimoku</a></li><li><a href="global.html#calcKdj">calcKdj</a></li><li><a href="global.html#calcKeltner">calcKeltner</a></li><li><a href="global.html#calcKlr">calcKlr</a></li><li><a href="global.html#calcMa">calcMa</a></li><li><a href="global.html#calcMacd">calcMacd</a></li><li><a href="global.html#calcMfi">calcMfi</a></li><li><a href="global.html#calcObv">calcObv</a></li><li><a href="global.html#calcOrig">calcOrig</a></li><li><a href="global.html#calcRsi">calcRsi</a></li><li><a href="global.html#calcSupertrend">calcSupertrend</a></li><li><a href="global.html#calcVec">calcVec</a></li><li><a href="global.html#calcVortex">calcVortex</a></li><li><a href="global.html#calcVwap">calcVwap</a></li><li><a href="global.html#dataCalibrate">dataCalibrate</a></li><li><a href="global.html#dataConvert">dataConvert</a></li><li><a href="global.html#resetWarned">resetWarned</a></li><li><a href="global.html#resolvePeriods">resolvePeriods</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#caEma">caEma</a></li><li><a href="global.html#calcAdx">calcAdx</a></li><li><a href="global.html#calcAtr">calcAtr</a></li><li><a href="global.html#calcAts">calcAts</a></li><li><a href="global.html#calcBbpb">calcBbpb</a></li><li><a href="global.html#calcCandle">calcCandle</a></li><li><a href="global.html#calcCvd">calcCvd</a></li><li><a href="global.html#calcDonchian">calcDonchian</a></li><li><a href="global.html#calcEma">calcEma</a></li><li><a href="global.html#calcIchimoku">calcIchimoku</a></li><li><a href="global.html#calcKdj">calcKdj</a></li><li><a href="global.html#calcKeltner">calcKeltner</a></li><li><a href="global.html#calcKlr">calcKlr</a></li><li><a href="global.html#calcMa">calcMa</a></li><li><a href="global.html#calcMacd">calcMacd</a></li><li><a href="global.html#calcMfi">calcMfi</a></li><li><a href="global.html#calcObv">calcObv</a></li><li><a href="global.html#calcOrig">calcOrig</a></li><li><a href="global.html#calcRsi">calcRsi</a></li><li><a href="global.html#calcSupertrend">calcSupertrend</a></li><li><a href="global.html#calcVec">calcVec</a></li><li><a href="global.html#calcVortex">calcVortex</a></li><li><a href="global.html#calcVwap">calcVwap</a></li><li><a href="global.html#chkIntervalSec">chkIntervalSec</a></li><li><a href="global.html#dataCalibrate">dataCalibrate</a></li><li><a href="global.html#dataConvert">dataConvert</a></li><li><a href="global.html#periodInfo">periodInfo</a></li><li><a href="global.html#resetWarned">resetWarned</a></li><li><a href="global.html#resolvePeriods">resolvePeriods</a></li><li><a href="global.html#spanLabelOf">spanLabelOf</a></li><li><a href="global.html#spanSecOf">spanSecOf</a></li></ul>
     
 </nav>
 
@@ -124,170 +124,6 @@
 
     
         <h3 class="subsection-title">Methods</h3>
-
-        
-            
-
-    
-
-    <h4 class="name" id="barLabelOf"><span class="type-signature"></span>barLabelOf<span class="signature">(barsPerDay)</span><span class="type-signature"> &rarr; {String}</span></h4>
-
-    
-
-
-
-
-<dl class="details">
-    
-    <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>由每日根數組出單根K線之週期標籤</p>
-<p>標籤與各calc內建週期表之格式一致：整日數為<code>${N}day</code>，整小時數為<code>${N}hr</code>，整分鐘數為<code>${N}m</code>，其餘為<code>${N}s</code>(一根K線之秒數四捨五入至整秒)</p></li></ul></dd>
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="resolvePeriods.mjs.html">resolvePeriods.mjs</a>, <a href="resolvePeriods.mjs.html#line71">line 71</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-    <h5 class="h5-examples">Example</h5>
-    
-    <pre class="prettyprint"><code>console.log(barLabelOf(6), barLabelOf(24), barLabelOf(48), barLabelOf(1), barLabelOf(288))// => 4hr 1hr 30m 1day 5m</code></pre>
-
-
-
-
-    <h5 class="h5-parameters">Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>barsPerDay</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Number</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>輸入每日K線根數，有效數字(正數，上限86400)，無效時throw</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5 class="h5-returns">Returns:</h5>
-
-        
-<div class="param-desc">
-    <p>回傳週期標籤字串</p>
-</div>
-
-
-
-<dl class="param-type">
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">String</span>
-
-
-
-    </dd>
-</dl>
-
-    
-
-
 
         
             
@@ -859,7 +695,7 @@
 
         <tr>
             
-                <td class="name"><code>barsPerDay</code></td>
+                <td class="name"><code>intervalSec</code></td>
             
 
             <td class="type">
@@ -890,12 +726,12 @@
             
                 <td class="default">
                 
-                    <code>6</code>
+                    <code>14400</code>
                 
                 </td>
             
 
-            <td class="description last"><p>輸入每日K線根數，有效數字(大於0且至多86400)，各期根數依此自4hr基準(每日6根)等比換算並四捨五入，換算後不足1根之期剔除，預設6(不換算)，非預期之輸入視為未給</p></td>
+            <td class="description last"><p>輸入每根K線之秒數，60之正整數倍且至多31536000(數值或數字字串)，各期根數不變(根數為本)，期別標籤為根數×每根秒數之時間跨度(例：每根1day時3根之期為'3day')，預設14400(每根4hr，標籤與根數皆同內建表)，無效時reject</p></td>
         </tr>
 
     
@@ -973,7 +809,7 @@
                 </td>
             
 
-            <td class="description last"><p>輸入是否於opt.barsPerDay或opt.kp出現非預期輸入時輸出警告布林值，預設false</p></td>
+            <td class="description last"><p>輸入是否於opt.kp出現非預期輸入時輸出警告布林值，預設false</p></td>
         </tr>
 
     
@@ -1307,7 +1143,7 @@ atrRatio於close為0時回0；atrRatioMod以diviProt保護分母(close+opt.plusC
 
         <tr>
             
-                <td class="name"><code>barsPerDay</code></td>
+                <td class="name"><code>intervalSec</code></td>
             
 
             <td class="type">
@@ -1338,12 +1174,12 @@ atrRatio於close為0時回0；atrRatioMod以diviProt保護分母(close+opt.plusC
             
                 <td class="default">
                 
-                    <code>6</code>
+                    <code>14400</code>
                 
                 </td>
             
 
-            <td class="description last"><p>輸入每日K線根數，有效數字(大於0且至多86400)，各期根數依此自4hr基準(每日6根)等比換算並四捨五入，換算後不足1根之期剔除，預設6(不換算)，非預期之輸入視為未給</p></td>
+            <td class="description last"><p>輸入每根K線之秒數，60之正整數倍且至多31536000(數值或數字字串)，各期根數不變(根數為本)，期別標籤為根數×每根秒數之時間跨度(例：每根1day時3根之期為'3day')，預設14400(每根4hr，標籤與根數皆同內建表)，無效時reject</p></td>
         </tr>
 
     
@@ -1421,7 +1257,7 @@ atrRatio於close為0時回0；atrRatioMod以diviProt保護分母(close+opt.plusC
                 </td>
             
 
-            <td class="description last"><p>輸入是否於opt.barsPerDay或opt.kp出現非預期輸入時輸出警告布林值，預設false</p></td>
+            <td class="description last"><p>輸入是否於opt.kp出現非預期輸入時輸出警告布林值，預設false</p></td>
         </tr>
 
     
@@ -1795,7 +1631,7 @@ atsRatio為當根ats相對最近len根(含當根)簡單平均之倍數，baselin
 
         <tr>
             
-                <td class="name"><code>barsPerDay</code></td>
+                <td class="name"><code>intervalSec</code></td>
             
 
             <td class="type">
@@ -1826,12 +1662,12 @@ atsRatio為當根ats相對最近len根(含當根)簡單平均之倍數，baselin
             
                 <td class="default">
                 
-                    <code>6</code>
+                    <code>14400</code>
                 
                 </td>
             
 
-            <td class="description last"><p>輸入每日K線根數，有效數字(大於0且至多86400)，各期根數依此自4hr基準(每日6根)等比換算並四捨五入，換算後不足1根之期剔除，預設6(不換算)，非預期之輸入視為未給</p></td>
+            <td class="description last"><p>輸入每根K線之秒數，60之正整數倍且至多31536000(數值或數字字串)，各期根數不變(根數為本)，期別標籤為根數×每根秒數之時間跨度(例：每根1day時3根之期為'3day')，預設14400(每根4hr，標籤與根數皆同內建表)，無效時reject</p></td>
         </tr>
 
     
@@ -1909,7 +1745,7 @@ atsRatio為當根ats相對最近len根(含當根)簡單平均之倍數，baselin
                 </td>
             
 
-            <td class="description last"><p>輸入是否於opt.barsPerDay或opt.kp出現非預期輸入時輸出警告布林值，預設false</p></td>
+            <td class="description last"><p>輸入是否於opt.kp出現非預期輸入時輸出警告布林值，預設false</p></td>
         </tr>
 
     
@@ -2244,7 +2080,7 @@ BBwidthMod、BBwidthChangeMod為以diviProt保護分母之修正版本，分母�
 
         <tr>
             
-                <td class="name"><code>barsPerDay</code></td>
+                <td class="name"><code>intervalSec</code></td>
             
 
             <td class="type">
@@ -2275,12 +2111,12 @@ BBwidthMod、BBwidthChangeMod為以diviProt保護分母之修正版本，分母�
             
                 <td class="default">
                 
-                    <code>6</code>
+                    <code>14400</code>
                 
                 </td>
             
 
-            <td class="description last"><p>輸入每日K線根數，有效數字(大於0且至多86400)，各期根數依此自4hr基準(每日6根)等比換算並四捨五入，換算後不足1根之期剔除，預設6(不換算)，非預期之輸入視為未給</p></td>
+            <td class="description last"><p>輸入每根K線之秒數，60之正整數倍且至多31536000(數值或數字字串)，各期根數不變(根數為本)，期別標籤為根數×每根秒數之時間跨度(例：每根1day時3根之期為'3day')，預設14400(每根4hr，標籤與根數皆同內建表)，無效時reject</p></td>
         </tr>
 
     
@@ -2358,7 +2194,7 @@ BBwidthMod、BBwidthChangeMod為以diviProt保護分母之修正版本，分母�
                 </td>
             
 
-            <td class="description last"><p>輸入是否於opt.barsPerDay或opt.kp出現非預期輸入時輸出警告布林值，預設false</p></td>
+            <td class="description last"><p>輸入是否於opt.kp出現非預期輸入時輸出警告布林值，預設false</p></td>
         </tr>
 
     
@@ -2893,7 +2729,7 @@ engulfStrength僅於當根與前一根方向相反且前一根有範圍時計算
 
         <tr>
             
-                <td class="name"><code>barsPerDay</code></td>
+                <td class="name"><code>intervalSec</code></td>
             
 
             <td class="type">
@@ -2924,12 +2760,12 @@ engulfStrength僅於當根與前一根方向相反且前一根有範圍時計算
             
                 <td class="default">
                 
-                    <code>6</code>
+                    <code>14400</code>
                 
                 </td>
             
 
-            <td class="description last"><p>輸入每日K線根數，有效數字(大於0且至多86400)，各期根數依此自4hr基準(每日6根)等比換算並四捨五入，換算後不足1根之期剔除，預設6(不換算)，非預期之輸入視為未給，本指標為單根型態，不換算根數，僅週期標籤改為該K線週期之標籤</p></td>
+            <td class="description last"><p>輸入每根K線之秒數，60之正整數倍且至多31536000(數值或數字字串)，各期根數不變(根數為本)，期別標籤為根數×每根秒數之時間跨度(例：每根1day時3根之期為'3day')，預設14400(每根4hr，標籤與根數皆同內建表)，無效時reject，本指標為單根型態(1根)，期別標籤即每根時長本身(例：每根1day時為'1day')</p></td>
         </tr>
 
     
@@ -3007,7 +2843,7 @@ engulfStrength僅於當根與前一根方向相反且前一根有範圍時計算
                 </td>
             
 
-            <td class="description last"><p>輸入是否於opt.barsPerDay或opt.kp出現非預期輸入時輸出警告布林值，預設false</p></td>
+            <td class="description last"><p>輸入是否於opt.kp出現非預期輸入時輸出警告布林值，預設false</p></td>
         </tr>
 
     
@@ -3118,7 +2954,7 @@ engulfStrength僅於當根與前一根方向相反且前一根有範圍時計算
     <dd class="tag-description"><ul class="dummy"><li><p>計算各週期之CVD(Cumulative Volume Delta，累積量能差)</p>
 <p>delta(i)=(2*TakerBuyBaseAssetVolume(i)-Volumn(i))/Volumn(i)，Volumn(i)小於等於0時delta回0
 cvd為視窗[i-len+1,i]內delta加總後除以√len之歸一化累積值，第一筆對應輸入索引len-1
-cvdSlope=(cvd(i)-cvd(i-3))/3，固定回看3根(對應12hr)以呈現累積動能之變化速度
+cvdSlope=(cvd(i)-cvd(i-3))/3，固定回看3根(根數，與內建表最短期同根數；每根4hr時為12hr)以呈現累積動能之變化速度
 資料筆數n小於len+3時該期vs回空陣列</p>
 <p>Unit Test: <a href="https://github.com/yuda-lyu/w-data-trade/blob/master/test/unit-calcCvd.test.mjs">Github</a></p></li></ul></dd>
     
@@ -3342,7 +3178,7 @@ cvdSlope=(cvd(i)-cvd(i-3))/3，固定回看3根(對應12hr)以呈現累積動能
 
         <tr>
             
-                <td class="name"><code>barsPerDay</code></td>
+                <td class="name"><code>intervalSec</code></td>
             
 
             <td class="type">
@@ -3373,12 +3209,12 @@ cvdSlope=(cvd(i)-cvd(i-3))/3，固定回看3根(對應12hr)以呈現累積動能
             
                 <td class="default">
                 
-                    <code>6</code>
+                    <code>14400</code>
                 
                 </td>
             
 
-            <td class="description last"><p>輸入每日K線根數，有效數字(大於0且至多86400)，各期根數依此自4hr基準(每日6根)等比換算並四捨五入，換算後不足1根之期剔除，預設6(不換算)，非預期之輸入視為未給</p></td>
+            <td class="description last"><p>輸入每根K線之秒數，60之正整數倍且至多31536000(數值或數字字串)，各期根數不變(根數為本)，期別標籤為根數×每根秒數之時間跨度(例：每根1day時3根之期為'3day')，預設14400(每根4hr，標籤與根數皆同內建表)，無效時reject</p></td>
         </tr>
 
     
@@ -3456,7 +3292,7 @@ cvdSlope=(cvd(i)-cvd(i-3))/3，固定回看3根(對應12hr)以呈現累積動能
                 </td>
             
 
-            <td class="description last"><p>輸入是否於opt.barsPerDay或opt.kp出現非預期輸入時輸出警告布林值，預設false</p></td>
+            <td class="description last"><p>輸入是否於opt.kp出現非預期輸入時輸出警告布林值，預設false</p></td>
         </tr>
 
     
@@ -3565,7 +3401,7 @@ cvdSlope=(cvd(i)-cvd(i-3))/3，固定回看3根(對應12hr)以呈現累積動能
     
     <dt class="tag-description">Description:</dt>
     <dd class="tag-description"><ul class="dummy"><li><p>計算各週期之唐奇安通道DC(Donchian Channel)</p>
-<p>各週期len為該期涵蓋之K線根數(以4hr K線為基準，1day=6根)，資料筆數不足該期len時，該期vs為空陣列
+<p>各週期len為該期涵蓋之K線根數(根數為本，任何每根時長下不變；期別標籤為根數×每根時長，每根4hr時'1day'即6根)，資料筆數不足該期len時，該期vs為空陣列
 opt.excludeCurrent=false(預設)時，視窗為[i-len+1,i]含當前根，第1筆對應輸入之第len根(index len-1)；
 為true時視窗為[i-len,i-1]不含當前根，第1筆對應輸入之第len+1根(index len)
 其後皆逐根對齊至最後一根</p>
@@ -3791,7 +3627,7 @@ opt.excludeCurrent=false(預設)時，視窗為[i-len+1,i]含當前根，第1筆
 
         <tr>
             
-                <td class="name"><code>barsPerDay</code></td>
+                <td class="name"><code>intervalSec</code></td>
             
 
             <td class="type">
@@ -3822,12 +3658,12 @@ opt.excludeCurrent=false(預設)時，視窗為[i-len+1,i]含當前根，第1筆
             
                 <td class="default">
                 
-                    <code>6</code>
+                    <code>14400</code>
                 
                 </td>
             
 
-            <td class="description last"><p>輸入每日K線根數，有效數字(大於0且至多86400)，各期根數依此自4hr基準(每日6根)等比換算並四捨五入，換算後不足1根之期剔除，預設6(不換算)，非預期之輸入視為未給</p></td>
+            <td class="description last"><p>輸入每根K線之秒數，60之正整數倍且至多31536000(數值或數字字串)，各期根數不變(根數為本)，期別標籤為根數×每根秒數之時間跨度(例：每根1day時3根之期為'3day')，預設14400(每根4hr，標籤與根數皆同內建表)，無效時reject</p></td>
         </tr>
 
     
@@ -3905,7 +3741,7 @@ opt.excludeCurrent=false(預設)時，視窗為[i-len+1,i]含當前根，第1筆
                 </td>
             
 
-            <td class="description last"><p>輸入是否於opt.barsPerDay或opt.kp出現非預期輸入時輸出警告布林值，預設false</p></td>
+            <td class="description last"><p>輸入是否於opt.kp出現非預期輸入時輸出警告布林值，預設false</p></td>
         </tr>
 
     
@@ -4214,7 +4050,7 @@ opt.excludeCurrent=false(預設)時，視窗為[i-len+1,i]含當前根，第1筆
     
     <dt class="tag-description">Description:</dt>
     <dd class="tag-description"><ul class="dummy"><li><p>計算各週期之指數移動平均EMA(Exponential Moving Average)</p>
-<p>各週期len為該期涵蓋之K線根數(以4hr K線為基準，1day=6根)，資料筆數不足該期len時，該期vs為空陣列
+<p>各週期len為該期涵蓋之K線根數(根數為本，任何每根時長下不變；期別標籤為根數×每根時長，每根4hr時'1day'即6根)，資料筆數不足該期len時，該期vs為空陣列
 第1筆為種子值(取前len筆之算術平均SMA)，對應輸入之第len根，物件僅含{time,param}
 其後各筆依EMA公式(alpha=2/(len+1))遞推，逐根對齊至最後一根，物件另含{value,diff,ratio}
 diff=EMA-現值，ratio=diff/現值(現值為0時ratio給0)</p>
@@ -4440,7 +4276,7 @@ diff=EMA-現值，ratio=diff/現值(現值為0時ratio給0)</p>
 
         <tr>
             
-                <td class="name"><code>barsPerDay</code></td>
+                <td class="name"><code>intervalSec</code></td>
             
 
             <td class="type">
@@ -4471,12 +4307,12 @@ diff=EMA-現值，ratio=diff/現值(現值為0時ratio給0)</p>
             
                 <td class="default">
                 
-                    <code>6</code>
+                    <code>14400</code>
                 
                 </td>
             
 
-            <td class="description last"><p>輸入每日K線根數，有效數字(大於0且至多86400)，各期根數依此自4hr基準(每日6根)等比換算並四捨五入，換算後不足1根之期剔除，預設6(不換算)，非預期之輸入視為未給</p></td>
+            <td class="description last"><p>輸入每根K線之秒數，60之正整數倍且至多31536000(數值或數字字串)，各期根數不變(根數為本)，期別標籤為根數×每根秒數之時間跨度(例：每根1day時3根之期為'3day')，預設14400(每根4hr，標籤與根數皆同內建表)，無效時reject</p></td>
         </tr>
 
     
@@ -4554,7 +4390,7 @@ diff=EMA-現值，ratio=diff/現值(現值為0時ratio給0)</p>
                 </td>
             
 
-            <td class="description last"><p>輸入是否於opt.barsPerDay或opt.kp出現非預期輸入時輸出警告布林值，預設false</p></td>
+            <td class="description last"><p>輸入是否於opt.kp出現非預期輸入時輸出警告布林值，預設false</p></td>
         </tr>
 
     
@@ -4703,8 +4539,8 @@ diff=EMA-現值，ratio=diff/現值(現值為0時ratio給0)</p>
     
     <dt class="tag-description">Description:</dt>
     <dd class="tag-description"><ul class="dummy"><li><p>計算各週期之一目均衡表Ichimoku Cloud(Ichimoku Kinko Hyo)</p>
-<p>三層lookback依經典9:26:52比例縮放，各期(period)對應之kp設定為{tenkan,kijun,senkouB}三參數配對(單位皆為以4hr K線為基準之根數)，
-period標籤本身即對應senkouB(最長lookback)所涵蓋之天數，僅保留4day~30day四期(短於4day時tenkan會&lt;4而失去意義)：
+<p>三層lookback依經典9:26:52比例縮放，各期(period)對應之kp設定為{tenkan,kijun,senkouB}三參數配對(單位皆為根數，任何每根時長下不變)，
+period標籤為senkouB(最長lookback)根數×每根時長(每根4hr時即下表之天數)，僅保留4day~30day四期(短於4day時tenkan會&lt;4而失去意義)：
 '4day':  { tenkan: 4,  kijun: 12, senkouB: 24 }
 '7day':  { tenkan: 7,  kijun: 21, senkouB: 42 }
 '15day': { tenkan: 16, kijun: 45, senkouB: 90 }
@@ -4936,7 +4772,7 @@ cloudTop=max(SenkouA,SenkouB)，cloudBot=min(SenkouA,SenkouB)，cloudMid=(cloudT
 
         <tr>
             
-                <td class="name"><code>barsPerDay</code></td>
+                <td class="name"><code>intervalSec</code></td>
             
 
             <td class="type">
@@ -4967,12 +4803,12 @@ cloudTop=max(SenkouA,SenkouB)，cloudBot=min(SenkouA,SenkouB)，cloudMid=(cloudT
             
                 <td class="default">
                 
-                    <code>6</code>
+                    <code>14400</code>
                 
                 </td>
             
 
-            <td class="description last"><p>輸入每日K線根數，有效數字(大於0且至多86400)，各期根數依此自4hr基準(每日6根)等比換算並四捨五入，換算後不足1根之期剔除，預設6(不換算)，非預期之輸入視為未給</p></td>
+            <td class="description last"><p>輸入每根K線之秒數，60之正整數倍且至多31536000(數值或數字字串)，各期根數不變(根數為本)，期別標籤為根數×每根秒數之時間跨度(例：每根1day時3根之期為'3day')，預設14400(每根4hr，標籤與根數皆同內建表)，無效時reject</p></td>
         </tr>
 
     
@@ -5050,7 +4886,7 @@ cloudTop=max(SenkouA,SenkouB)，cloudBot=min(SenkouA,SenkouB)，cloudMid=(cloudT
                 </td>
             
 
-            <td class="description last"><p>輸入是否於opt.barsPerDay或opt.kp出現非預期輸入時輸出警告布林值，預設false</p></td>
+            <td class="description last"><p>輸入是否於opt.kp出現非預期輸入時輸出警告布林值，預設false</p></td>
         </tr>
 
     
@@ -5319,7 +5155,7 @@ cloudTop=max(SenkouA,SenkouB)，cloudBot=min(SenkouA,SenkouB)，cloudMid=(cloudT
     
     <dt class="tag-description">Description:</dt>
     <dd class="tag-description"><ul class="dummy"><li><p>計算各週期之KDJ隨機指標(Stochastic Oscillator KDJ)</p>
-<p>各週期len即RSV回看期數(以4hr K線為基準，1day=6根)，資料筆數不足該期len時，該期vs為空陣列
+<p>各週期len即RSV回看期數(根數為本，任何每根時長下不變；期別標籤為根數×每根時長，每根4hr時'1day'即6根)，資料筆數不足該期len時，該期vs為空陣列
 K/D以EMA平滑遞推(kAlpha=dAlpha=1/3)，K與D初始值(seed)皆為50
 RSV=(Close-Ln)/(Hn-Ln)*100，Hn/Ln為視窗內(最近len根)之最高High/最低Low，Hn===Ln時RSV取中性值50(避免除以0)
 輸出自輸入索引len-1起(視窗未滿之根不輸出)，其後逐根對齊至最後一根
@@ -5546,7 +5382,7 @@ opt目前未被讀取(本函式尚未提供可調整之設定項)</p>
 
         <tr>
             
-                <td class="name"><code>barsPerDay</code></td>
+                <td class="name"><code>intervalSec</code></td>
             
 
             <td class="type">
@@ -5577,12 +5413,12 @@ opt目前未被讀取(本函式尚未提供可調整之設定項)</p>
             
                 <td class="default">
                 
-                    <code>6</code>
+                    <code>14400</code>
                 
                 </td>
             
 
-            <td class="description last"><p>輸入每日K線根數，有效數字(大於0且至多86400)，各期根數依此自4hr基準(每日6根)等比換算並四捨五入，換算後不足1根之期剔除，預設6(不換算)，非預期之輸入視為未給</p></td>
+            <td class="description last"><p>輸入每根K線之秒數，60之正整數倍且至多31536000(數值或數字字串)，各期根數不變(根數為本)，期別標籤為根數×每根秒數之時間跨度(例：每根1day時3根之期為'3day')，預設14400(每根4hr，標籤與根數皆同內建表)，無效時reject</p></td>
         </tr>
 
     
@@ -5660,7 +5496,7 @@ opt目前未被讀取(本函式尚未提供可調整之設定項)</p>
                 </td>
             
 
-            <td class="description last"><p>輸入是否於opt.barsPerDay或opt.kp出現非預期輸入時輸出警告布林值，預設false</p></td>
+            <td class="description last"><p>輸入是否於opt.kp出現非預期輸入時輸出警告布林值，預設false</p></td>
         </tr>
 
     
@@ -5769,7 +5605,7 @@ opt目前未被讀取(本函式尚未提供可調整之設定項)</p>
     
     <dt class="tag-description">Description:</dt>
     <dd class="tag-description"><ul class="dummy"><li><p>計算各週期之肯特納通道Keltner Channel</p>
-<p>各期(period)對應之kp設定為{len,mult}參數配對(len單位為以4hr K線為基準之根數)，
+<p>各期(period)對應之kp設定為{len,mult}參數配對(len單位為根數，任何每根時長下不變)，
 len為EMA(中線)與ATR(通道厚度基準)共用之平滑期數，mult為ATR通道厚度倍數，錨點1day=(len:6,mult:2)對應Linda Raschke經典(20,10,2)標準：
 '12hr': { len: 3,   mult: 1.5 }
 '16hr': { len: 4,   mult: 1.5 }
@@ -6004,7 +5840,7 @@ middle=EMA(Close,len)，ATR以Wilder平滑遞推(種子為前len筆TR之算術�
 
         <tr>
             
-                <td class="name"><code>barsPerDay</code></td>
+                <td class="name"><code>intervalSec</code></td>
             
 
             <td class="type">
@@ -6035,12 +5871,12 @@ middle=EMA(Close,len)，ATR以Wilder平滑遞推(種子為前len筆TR之算術�
             
                 <td class="default">
                 
-                    <code>6</code>
+                    <code>14400</code>
                 
                 </td>
             
 
-            <td class="description last"><p>輸入每日K線根數，有效數字(大於0且至多86400)，各期根數依此自4hr基準(每日6根)等比換算並四捨五入，換算後不足1根之期剔除，預設6(不換算)，非預期之輸入視為未給</p></td>
+            <td class="description last"><p>輸入每根K線之秒數，60之正整數倍且至多31536000(數值或數字字串)，各期根數不變(根數為本)，期別標籤為根數×每根秒數之時間跨度(例：每根1day時3根之期為'3day')，預設14400(每根4hr，標籤與根數皆同內建表)，無效時reject</p></td>
         </tr>
 
     
@@ -6118,7 +5954,7 @@ middle=EMA(Close,len)，ATR以Wilder平滑遞推(種子為前len筆TR之算術�
                 </td>
             
 
-            <td class="description last"><p>輸入是否於opt.barsPerDay或opt.kp出現非預期輸入時輸出警告布林值，預設false</p></td>
+            <td class="description last"><p>輸入是否於opt.kp出現非預期輸入時輸出警告布林值，預設false</p></td>
         </tr>
 
     
@@ -6492,7 +6328,7 @@ ho=H/O，lo=L/O，co=C/O，hc=H/C，lc=L/C，hl=H/L，六比值皆先將O/H/L/C�
 
         <tr>
             
-                <td class="name"><code>barsPerDay</code></td>
+                <td class="name"><code>intervalSec</code></td>
             
 
             <td class="type">
@@ -6523,12 +6359,12 @@ ho=H/O，lo=L/O，co=C/O，hc=H/C，lc=L/C，hl=H/L，六比值皆先將O/H/L/C�
             
                 <td class="default">
                 
-                    <code>6</code>
+                    <code>14400</code>
                 
                 </td>
             
 
-            <td class="description last"><p>輸入每日K線根數，有效數字(大於0且至多86400)，各期根數依此自4hr基準(每日6根)等比換算並四捨五入，換算後不足1根之期剔除，預設6(不換算)，非預期之輸入視為未給，本指標為單根型態，不換算根數，僅週期標籤改為該K線週期之標籤</p></td>
+            <td class="description last"><p>輸入每根K線之秒數，60之正整數倍且至多31536000(數值或數字字串)，各期根數不變(根數為本)，期別標籤為根數×每根秒數之時間跨度(例：每根1day時3根之期為'3day')，預設14400(每根4hr，標籤與根數皆同內建表)，無效時reject，本指標為單根型態(1根)，期別標籤即每根時長本身(例：每根1day時為'1day')</p></td>
         </tr>
 
     
@@ -6606,7 +6442,7 @@ ho=H/O，lo=L/O，co=C/O，hc=H/C，lc=L/C，hl=H/L，六比值皆先將O/H/L/C�
                 </td>
             
 
-            <td class="description last"><p>輸入是否於opt.barsPerDay或opt.kp出現非預期輸入時輸出警告布林值，預設false</p></td>
+            <td class="description last"><p>輸入是否於opt.kp出現非預期輸入時輸出警告布林值，預設false</p></td>
         </tr>
 
     
@@ -6755,7 +6591,7 @@ ho=H/O，lo=L/O，co=C/O，hc=H/C，lc=L/C，hl=H/L，六比值皆先將O/H/L/C�
     
     <dt class="tag-description">Description:</dt>
     <dd class="tag-description"><ul class="dummy"><li><p>計算各週期之移動平均MA(Moving Average)</p>
-<p>各週期len為該期涵蓋之K線根數(以4hr K線為基準，1day=6根)，資料筆數不足該期len時，該期vs為空陣列
+<p>各週期len為該期涵蓋之K線根數(根數為本，任何每根時長下不變；期別標籤為根數×每根時長，每根4hr時'1day'即6根)，資料筆數不足該期len時，該期vs為空陣列
 各期第1筆對應輸入之第len根，其後逐根對齊至最後一根</p>
 <p>Unit Test: <a href="https://github.com/yuda-lyu/w-data-trade/blob/master/test/unit-calcMa.test.mjs">Github</a></p></li></ul></dd>
     
@@ -6979,7 +6815,7 @@ ho=H/O，lo=L/O，co=C/O，hc=H/C，lc=L/C，hl=H/L，六比值皆先將O/H/L/C�
 
         <tr>
             
-                <td class="name"><code>barsPerDay</code></td>
+                <td class="name"><code>intervalSec</code></td>
             
 
             <td class="type">
@@ -7010,12 +6846,12 @@ ho=H/O，lo=L/O，co=C/O，hc=H/C，lc=L/C，hl=H/L，六比值皆先將O/H/L/C�
             
                 <td class="default">
                 
-                    <code>6</code>
+                    <code>14400</code>
                 
                 </td>
             
 
-            <td class="description last"><p>輸入每日K線根數，有效數字(大於0且至多86400)，各期根數依此自4hr基準(每日6根)等比換算並四捨五入，換算後不足1根之期剔除，預設6(不換算)，非預期之輸入視為未給</p></td>
+            <td class="description last"><p>輸入每根K線之秒數，60之正整數倍且至多31536000(數值或數字字串)，各期根數不變(根數為本)，期別標籤為根數×每根秒數之時間跨度(例：每根1day時3根之期為'3day')，預設14400(每根4hr，標籤與根數皆同內建表)，無效時reject</p></td>
         </tr>
 
     
@@ -7093,7 +6929,7 @@ ho=H/O，lo=L/O，co=C/O，hc=H/C，lc=L/C，hl=H/L，六比值皆先將O/H/L/C�
                 </td>
             
 
-            <td class="description last"><p>輸入是否於opt.barsPerDay或opt.kp出現非預期輸入時輸出警告布林值，預設false</p></td>
+            <td class="description last"><p>輸入是否於opt.kp出現非預期輸入時輸出警告布林值，預設false</p></td>
         </tr>
 
     
@@ -7242,7 +7078,7 @@ ho=H/O，lo=L/O，co=C/O，hc=H/C，lc=L/C，hl=H/L，六比值皆先將O/H/L/C�
     
     <dt class="tag-description">Description:</dt>
     <dd class="tag-description"><ul class="dummy"><li><p>計算各週期之指數平滑異同移動平均線MACD(Moving Average Convergence Divergence)</p>
-<p>各週期len為基準倍率(以4hr K線為基準)，實際採用快線期數fastPeriod=len<em>12、慢線期數slowPeriod=len</em>26、訊號線期數signalPeriod=len<em>9(即標準MACD(12,26,9)之等比放大)
+<p>各週期len為基準倍率(根數為本，任何每根時長下不變)，實際採用快線期數fastPeriod=len<em>12、慢線期數slowPeriod=len</em>26、訊號線期數signalPeriod=len<em>9(即標準MACD(12,26,9)之等比放大)
 DIF(快線)為收盤價快線EMA減慢線EMA，DEM(慢線，即訊號線)為DIF之EMA，OSC(柱狀動能)為DIF減DEM
 資料筆數n小於len或小於slowPeriod+signalPeriod-1時，該期vs為空陣列
 各期第1筆對應輸入之第35</em>len-2根(即索引(slowPeriod-1)+(signalPeriod-1))，其後逐根對齊至最後一根</p>
@@ -7468,7 +7304,7 @@ DIF(快線)為收盤價快線EMA減慢線EMA，DEM(慢線，即訊號線)為DIF�
 
         <tr>
             
-                <td class="name"><code>barsPerDay</code></td>
+                <td class="name"><code>intervalSec</code></td>
             
 
             <td class="type">
@@ -7499,12 +7335,12 @@ DIF(快線)為收盤價快線EMA減慢線EMA，DEM(慢線，即訊號線)為DIF�
             
                 <td class="default">
                 
-                    <code>6</code>
+                    <code>14400</code>
                 
                 </td>
             
 
-            <td class="description last"><p>輸入每日K線根數，有效數字(大於0且至多86400)，各期根數依此自4hr基準(每日6根)等比換算並四捨五入，換算後不足1根之期剔除，預設6(不換算)，非預期之輸入視為未給</p></td>
+            <td class="description last"><p>輸入每根K線之秒數，60之正整數倍且至多31536000(數值或數字字串)，各期根數不變(根數為本)，期別標籤為根數×每根秒數之時間跨度(例：每根1day時3根之期為'3day')，預設14400(每根4hr，標籤與根數皆同內建表)，無效時reject</p></td>
         </tr>
 
     
@@ -7582,7 +7418,7 @@ DIF(快線)為收盤價快線EMA減慢線EMA，DEM(慢線，即訊號線)為DIF�
                 </td>
             
 
-            <td class="description last"><p>輸入是否於opt.barsPerDay或opt.kp出現非預期輸入時輸出警告布林值，預設false</p></td>
+            <td class="description last"><p>輸入是否於opt.kp出現非預期輸入時輸出警告布林值，預設false</p></td>
         </tr>
 
     
@@ -7691,7 +7527,7 @@ DIF(快線)為收盤價快線EMA減慢線EMA，DEM(慢線，即訊號線)為DIF�
     
     <dt class="tag-description">Description:</dt>
     <dd class="tag-description"><ul class="dummy"><li><p>計算各週期之資金流量指標MFI(Money Flow Index)</p>
-<p>各週期len為該期涵蓋之K線根數(以4hr K線為基準，1day=6根)，資料筆數n小於len+1時，該期vs為空陣列
+<p>各週期len為該期涵蓋之K線根數(根數為本，任何每根時長下不變；期別標籤為根數×每根時長，每根4hr時'1day'即6根)，資料筆數n小於len+1時，該期vs為空陣列
 典型價tp=(High+Low+Close)/3，原始資金流rawMF=tp*Volumn；tp較前一根上升時計入正向資金流posMF，下降時計入負向資金流negMF，持平則兩者皆不計入
 MFI=100-100/(1+視窗內sumPosMF/sumNegMF之比值)；sumPosMF與sumNegMF皆小於等於opt.eps時給50(完全平盤)，僅sumNegMF小於等於opt.eps時給100(全部正向)，僅sumPosMF小於等於opt.eps時給0(全部負向)
 MFIratio=sumPosMF/(sumPosMF+sumNegMF)，兩者總和小於等於opt.eps時給0.5
@@ -7919,7 +7755,7 @@ MFIdiv為MFI與len根前之MFI取正負號比較，與Close之len根漲跌方向
 
         <tr>
             
-                <td class="name"><code>barsPerDay</code></td>
+                <td class="name"><code>intervalSec</code></td>
             
 
             <td class="type">
@@ -7950,12 +7786,12 @@ MFIdiv為MFI與len根前之MFI取正負號比較，與Close之len根漲跌方向
             
                 <td class="default">
                 
-                    <code>6</code>
+                    <code>14400</code>
                 
                 </td>
             
 
-            <td class="description last"><p>輸入每日K線根數，有效數字(大於0且至多86400)，各期根數依此自4hr基準(每日6根)等比換算並四捨五入，換算後不足1根之期剔除，預設6(不換算)，非預期之輸入視為未給</p></td>
+            <td class="description last"><p>輸入每根K線之秒數，60之正整數倍且至多31536000(數值或數字字串)，各期根數不變(根數為本)，期別標籤為根數×每根秒數之時間跨度(例：每根1day時3根之期為'3day')，預設14400(每根4hr，標籤與根數皆同內建表)，無效時reject</p></td>
         </tr>
 
     
@@ -8033,7 +7869,7 @@ MFIdiv為MFI與len根前之MFI取正負號比較，與Close之len根漲跌方向
                 </td>
             
 
-            <td class="description last"><p>輸入是否於opt.barsPerDay或opt.kp出現非預期輸入時輸出警告布林值，預設false</p></td>
+            <td class="description last"><p>輸入是否於opt.kp出現非預期輸入時輸出警告布林值，預設false</p></td>
         </tr>
 
     
@@ -8182,7 +8018,7 @@ MFIdiv為MFI與len根前之MFI取正負號比較，與Close之len根漲跌方向
     
     <dt class="tag-description">Description:</dt>
     <dd class="tag-description"><ul class="dummy"><li><p>計算各週期之能量潮OBV(On Balance Volume)</p>
-<p>各週期len為該期涵蓋之K線根數(以4hr K線為基準，1day=6根)，資料筆數n小於len+1時，該期vs為空陣列
+<p>各週期len為該期涵蓋之K線根數(根數為本，任何每根時長下不變；期別標籤為根數×每根時長，每根4hr時'1day'即6根)，資料筆數n小於len+1時，該期vs為空陣列
 累積OBV：Close較前一根上升時obv累加該根Volumn，下降時obv累減該根Volumn，持平則obv不變，obv[0]=0
 OBVnorm=(obv-視窗len根obv之算術平均OBV_MA)/|OBV_MA|，OBV_MA=0時給0
 OBVslope=(obv-len根前之obv)/(len*|len根前之obv|)，len根前之obv為0時分母改為len
@@ -8410,7 +8246,7 @@ OBVdiv為obv與len根前之obv取正負號比較，與Close之len根漲跌方向
 
         <tr>
             
-                <td class="name"><code>barsPerDay</code></td>
+                <td class="name"><code>intervalSec</code></td>
             
 
             <td class="type">
@@ -8441,12 +8277,12 @@ OBVdiv為obv與len根前之obv取正負號比較，與Close之len根漲跌方向
             
                 <td class="default">
                 
-                    <code>6</code>
+                    <code>14400</code>
                 
                 </td>
             
 
-            <td class="description last"><p>輸入每日K線根數，有效數字(大於0且至多86400)，各期根數依此自4hr基準(每日6根)等比換算並四捨五入，換算後不足1根之期剔除，預設6(不換算)，非預期之輸入視為未給</p></td>
+            <td class="description last"><p>輸入每根K線之秒數，60之正整數倍且至多31536000(數值或數字字串)，各期根數不變(根數為本)，期別標籤為根數×每根秒數之時間跨度(例：每根1day時3根之期為'3day')，預設14400(每根4hr，標籤與根數皆同內建表)，無效時reject</p></td>
         </tr>
 
     
@@ -8524,7 +8360,7 @@ OBVdiv為obv與len根前之obv取正負號比較，與Close之len根漲跌方向
                 </td>
             
 
-            <td class="description last"><p>輸入是否於opt.barsPerDay或opt.kp出現非預期輸入時輸出警告布林值，預設false</p></td>
+            <td class="description last"><p>輸入是否於opt.kp出現非預期輸入時輸出警告布林值，預設false</p></td>
         </tr>
 
     
@@ -8823,7 +8659,7 @@ OBVdiv為obv與len根前之obv取正負號比較，與Close之len根漲跌方向
     
     <dt class="tag-description">Description:</dt>
     <dd class="tag-description"><ul class="dummy"><li><p>計算各週期之相對強弱指標RSI(Relative Strength Index，採Wilder平滑法)</p>
-<p>各週期len為該期涵蓋之K線根數(以4hr K線為基準，1day=6根)，資料筆數n小於len+1時，該期vs為空陣列
+<p>各週期len為該期涵蓋之K線根數(根數為本，任何每根時長下不變；期別標籤為根數×每根時長，每根4hr時'1day'即6根)，資料筆數n小於len+1時，該期vs為空陣列
 每根漲跌diff=Close-前一根Close，漲幅up=max(diff,0)，跌幅down=max(-diff,0)
 種子(opt.seed='sma'，預設)：avgGain為第1至len根up之算術平均，avgLoss為第1至len根down之算術平均
 種子(opt.seed='first')：avgGain、avgLoss分別取第1根之up、down，再以Wilder遞推方式(avg=(avg*(len-1)+x)/len)推進至第len根
@@ -9052,7 +8888,7 @@ avgGain與avgLoss皆小於等於opt.eps時RSI給50(完全平盤)，僅avgLoss小
 
         <tr>
             
-                <td class="name"><code>barsPerDay</code></td>
+                <td class="name"><code>intervalSec</code></td>
             
 
             <td class="type">
@@ -9083,12 +8919,12 @@ avgGain與avgLoss皆小於等於opt.eps時RSI給50(完全平盤)，僅avgLoss小
             
                 <td class="default">
                 
-                    <code>6</code>
+                    <code>14400</code>
                 
                 </td>
             
 
-            <td class="description last"><p>輸入每日K線根數，有效數字(大於0且至多86400)，各期根數依此自4hr基準(每日6根)等比換算並四捨五入，換算後不足1根之期剔除，預設6(不換算)，非預期之輸入視為未給</p></td>
+            <td class="description last"><p>輸入每根K線之秒數，60之正整數倍且至多31536000(數值或數字字串)，各期根數不變(根數為本)，期別標籤為根數×每根秒數之時間跨度(例：每根1day時3根之期為'3day')，預設14400(每根4hr，標籤與根數皆同內建表)，無效時reject</p></td>
         </tr>
 
     
@@ -9166,7 +9002,7 @@ avgGain與avgLoss皆小於等於opt.eps時RSI給50(完全平盤)，僅avgLoss小
                 </td>
             
 
-            <td class="description last"><p>輸入是否於opt.barsPerDay或opt.kp出現非預期輸入時輸出警告布林值，預設false</p></td>
+            <td class="description last"><p>輸入是否於opt.kp出現非預期輸入時輸出警告布林值，預設false</p></td>
         </tr>
 
     
@@ -9355,7 +9191,7 @@ avgGain與avgLoss皆小於等於opt.eps時RSI給50(完全平盤)，僅avgLoss小
     
     <dt class="tag-description">Description:</dt>
     <dd class="tag-description"><ul class="dummy"><li><p>計算各週期之Supertrend(Olivier Seban ATR通道趨勢指標)</p>
-<p>各週期kp值為{len,mult}物件，len為ATR平滑期數(以4hr K線為基準之根數)，mult為ATR通道厚度倍數；資料筆數n小於len+1時，該期vs為空陣列
+<p>各週期kp值為{len,mult}物件，len為ATR平滑期數(根數，任何每根時長下不變)，mult為ATR通道厚度倍數；資料筆數n小於len+1時，該期vs為空陣列
 TR(真實區間)=max(|High-Low|,|High-前一根Close|,|Low-前一根Close|)，ATR種子為第1至len根TR之算術平均，其後以Wilder平滑遞推(atr=(atr*(len-1)+TR)/len)
 basicUpper=(High+Low)/2+mult<em>ATR，basicLower=(High+Low)/2-mult</em>ATR
 finalUpper僅在basicUpper較前值小或前一根Close高於前值時更新為basicUpper，否則鎖死沿用前值；finalLower僅在basicLower較前值大或前一根Close低於前值時更新為basicLower，否則鎖死沿用前值
@@ -9586,7 +9422,7 @@ stDistanceMod=diviProt(Close+opt.plusClose-line, Close+opt.plusClose)，opt.plus
 
         <tr>
             
-                <td class="name"><code>barsPerDay</code></td>
+                <td class="name"><code>intervalSec</code></td>
             
 
             <td class="type">
@@ -9617,12 +9453,12 @@ stDistanceMod=diviProt(Close+opt.plusClose-line, Close+opt.plusClose)，opt.plus
             
                 <td class="default">
                 
-                    <code>6</code>
+                    <code>14400</code>
                 
                 </td>
             
 
-            <td class="description last"><p>輸入每日K線根數，有效數字(大於0且至多86400)，各期根數依此自4hr基準(每日6根)等比換算並四捨五入，換算後不足1根之期剔除，預設6(不換算)，非預期之輸入視為未給</p></td>
+            <td class="description last"><p>輸入每根K線之秒數，60之正整數倍且至多31536000(數值或數字字串)，各期根數不變(根數為本)，期別標籤為根數×每根秒數之時間跨度(例：每根1day時3根之期為'3day')，預設14400(每根4hr，標籤與根數皆同內建表)，無效時reject</p></td>
         </tr>
 
     
@@ -9700,7 +9536,7 @@ stDistanceMod=diviProt(Close+opt.plusClose-line, Close+opt.plusClose)，opt.plus
                 </td>
             
 
-            <td class="description last"><p>輸入是否於opt.barsPerDay或opt.kp出現非預期輸入時輸出警告布林值，預設false</p></td>
+            <td class="description last"><p>輸入是否於opt.kp出現非預期輸入時輸出警告布林值，預設false</p></td>
         </tr>
 
     
@@ -9849,7 +9685,7 @@ stDistanceMod=diviProt(Close+opt.plusClose-line, Close+opt.plusClose)，opt.plus
     
     <dt class="tag-description">Description:</dt>
     <dd class="tag-description"><ul class="dummy"><li><p>計算各週期之差值向量Vec(後一值減前一值，非真實速度)</p>
-<p>各週期len為該期涵蓋之K線根數(以4hr K線為基準，1day=6根)，資料筆數不足該期len時，該期vs為空陣列
+<p>各週期len為該期涵蓋之K線根數(根數為本，任何每根時長下不變；期別標籤為根數×每根時長，每根4hr時'1day'即6根)，資料筆數不足該期len時，該期vs為空陣列
 各期第1筆對應輸入之第len根(非len-1，因需與len根前之值相減)，其後逐根對齊至最後一根</p>
 <p>Unit Test: <a href="https://github.com/yuda-lyu/w-data-trade/blob/master/test/unit-calcVec.test.mjs">Github</a></p></li></ul></dd>
     
@@ -10073,7 +9909,7 @@ stDistanceMod=diviProt(Close+opt.plusClose-line, Close+opt.plusClose)，opt.plus
 
         <tr>
             
-                <td class="name"><code>barsPerDay</code></td>
+                <td class="name"><code>intervalSec</code></td>
             
 
             <td class="type">
@@ -10104,12 +9940,12 @@ stDistanceMod=diviProt(Close+opt.plusClose-line, Close+opt.plusClose)，opt.plus
             
                 <td class="default">
                 
-                    <code>6</code>
+                    <code>14400</code>
                 
                 </td>
             
 
-            <td class="description last"><p>輸入每日K線根數，有效數字(大於0且至多86400)，各期根數依此自4hr基準(每日6根)等比換算並四捨五入，換算後不足1根之期剔除，預設6(不換算)，非預期之輸入視為未給</p></td>
+            <td class="description last"><p>輸入每根K線之秒數，60之正整數倍且至多31536000(數值或數字字串)，各期根數不變(根數為本)，期別標籤為根數×每根秒數之時間跨度(例：每根1day時3根之期為'3day')，預設14400(每根4hr，標籤與根數皆同內建表)，無效時reject</p></td>
         </tr>
 
     
@@ -10187,7 +10023,7 @@ stDistanceMod=diviProt(Close+opt.plusClose-line, Close+opt.plusClose)，opt.plus
                 </td>
             
 
-            <td class="description last"><p>輸入是否於opt.barsPerDay或opt.kp出現非預期輸入時輸出警告布林值，預設false</p></td>
+            <td class="description last"><p>輸入是否於opt.kp出現非預期輸入時輸出警告布林值，預設false</p></td>
         </tr>
 
     
@@ -10336,7 +10172,7 @@ stDistanceMod=diviProt(Close+opt.plusClose-line, Close+opt.plusClose)，opt.plus
     
     <dt class="tag-description">Description:</dt>
     <dd class="tag-description"><ul class="dummy"><li><p>計算各週期之Vortex Indicator(VI+/VI-，Etienne Botes與Douglas Siepman原始定義)</p>
-<p>各週期len為該期涵蓋之K線根數(以4hr K線為基準，1day=6根)，直接讀取輸入arr內High、Low、Close欄位計算，資料筆數不足len+1根時，該期vs為空陣列
+<p>各週期len為該期涵蓋之K線根數(根數為本，任何每根時長下不變；期別標籤為根數×每根時長，每根4hr時'1day'即6根)，直接讀取輸入arr內High、Low、Close欄位計算，資料筆數不足len+1根時，該期vs為空陣列
 各期第1筆對應輸入之第len根(因每根計算VM+/VM-/TR皆需前一根資料，故自輸入第1根起算，累積滿len根視窗後才有第1筆輸出)，其後逐根對齊至最後一根
 sum(TR)為0(視窗內無波動)時，VI+與VI-皆直接給0以避免除以0</p>
 <p>Unit Test: <a href="https://github.com/yuda-lyu/w-data-trade/blob/master/test/unit-calcVortex.test.mjs">Github</a></p></li></ul></dd>
@@ -10561,7 +10397,7 @@ sum(TR)為0(視窗內無波動)時，VI+與VI-皆直接給0以避免除以0</p>
 
         <tr>
             
-                <td class="name"><code>barsPerDay</code></td>
+                <td class="name"><code>intervalSec</code></td>
             
 
             <td class="type">
@@ -10592,12 +10428,12 @@ sum(TR)為0(視窗內無波動)時，VI+與VI-皆直接給0以避免除以0</p>
             
                 <td class="default">
                 
-                    <code>6</code>
+                    <code>14400</code>
                 
                 </td>
             
 
-            <td class="description last"><p>輸入每日K線根數，有效數字(大於0且至多86400)，各期根數依此自4hr基準(每日6根)等比換算並四捨五入，換算後不足1根之期剔除，預設6(不換算)，非預期之輸入視為未給</p></td>
+            <td class="description last"><p>輸入每根K線之秒數，60之正整數倍且至多31536000(數值或數字字串)，各期根數不變(根數為本)，期別標籤為根數×每根秒數之時間跨度(例：每根1day時3根之期為'3day')，預設14400(每根4hr，標籤與根數皆同內建表)，無效時reject</p></td>
         </tr>
 
     
@@ -10675,7 +10511,7 @@ sum(TR)為0(視窗內無波動)時，VI+與VI-皆直接給0以避免除以0</p>
                 </td>
             
 
-            <td class="description last"><p>輸入是否於opt.barsPerDay或opt.kp出現非預期輸入時輸出警告布林值，預設false</p></td>
+            <td class="description last"><p>輸入是否於opt.kp出現非預期輸入時輸出警告布林值，預設false</p></td>
         </tr>
 
     
@@ -10784,7 +10620,7 @@ sum(TR)為0(視窗內無波動)時，VI+與VI-皆直接給0以避免除以0</p>
     
     <dt class="tag-description">Description:</dt>
     <dd class="tag-description"><ul class="dummy"><li><p>計算各週期之Rolling VWAP偏離度(vwapDist)與其以ATR正規化後之偏離度(vwapDistATR)</p>
-<p>各週期len為該期涵蓋之K線根數(以4hr K線為基準，1day=6根)，直接讀取輸入arr內High、Low、Close、Volumn欄位計算，資料筆數不足len+1根時，該期vs為空陣列
+<p>各週期len為該期涵蓋之K線根數(根數為本，任何每根時長下不變；期別標籤為根數×每根時長，每根4hr時'1day'即6根)，直接讀取輸入arr內High、Low、Close、Volumn欄位計算，資料筆數不足len+1根時，該期vs為空陣列
 ATR以Wilder平滑計算，種子為前len根TR之簡單平均；VWAP為典型價((High+Low+Close)/3)乘Volumn後之rolling窗口總和除以Volumn總和
 各期第1筆對應輸入之第len根(與ATR對齊)，其後逐根對齊至最後一根
 vwapDist於Close為0時給0；vwapDistATR於ATR為0時給0</p>
@@ -11010,7 +10846,7 @@ vwapDist於Close為0時給0；vwapDistATR於ATR為0時給0</p>
 
         <tr>
             
-                <td class="name"><code>barsPerDay</code></td>
+                <td class="name"><code>intervalSec</code></td>
             
 
             <td class="type">
@@ -11041,12 +10877,12 @@ vwapDist於Close為0時給0；vwapDistATR於ATR為0時給0</p>
             
                 <td class="default">
                 
-                    <code>6</code>
+                    <code>14400</code>
                 
                 </td>
             
 
-            <td class="description last"><p>輸入每日K線根數，有效數字(大於0且至多86400)，各期根數依此自4hr基準(每日6根)等比換算並四捨五入，換算後不足1根之期剔除，預設6(不換算)，非預期之輸入視為未給</p></td>
+            <td class="description last"><p>輸入每根K線之秒數，60之正整數倍且至多31536000(數值或數字字串)，各期根數不變(根數為本)，期別標籤為根數×每根秒數之時間跨度(例：每根1day時3根之期為'3day')，預設14400(每根4hr，標籤與根數皆同內建表)，無效時reject</p></td>
         </tr>
 
     
@@ -11124,7 +10960,7 @@ vwapDist於Close為0時給0；vwapDistATR於ATR為0時給0</p>
                 </td>
             
 
-            <td class="description last"><p>輸入是否於opt.barsPerDay或opt.kp出現非預期輸入時輸出警告布林值，預設false</p></td>
+            <td class="description last"><p>輸入是否於opt.kp出現非預期輸入時輸出警告布林值，預設false</p></td>
         </tr>
 
     
@@ -11222,6 +11058,174 @@ vwapDist於Close為0時給0；vwapDistATR於ATR為0時給0</p>
 
     
 
+    <h4 class="name" id="chkIntervalSec"><span class="type-signature"></span>chkIntervalSec<span class="signature">(v)</span><span class="type-signature"> &rarr; {Number}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+    
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li><p>檢核opt.intervalSec(每根K線之秒數)並轉為數值</p>
+<p>有效值為60之正整數倍且至多31536000(365日)之整數(數值或數字字串，檢測之值即使用之值)；其餘一律throw(訊息不含傳入之值)
+不採「非預期視為未給」：每根秒數錯誤時若改用預設4hr，期別標籤(即參數鍵名)會靜默錯置，故拋錯</p></li></ul></dd>
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="resolvePeriods.mjs.html">resolvePeriods.mjs</a>, <a href="resolvePeriods.mjs.html#line143">line 143</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+    <h5 class="h5-examples">Example</h5>
+    
+    <pre class="prettyprint"><code>console.log(chkIntervalSec(86400), chkIntervalSec('3600'))// => 86400 3600</code></pre>
+
+
+
+
+    <h5 class="h5-parameters">Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>v</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+|
+
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>輸入每根K線之秒數</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>回傳秒數</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Number</span>
+
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
     <h4 class="name" id="dataCalibrate"><span class="type-signature type-signature-async">(async) </span>dataCalibrate<span class="signature">(calcFn, arrSrc, arrRef, pairs, optMethodInit, opt<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
 
     
@@ -11235,14 +11239,15 @@ vwapDist於Close為0時給0；vwapDistATR於ATR為0時給0</p>
     <dd class="tag-description"><ul class="dummy"><li><p>校正calc函式之optMethod: 搜尋參數，使來源側(src)各keyOut之z-score分布形狀對齊參考側(ref)對應keyOut</p>
 <p>本專案用例: src=溢價指數(index) OHLC，ref=價格(price) OHLC，校正index系變換偏移量
 搜尋為逐維座標下降: 每維先粗掃(現值+0+正負mags量級)，再以粗掃最佳為中心做倍率細化與微調
-防churn: 需(score0-scoreBest)/score0 &gt; threshold，且(score0-scoreBest) &gt; thresholdAbs，兩者皆達門檻才採納搜尋結果，否則optMethod維持optMethodInit</p>
+防churn: 需(score0-scoreBest)/score0 &gt; threshold，且(score0-scoreBest) &gt; thresholdAbs，兩者皆達門檻才採納搜尋結果，否則optMethod維持optMethodInit
+optMethodInit與opt.optMethodRef之intervalSec(每根秒數，見resolvePeriods)給了而無效時，於任何計算(calcFn之呼叫)之前即reject(訊息同calc)；未給時行為與既有相同；intervalSec為固定之每根時長，不是校正參數，須以opt.params排除(預設params為optMethodInit全部鍵)</p>
 <p>Unit Test: <a href="https://github.com/yuda-lyu/w-data-trade/blob/master/test/unit-dataCalibrate.test.mjs">Github</a></p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="dataCalibrate.mjs.html">dataCalibrate.mjs</a>, <a href="dataCalibrate.mjs.html#line81">line 81</a>
+        <a href="dataCalibrate.mjs.html">dataCalibrate.mjs</a>, <a href="dataCalibrate.mjs.html#line83">line 83</a>
     </li></ul></dd>
     
 
@@ -11983,13 +11988,15 @@ dataCalibrate(calcFn, arr, arr, ['X'], { a: 0 }, { optMethodRef: { a: 0.1 } })
 對keysIn(輸入計算所用數值欄位名稱)與methods(指標方法設定)做雙層迴圈，各methods[i]需含method(對應kp之鍵)、deals(輸出設定陣列)、optMethod(傳入calc函式之opt，可選，預設{})
 呼叫kp<a href="arr,keyIn,optMethod">method</a>取得rrs(各期{period,len,vs}結果)後，對每個deal依其keyOut取值並以(值-avg)/std正規化，若deal.keyIn有指定則僅處理keyIn相符者，其餘略過
 除非opt.denyOutput為true，否則會將各期正規化後之序列以檔名<code>${cointpe}_${keyKind}_${keyIn}_${keyOut}_${method}_${period}.json</code>寫入fdSelfData資料夾
+全部檢核先於任何計算(含opt.funAddKeysIn與calc)與寫檔：keysIn各元素、methods各元素(須為物件，method須為字串且存在於kp，deals須為非空陣列，各deal之keyOut須為字串、nm須為物件，deal.keyIn有指定而不在keysIn內之deal不會被處理故不檢核)、各methods[i].optMethod之intervalSec(每根秒數，見resolvePeriods)；任一無效即reject且不寫出任何檔
+同一次呼叫內各method之optMethod.intervalSec須相同(未給視為14400，數字字串與數值視為同值)，否則reject <code>invalid methods[i].optMethod.intervalSec: must be the same in every method</code>(i為第一個與先前不一致者之索引)，以免不同每根時長之序列靜默寫進同一資料夾；各method之optMethod.intervalSec皆未給時行為與既有相同
 最終以w-statistic計算全期攤平後序列之avg、std、min、max，彙整為單筆結果</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="dataConvert.mjs.html">dataConvert.mjs</a>, <a href="dataConvert.mjs.html#line85">line 85</a>
+        <a href="dataConvert.mjs.html">dataConvert.mjs</a>, <a href="dataConvert.mjs.html#line88">line 88</a>
     </li></ul></dd>
     
 
@@ -12664,6 +12671,305 @@ dataConvert('demo', 'BTCUSDT', '4hr', 'price', 'ohlc', methods, arr, kp, './tmp/
 
     
 
+    <h4 class="name" id="periodInfo"><span class="type-signature"></span>periodInfo<span class="signature">(period, opt<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Object}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+    
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li><p>查詢期別標籤(參數鍵名之末段)所代表之根數與時間跨度秒數</p>
+<p>根數為本(opt.intervalSec)下，各calc之期別標籤 = 根數 × 每根秒數之時間跨度(見resolvePeriods)，故由標籤與每根秒數即可反推根數；跨週期時以根數對應同一線型(例：每根1day之'3day'與每根4hr之'12hr'皆為3根)
+根數即各calc輸出之len：多數為視窗根數，calcMacd為(12,26,9)之倍率，calcIchimoku為senkouB，calcKeltner、calcSupertrend為len
+period為'none'(calcOrig之期別)時回傳根數0、秒數0
+只收期別標籤(參數鍵名以'_'分隔之最後一段)，不收完整鍵名
+opt.intervalSec未給時視為每根4hr：每根1day之標籤須給opt.intervalSec為86400才得正確根數(例：'3day'未給時得18根，給86400時得3根)
+只適用於各calc之內建週期表所產生之標籤；不適用於自訂週期表opt.kp(自訂週期表之標籤由呼叫端自負其義，原樣採用，不保證等於根數×每根時長)所產生之標籤</p>
+<p>Unit Test: <a href="https://github.com/yuda-lyu/w-data-trade/blob/master/test/unit-intervalSec.test.mjs">Github</a></p></li></ul></dd>
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="periodInfo.mjs.html">periodInfo.mjs</a>, <a href="periodInfo.mjs.html#line38">line 38</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+    <h5 class="h5-examples">Example</h5>
+    
+    <pre class="prettyprint"><code>console.log(periodInfo('3day', { intervalSec: 86400 }))// => { period: '3day', bars: 3, spanSec: 259200 }console.log(periodInfo('12hr'))// => { period: '12hr', bars: 3, spanSec: 43200 }//未給intervalSec時視為每根4hr, 每根1day之標籤須給intervalSec: 86400console.log(periodInfo('3day'))// => { period: '3day', bars: 18, spanSec: 259200 }console.log(periodInfo('none'))// => { period: 'none', bars: 0, spanSec: 0 }</code></pre>
+
+
+
+
+    <h5 class="h5-parameters">Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>period</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入期別標籤字串，為'none'或標準標籤(如'12hr'、'3day'、'90m'，規則見spanLabelOf)且其秒數須為每根秒數之整數倍，無效時throw</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>opt</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>{}</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入設定物件，預設{}</p>
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>intervalSec</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+|
+
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>14400</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入每根K線之秒數，60之正整數倍且至多31536000(數值或數字字串)，預設14400(4hr)，無效時throw</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>回傳{period,bars,spanSec}，bars為根數，spanSec為時間跨度秒數(= bars × 每根秒數)</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Object</span>
+
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
     <h4 class="name" id="resetWarned"><span class="type-signature"></span>resetWarned<span class="signature">()</span><span class="type-signature"> &rarr; {undefined}</span></h4>
 
     
@@ -12680,7 +12986,7 @@ dataConvert('demo', 'BTCUSDT', '4hr', 'price', 'ohlc', methods, arr, kp, './tmp/
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="resolvePeriods.mjs.html">resolvePeriods.mjs</a>, <a href="resolvePeriods.mjs.html#line52">line 52</a>
+        <a href="resolvePeriods.mjs.html">resolvePeriods.mjs</a>, <a href="resolvePeriods.mjs.html#line57">line 57</a>
     </li></ul></dd>
     
 
@@ -12782,20 +13088,20 @@ dataConvert('demo', 'BTCUSDT', '4hr', 'price', 'ohlc', methods, arr, kp, './tmp/
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>依實際K線週期換算各calc之內建週期表</p>
-<p>各calc之內建週期表(kp)以4hr K線為基準寫定(每日6根)，週期標籤為時間語意('1day'、'12hr'…)而值為根數；本函式使同一標籤於其他K線週期仍對應同一段時間
-換算規則：以opt.barsPerDay(每日根數)對基準6之比值等比換算各期之根數(數值型之值，或參數物件內之len、tenkan、kijun、senkouB欄位)並四捨五入(.5進位)；換算後不足1根之期剔除(該週期短於一根K線)；倍數類欄位(如mult)不換算
-相鄰週期四捨五入後可能得到相同根數(如12hr K線上'12hr'與'16hr'皆為1根)，本函式不去重，各期標籤維持時間語意
-單根型態之表(僅一期且根數為1，如K線型態與單根比值類)不換算根數，只把標籤改為該K線週期之標籤(由barsPerDay推得，見barLabelOf)
-opt.barsPerDay未給或為6時原樣回傳(與既有輸出完全相同)；opt.kp給予時直接採用該表不換算，優先於opt.barsPerDay</p>
-<p>輸入檢核：kp為必須參數，無效時throw；opt.barsPerDay、opt.kp皆為opt類參數，給了非預期之輸入(不屬有效數字或正整數、超出範圍，含Infinity)視為未給、改用預設不拋錯，opt.debug為true時另輸出警告
-換算後全部週期皆不足1根時無從得出結果，throw(訊息不含傳入之值)</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>依每根K線之時長取得各calc之實際週期表(根數為本)</p>
+<p>各calc之內建週期表(kp)之值為根數(或內含根數欄位之參數物件)，界定的是線型(幾根)；標籤以每根4hr寫定，其時間跨度 = 根數 × 4hr('4hr'=1根、'12hr'=3根、'1day'=6根、'30day'=180根)
+給opt.intervalSec(每根秒數)：各期之值原樣保留，任何每根時長下根數不變、不剔除任何期；期別標籤改為「根數 × 每根秒數」之時間跨度(標籤規則見spanLabelOf)，例：每根1day時'4hr'(1根)為'1day'、'12hr'(3根)為'3day'、'1day'(6根)為'6day'；多參數之表(如{ tenkan, kijun, senkouB })以標籤所代表之根數同比例換算標籤；單根型態之表(僅一期且根數為1)於每根1day時為'1day'
+opt.intervalSec未給時視為每根4hr(14400)：各期原樣回傳(新物件)；給14400時標籤亦逐一重現內建表之標籤，與未給之輸出完全相同
+opt.kp給予時直接採用該表(標籤與值皆原樣，同時給opt.intervalSec亦不換算標籤)，優先於opt.intervalSec之換算；自訂週期表之標籤由呼叫端自負其義，不保證等於根數×每根時長(periodInfo不適用)
+opt內之其他鍵(含已移除之舊選項barsPerDay)視為未知鍵，忽略</p>
+<p>輸入檢核：kp為必須參數，無效時throw；opt.intervalSec給了而無效時throw(見chkIntervalSec，錯誤之每根秒數會使標籤即鍵名靜默錯置，故不改用預設，且先於其他處理)；opt.kp為opt類參數，給了非預期之輸入(含任一值無效)視為未給、改用內建表不拋錯，opt.debug為true時另輸出警告
+根數為本時(給opt.intervalSec，含14400)kp之標籤須為4hr之整數倍之標準標籤(各calc之內建表皆是)，否則throw；未給opt.intervalSec時不檢核標籤、原樣回傳(訊息皆不含傳入之值)</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="resolvePeriods.mjs.html">resolvePeriods.mjs</a>, <a href="resolvePeriods.mjs.html#line183">line 183</a>
+        <a href="resolvePeriods.mjs.html">resolvePeriods.mjs</a>, <a href="resolvePeriods.mjs.html#line254">line 254</a>
     </li></ul></dd>
     
 
@@ -12842,7 +13148,7 @@ opt.barsPerDay未給或為6時原樣回傳(與既有輸出完全相同)；opt.kp
 
     <h5 class="h5-examples">Example</h5>
     
-    <pre class="prettyprint"><code>let kp = { '12hr': 3, '1day': 6, '7day': 42 }console.log(resolvePeriods(kp))// => { '12hr': 3, '1day': 6, '7day': 42 }console.log(resolvePeriods(kp, { barsPerDay: 24 }))// => { '12hr': 12, '1day': 24, '7day': 168 }console.log(resolvePeriods(kp, { barsPerDay: 1 }))// => { '1day': 1, '7day': 7 }console.log(resolvePeriods({ '1day': { len: 6, mult: 2 } }, { barsPerDay: 24 }))// => { '1day': { len: 24, mult: 2 } }console.log(resolvePeriods({ '4hr': 1 }, { barsPerDay: 24 }))// => { '1hr': 1 }console.log(resolvePeriods(kp, { kp: { '3day': 18 } }))// => { '3day': 18 }</code></pre>
+    <pre class="prettyprint"><code>let kp = { '12hr': 3, '1day': 6, '7day': 42 }console.log(resolvePeriods(kp))// => { '12hr': 3, '1day': 6, '7day': 42 }console.log(resolvePeriods(kp, { intervalSec: 86400 }))// => { '3day': 3, '6day': 6, '42day': 42 }console.log(resolvePeriods(kp, { intervalSec: 3600 }))// => { '3hr': 3, '6hr': 6, '42hr': 42 }console.log(resolvePeriods({ '4day': { tenkan: 4, kijun: 12, senkouB: 24 } }, { intervalSec: 86400 }))// => { '24day': { tenkan: 4, kijun: 12, senkouB: 24 } }console.log(resolvePeriods({ '4hr': 1 }, { intervalSec: 86400 }))// => { '1day': 1 }console.log(resolvePeriods(kp, { kp: { '3day': 18 } }))// => { '3day': 18 }</code></pre>
 
 
 
@@ -12905,7 +13211,7 @@ opt.barsPerDay未給或為6時原樣回傳(與既有輸出完全相同)；opt.kp
                 </td>
             
 
-            <td class="description last"><p>輸入內建週期表物件，鍵為週期標籤，值為根數或參數物件，須為非空物件，無效時throw</p></td>
+            <td class="description last"><p>輸入內建週期表物件，鍵為週期標籤(以每根4hr寫定)，值為根數或參數物件，須為非空物件，無效時throw</p></td>
         </tr>
 
     
@@ -12975,7 +13281,7 @@ opt.barsPerDay未給或為6時原樣回傳(與既有輸出完全相同)；opt.kp
 
         <tr>
             
-                <td class="name"><code>barsPerDay</code></td>
+                <td class="name"><code>intervalSec</code></td>
             
 
             <td class="type">
@@ -13006,12 +13312,12 @@ opt.barsPerDay未給或為6時原樣回傳(與既有輸出完全相同)；opt.kp
             
                 <td class="default">
                 
-                    <code>6</code>
+                    <code>14400</code>
                 
                 </td>
             
 
-            <td class="description last"><p>輸入每日K線根數，有效數字(數值或數字字串，大於0且至多86400)，4hr為6、1hr為24、30m為48、1day為1，預設6(不換算)，非預期之輸入視為未給</p></td>
+            <td class="description last"><p>輸入每根K線之秒數，60之正整數倍且至多31536000(數值或數字字串)，4hr為14400、1hr為3600、15m為900、1day為86400，給予時根數不變、標籤依根數×每根秒數換算，預設14400(與內建表相同)，給了而無效時throw</p></td>
         </tr>
 
     
@@ -13049,7 +13355,7 @@ opt.barsPerDay未給或為6時原樣回傳(與既有輸出完全相同)；opt.kp
                 </td>
             
 
-            <td class="description last"><p>輸入直接採用之週期表物件，鍵為週期標籤，值為正整數根數或參數物件(根數類欄位須為正整數)，給予時不換算，預設採內建週期表，非預期之輸入(含任一值無效)視為未給</p></td>
+            <td class="description last"><p>輸入直接採用之週期表物件，鍵為週期標籤，值為正整數根數或參數物件(根數類欄位須為正整數)，給予時標籤與值皆原樣採用，預設採內建週期表，非預期之輸入(含任一值無效)視為未給</p></td>
         </tr>
 
     
@@ -13089,7 +13395,7 @@ opt.barsPerDay未給或為6時原樣回傳(與既有輸出完全相同)；opt.kp
                 </td>
             
 
-            <td class="description last"><p>輸入是否於opt.barsPerDay或opt.kp出現非預期輸入時輸出警告布林值，非布林視為false，同一個鍵每個行程只警告一次，預設false</p></td>
+            <td class="description last"><p>輸入是否於opt.kp出現非預期輸入時輸出警告布林值，非布林視為false，同一個鍵每個行程只警告一次，預設false</p></td>
         </tr>
 
     
@@ -13160,7 +13466,7 @@ opt.barsPerDay未給或為6時原樣回傳(與既有輸出完全相同)；opt.kp
 
         
 <div class="param-desc">
-    <p>回傳換算後之週期表物件(新物件，鍵序與輸入一致)</p>
+    <p>回傳週期表物件(新物件，鍵序與輸入一致)</p>
 </div>
 
 
@@ -13172,6 +13478,339 @@ opt.barsPerDay未給或為6時原樣回傳(與既有輸出完全相同)；opt.kp
     <dd>
         
 <span class="param-type">Object</span>
+
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="spanLabelOf"><span class="type-signature"></span>spanLabelOf<span class="signature">(sec)</span><span class="type-signature"> &rarr; {String}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+    
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li><p>由時間跨度之秒數組出期別標籤(根數為本之標籤規則，各calc之期別標籤皆經此產生)</p>
+<p>規則：秒數為86400之整數倍者為<code>${N}day</code>，否則為3600之整數倍者為<code>${N}hr</code>，否則為60之整數倍者為<code>${N}m</code>(N為正整數、無前導零)
+每個秒數恰有一種標籤，不同秒數之標籤必不同(標籤與秒數一一對應)，故同一每根時長下根數不同之期別不會同名
+秒數非60之正整數倍(含非整分鐘、0、負數、非安全整數、非數值)無法以上列單位表示，throw</p></li></ul></dd>
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="resolvePeriods.mjs.html">resolvePeriods.mjs</a>, <a href="resolvePeriods.mjs.html#line78">line 78</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+    <h5 class="h5-examples">Example</h5>
+    
+    <pre class="prettyprint"><code>console.log(spanLabelOf(14400), spanLabelOf(43200), spanLabelOf(86400), spanLabelOf(259200), spanLabelOf(5400))// => 4hr 12hr 1day 3day 90m</code></pre>
+
+
+
+
+    <h5 class="h5-parameters">Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>sec</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>輸入時間跨度之秒數，60之正整數倍之數值(不接受字串)，無效時throw</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>回傳期別標籤字串</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">String</span>
+
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="spanSecOf"><span class="type-signature"></span>spanSecOf<span class="signature">(label)</span><span class="type-signature"> &rarr; {Number|null}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+    
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li><p>解析期別標籤為時間跨度之秒數(spanLabelOf之反函數)</p>
+<p>只接受spanLabelOf會產生之標準寫法(如'12hr'、'1day'、'90m')；非標準寫法(如'24hr'應為'1day'、'60m'應為'1hr'、前導零、小數、大寫、其他單位)與非字串回傳null</p></li></ul></dd>
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="resolvePeriods.mjs.html">resolvePeriods.mjs</a>, <a href="resolvePeriods.mjs.html#line109">line 109</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+    <h5 class="h5-examples">Example</h5>
+    
+    <pre class="prettyprint"><code>console.log(spanSecOf('12hr'), spanSecOf('3day'), spanSecOf('24hr'), spanSecOf('none'))// => 43200 259200 null null</code></pre>
+
+
+
+
+    <h5 class="h5-parameters">Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>label</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>輸入期別標籤字串</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>回傳秒數，非標準標籤回傳null</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Number</span>
+|
+
+<span class="param-type">null</span>
 
 
 
@@ -13202,7 +13841,7 @@ opt.barsPerDay未給或為6時原樣回傳(與既有輸出完全相同)；opt.kp
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.5</a> on Wed Nov 18 2026 17:40:27 GMT+0800 (台北標準時間) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.5</a> on Wed Nov 18 2026 23:14:10 GMT+0800 (台北標準時間) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
 <script>prettyPrint();</script>
