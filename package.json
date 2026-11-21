@@ -1,13 +1,13 @@
 {
   "name": "w-data-trade",
-  "version": "1.0.54",
+  "version": "1.0.55",
   "main": "dist/w-data-trade.umd.js",
   "dependencies": {
-    "w-statistic": "^1.0.72",
-    "wsemi": "^1.9.70"
+    "w-statistic": "^1.0.73",
+    "wsemi": "^1.9.71"
   },
   "devDependencies": {
-    "w-package-tools": "^1.1.28"
+    "w-package-tools": "^1.1.29"
   },
   "scripts": {
     "test": "mocha --parallel \"test/*.test.mjs\" --timeout 180000",
