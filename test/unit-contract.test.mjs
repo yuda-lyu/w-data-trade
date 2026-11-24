@@ -20,6 +20,7 @@ let ks = [
     'calcBbpb',
     'calcCandle',
     'calcCvd',
+    'calcDirChange',
     'calcDonchian',
     'calcEma',
     'calcIchimoku',
@@ -136,6 +137,12 @@ describe('各指標共通契約', function() {
                 if (k === 'calcVec' && r.period === '4hr') {
                     //calcVec 之 4hr 期 len=1, 差值僅需 2 根
                     assert.strictEqual(r.vs.length, 1, `${k}[${r.period}] 應有 1 筆差值`)
+                    return
+                }
+                if (k === 'calcDirChange') {
+                    //calcDirChange 無根數視窗: 第 2 根相對第 1 根之漲跌達門檻(最小 4%)才有值; 此 2 根之漲跌未達 4%, 故各門檻為空
+                    assert.ok(Math.abs(Math.log(arr[1].Close / arr[0].Close)) < Math.log(1.04), '前提: 2 根之漲跌未達 4%')
+                    assert.strictEqual(r.vs.length, 0, `${k}[${r.period}] 應為空`)
                     return
                 }
                 assert.strictEqual(r.vs.length, 0, `${k}[${r.period}] 應為空`)

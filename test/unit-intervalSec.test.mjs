@@ -13,7 +13,7 @@ import { genOhlc, assertNear } from './unit-setup.mjs'
 //  S4. opt.intervalSec無效(非60之正整數倍、超過31536000、非數值)時calc以reject、resolvePeriods與periodInfo以throw告知, 訊息不含傳入之值
 //  S5. 已移除之opt.barsPerDay視為未知鍵而忽略: 不換算、不檢核、不警告、與intervalSec併給亦不影響(輸出同只給intervalSec或未給)
 //  S6. opt.kp給予時標籤與值皆原樣採用(同時給opt.intervalSec亦然)
-//  S7. periodInfo(period, { intervalSec })回傳{ period, bars, spanSec }: bars等於該期輸出之len, spanSec = bars × 每根秒數; 'none'為0
+//  S7. periodInfo(period, { intervalSec })回傳{ period, bars, spanSec }: bars等於該期輸出之len, spanSec = bars × 每根秒數; 'none'與`${N}pct`(N為正整數、無前導零; calcDirChange之門檻標籤)為0根0秒(不隨intervalSec改變); 其餘寫法(0pct、前導零、小數、大小寫、空白等)throw
 //  S8. dataConvert經methods[i].optMethod傳入intervalSec時, 輸出檔名之期別即換算後之標籤, 內容與不給時同根數之期相同
 //  S9. dataConvert/dataCalibrate之入口檢核先於任何計算與寫檔(檢測先於副作用, dspec V17): methods各元素(非物件、method不在kp、deals無效、deal.keyOut與deal.nm無效)與各method之intervalSec任一無效即reject且輸出夾為空、calc與funAddKeysIn未被呼叫; 既有訊息字面不變; 各method之intervalSec不一致時訊息為invalid methods[i].optMethod.intervalSec: must be the same in every method(i為第一個不一致者之索引, dspec V19)
 
@@ -435,6 +435,92 @@ describe('opt.intervalSec(根數為本: 根數不變、期別標籤依根數×�
             let ro = await wdt.calcOrig(arr, 'Close')
             assert.deepStrictEqual(wdt.periodInfo(ro[0].period), { period: 'none', bars: 0, spanSec: 0 })
             assert.deepStrictEqual(wdt.periodInfo('none', { intervalSec: 86400 }), { period: 'none', bars: 0, spanSec: 0 })
+        })
+
+        it('S7 Npct(calcDirChange之門檻標籤, N為正整數)回傳根數0、秒數0(同none): 與calcDirChange各期之len相同, 不隨intervalSec改變', async function() {
+            let rrs = await wdt.calcDirChange(arr, 'Close')
+            assert.deepStrictEqual(rrs.map((v) => v.period), ['4pct', '6pct', '8pct', '10pct'])
+            let opts = [undefined, {}, { intervalSec: null }, { intervalSec: '86400' }, { intervalSec: '3600' }].concat(IVS_MORE.map((iv) => ({ intervalSec: iv })))
+            opts.forEach((opt, j) => {
+                rrs.forEach((v) => {
+                    //bars等於該期輸出之len(同其他calc之S7), 且為0根0秒
+                    assert.strictEqual(wdt.periodInfo(v.period, opt).bars, v.len, `opt[${j}] ${v.period} bars等於len`)
+                    assert.deepStrictEqual(wdt.periodInfo(v.period, opt), { period: v.period, bars: 0, spanSec: 0 }, `opt[${j}] ${v.period} 0根0秒`)
+                })
+            })
+            //opt.kp自訂之門檻表, 標籤符合${N}pct者亦同
+            let rk = await wdt.calcDirChange(arr, 'Close', { kp: { '5pct': 5, '12pct': 12 }, intervalSec: 86400 })
+            rk.forEach((v) => {
+                assert.deepStrictEqual(wdt.periodInfo(v.period, { intervalSec: 86400 }), { period: v.period, bars: v.len, spanSec: 0 }, `kp ${v.period}`)
+            })
+            //任一正整數(無前導零)之Npct
+            for (let p of ['1pct', '2pct', '9pct', '10pct', '11pct', '19pct', '99pct', '100pct', '250pct', '1000000pct', `9${'0'.repeat(40)}pct`]) {
+                assert.deepStrictEqual(wdt.periodInfo(p), { period: p, bars: 0, spanSec: 0 }, p)
+                assert.deepStrictEqual(wdt.periodInfo(p, { intervalSec: 60 }), { period: p, bars: 0, spanSec: 0 }, `${p} 每根60秒`)
+            }
+        })
+
+        it('S7 Npct之接受集合: 於n(0~200) × 單位(day、hr、m、pct、無)之格上逐格核對 ⇒ 只有n為正整數且單位為pct者回0根0秒, 其餘維持既有之接受與拒絕', function() {
+            let nAcc = 0
+            let nRej = 0
+            let nPct = 0
+            for (let n = 0; n <= 200; n++) {
+                for (let u of ['day', 'hr', 'm', 'pct', '', 'PCT', 'Pct', 'pcts', 'p', '%']) {
+                    for (let lead of ['', '0', '00', '+', '-', ' ']) {
+                        let p = `${lead}${n}${u}`
+                        //期望: pct且為無前導零之正整數 ⇒ 0根0秒; 否則依既有之標準標籤規則(spanSecOf, 本檔S2已逐一驗證)
+                        let expPct = u === 'pct' && lead === '' && n >= 1
+                        let sec = rp.spanSecOf(p)
+                        let expStd = sec !== null && sec % 14400 === 0
+                        let got = null
+                        try {
+                            got = wdt.periodInfo(p)
+                        }
+                        catch (err) {
+                            assert.strictEqual(err.message, MSG_PERIOD, `${p} 之訊息`)
+                        }
+                        if (expPct) {
+                            assert.deepStrictEqual(got, { period: p, bars: 0, spanSec: 0 }, `${p} 應收`)
+                            nPct++
+                            nAcc++
+                        }
+                        else if (expStd) {
+                            assert.deepStrictEqual(got, { period: p, bars: sec / 14400, spanSec: sec }, `${p} 既有之標準標籤`)
+                            nAcc++
+                        }
+                        else {
+                            assert.strictEqual(got, null, `${p} 應拒`)
+                            nRej++
+                        }
+                    }
+                }
+            }
+            //鑑別前提: 各類格數皆非零
+            assert.strictEqual(nPct, 200, `Npct 共 ${nPct} 格`)
+            assert.ok(nAcc > nPct, `既有之標準標籤亦有被收者 ${nAcc}`)
+            assert.ok(nRej > 1000, `被拒者 ${nRej}`)
+        })
+
+        it('S7 Npct之拒絕寫法: 0pct、前導零、小數、無數字、大小寫、前後空白或換行、符號、指數、全形數字、其餘單位或尾綴 ⇒ throw(訊息同既有、不含傳入之值)', function() {
+            let bads = ['0pct', '00pct', '01pct', '007pct', '4.5pct', '4.0pct', '.5pct', '4.pct', 'pct', 'Pct', 'PCT', '4PCT', '4Pct', '4pCt', ' 4pct', '4pct ', '4 pct', '4pct\n', '\n4pct', '4pct\r\n', '\t4pct', '-4pct', '+4pct', '4pct%', '%4pct', '4%', '4pc', '4pct2', '4pctpct', 'pct4', 'x4pct', '4xpct', '4-pct', '4_pct', '4,0pct', '1e1pct', '0x4pct', '4e0pct', '4pcts', '4cpt', '４pct', '٤pct', 'NaNpct', 'Infinitypct', 'undefinedpct', 'nullpct', '4 pct', '4 pct', '4pct​']
+            bads.forEach((p) => {
+                assert.throws(() => wdt.periodInfo(p), { message: MSG_PERIOD }, JSON.stringify(p))
+                assert.throws(() => wdt.periodInfo(p, { intervalSec: 86400 }), { message: MSG_PERIOD }, `${JSON.stringify(p)} 於日線`)
+                assert.throws(() => wdt.periodInfo(p, { intervalSec: 60 }), { message: MSG_PERIOD }, `${JSON.stringify(p)} 於每根60秒`)
+            })
+            //非字串之期別(含數值4、陣列['4pct']、物件)仍先拒
+            for (let p of [4, 4.5, ['4pct'], { period: '4pct' }, null, undefined, true, '']) {
+                assert.throws(() => wdt.periodInfo(p), { message: MSG_PERIOD })
+            }
+        })
+
+        it('S7 Npct: opt.intervalSec給了而無效時仍throw(同none, 先於標籤之判斷, 訊息不含傳入之值)', function() {
+            for (let v of [0, 59, 61, 90, -60, 1.5, 31536060, 'abc', '', 'mark', NaN, Infinity, true, [], {}]) {
+                assert.throws(() => wdt.periodInfo('4pct', { intervalSec: v }), (err) => err.message === MSG_ISEC && !err.message.includes('mark'), `4pct intervalSec ${String(v)}`)
+                assert.throws(() => wdt.periodInfo('10pct', { intervalSec: v }), { message: MSG_ISEC }, `10pct intervalSec ${String(v)}`)
+            }
+            //period無效時, 於有效之intervalSec下以period之訊息拒
+            assert.throws(() => wdt.periodInfo('0pct', { intervalSec: 86400 }), { message: MSG_PERIOD })
         })
 
         it('無效之period或intervalSec throw, 訊息不含傳入之值', function() {

@@ -11,6 +11,7 @@ import calcAts from './calcAts.mjs'
 import calcBbpb from './calcBbpb.mjs'
 import calcCandle from './calcCandle.mjs'
 import calcCvd from './calcCvd.mjs'
+import calcDirChange from './calcDirChange.mjs'
 import calcDonchian from './calcDonchian.mjs'
 import calcEma from './calcEma.mjs'
 import calcIchimoku from './calcIchimoku.mjs'
@@ -43,6 +44,7 @@ let r = {
     calcBbpb,
     calcCandle,
     calcCvd,
+    calcDirChange,
     calcDonchian,
     calcEma,
     calcIchimoku,

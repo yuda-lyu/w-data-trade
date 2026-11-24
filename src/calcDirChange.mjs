@@ -1,0 +1,225 @@
+import isNumber from 'lodash-es/isNumber.js'
+import get from 'lodash-es/get.js'
+import size from 'lodash-es/size.js'
+import each from 'lodash-es/each.js'
+import resolvePeriods, { chkIntervalSec } from './resolvePeriods.mjs'
+
+
+/**
+ * 計算各門檻之方向改變法(Directional Change)於各根「當下已確認之方向」與其所在之段之位置
+ *
+ * 只用收盤(Close)，逐根且只看到當根(因果)：以對數收盤lc=ln(Close)與門檻θ=ln(1+門檻百分比/100)計
+ * 起始：自第1根起同時記至今之最高與最低之lc，某根之lc−最低≥θ即確認為漲(+1)，否則最高−lc≥θ即確認為跌(−1)；第1次確認以前無值(不輸出)；θ>0時兩者不會於同一根同時成立(同時成立則最高與最低相差至少2θ，較晚出現之極值所在之根與較早之極值已相差達θ，於該根或更早即已確認)，程式先檢查漲
+ * 漲之方向中記至今之最高lc為ext，某根之ext−lc≥θ即換為跌(程式以此式判定，浮點下與lc≤ext−θ於1ulp之邊界可能不同，以前者為準)、ext改記該根之lc，否則創新高時更新ext；跌之方向對稱(lc−ext≥θ即換為漲)
+ * 每次確認(含第1次)所確認之極值為轉折點pivot：第1次確認漲(跌)時為至今之最低(最高)lc，其後換為跌(漲)時為換向前之ext
+ * 各根輸出(皆為處理完該根之後、當下可知之量)：
+ * dirState為目前已確認之方向(+1或−1)
+ * dirRetrace為自ext逆向之回撤占門檻之比例，漲時(ext−lc)/θ、跌時(lc−ext)/θ，範圍[0,1)，0為正在極值、接近1為即將換向
+ * dirRun為自pivot至當根順方向之對數報酬占門檻之比例，漲時(lc−pivot)/θ、跌時(pivot−lc)/θ，確認當根≥1，恆>0，越大代表此段已走越遠
+ * dirAge為自最近一次確認起經過之根數，確認當根為0
+ * 內建門檻表之值為門檻百分比(4、6、8、10)，標籤為`${百分比}pct`；門檻為價格之比例，與K線週期無關，故標籤不隨opt.intervalSec改變(不是時間跨度之期別標籤；periodInfo認`${正整數}pct`之標籤，回傳根數0、秒數0，同'none')；各期之len固定為0(無根數視窗)，另以pct記門檻百分比
+ * 各門檻第1筆對應輸入之第1次確認之根，其後逐根對齊至最後一根；資料不足或未曾確認者該門檻之vs為空陣列
+ *
+ * Unit Test: {@link https://github.com/yuda-lyu/w-data-trade/blob/master/test/unit-calcDirChange.test.mjs Github}
+ * @function
+ * @param {Array} arr 輸入K線陣列，各元素需含time、Close欄位，Close須為正之有限數，否則reject(任一根無效即整批reject)；null、undefined、{}(以lodash size計為0根)視為無資料，各門檻vs為空陣列，其餘非陣列值(如字串)讀不到有效Close而reject
+ * @param {String} key 輸入計算所用數值欄位名稱字串，目前未實際使用(內部固定採用Close)
+ * @param {Object} [opt={}] 輸入設定物件，預設{}
+ * @param {Number|String} [opt.intervalSec=14400] 輸入每根K線之秒數，60之正整數倍且至多31536000(數值或數字字串)，只檢核(無效時reject，同其他calc)，門檻與標籤不隨之改變，預設14400
+ * @param {Object} [opt.kp] 輸入直接採用之門檻表物件，鍵為標籤，值為門檻百分比之正整數(數字字串轉為數值)，給予時標籤與值皆原樣採用，預設採內建門檻表，非預期之輸入(非物件、空物件、任一值非正整數)視為未給(同resolvePeriods)；值為物件者(其他calc之參數物件)reject
+ * @param {Boolean} [opt.debug=false] 輸入是否於opt.kp出現非預期輸入時輸出警告布林值，預設false；警告文字沿用resolvePeriods之固定詞彙(其中提及之參數物件於本函式為reject，見opt.kp)，同一個鍵每個行程只警告一次
+ * @param {Function} [opt.funLog] 輸入警告出口函數，以(msg, { fn, reason, key })呼叫，未給則用console.warn，預設未給
+ * @returns {Promise} 回傳Promise，resolve為各門檻結果陣列，各元素為{period,len,pct,vs}，len固定為0，pct為門檻百分比，vs內各元素為{time,dirState,dirRetrace,dirRun,dirAge}
+ * @example
+ *
+ * let arr = [
+ *     { time: '2020-01-01T00:00:00', Close: 100 },
+ *     { time: '2020-01-01T04:00:00', Close: 103 },
+ *     { time: '2020-01-01T08:00:00', Close: 107 },
+ *     { time: '2020-01-01T12:00:00', Close: 105 },
+ *     { time: '2020-01-01T16:00:00', Close: 99 },
+ * ]
+ *
+ * calcDirChange(arr, 'Close')
+ *     .then((rs) => {
+ *         console.log(rs[0])
+ *         // => {
+ *         //   period: '4pct',
+ *         //   len: 0,
+ *         //   pct: 4,
+ *         //   vs: [
+ *         //     { time: '2020-01-01T08:00:00', dirState: 1, dirRetrace: 0, dirRun: 1.7250744067144388, dirAge: 0 },
+ *         //     { time: '2020-01-01T12:00:00', dirState: 1, dirRetrace: 0.4810846817252253, dirRun: 1.2439897249892136, dirAge: 1 },
+ *         //     { time: '2020-01-01T16:00:00', dirState: -1, dirRetrace: 0, dirRun: 1.981325123375902, dirAge: 0 }
+ *         //   ]
+ *         // }
+ *     })
+ *
+ */
+let calcDirChange = (() => {
+
+    let KP = { //內建門檻表(值為門檻百分比; 標籤為`${百分比}pct`, 與K線週期無關, 不經opt.intervalSec換算), 實際門檻表為此表或opt.kp(直接採用)
+        '4pct': 4,
+        '6pct': 6,
+        '8pct': 8,
+        '10pct': 10,
+    }
+
+    let caDirChange = (arr, pct) => {
+
+        //check, 門檻表之值須為數值(opt.kp之值為參數物件者經resolvePeriods原樣保留, 於此拒絕)
+        if (!isNumber(pct)) {
+            throw new Error(`invalid opt.kp: must be an object of positive integer percentages`)
+        }
+
+        //theta, 對數報酬之門檻
+        let theta = Math.log(1 + pct / 100)
+
+        //n
+        let n = size(arr)
+
+        let kTime = 'time'
+        let kClose = 'Close'
+
+        //rs
+        let rs = []
+
+        //遞推狀態: dir為已確認之方向(0為尚未確認), hi與lo為確認前至今之最高與最低lc, ext為已確認之方向中至今之極值, pivot為最近一次確認之轉折點, iConf為其確認之根
+        let dir = 0
+        let hi = null
+        let lo = null
+        let ext = null
+        let pivot = null
+        let iConf = null
+
+        for (let i = 0; i < n; i++) {
+
+            //c
+            let c = get(arr[i], kClose)
+
+            //check
+            if (!isNumber(c) || !Number.isFinite(c) || !(c > 0)) {
+                throw new Error(`invalid arr: must have a positive finite Close in every element`)
+            }
+
+            //lc
+            let lc = Math.log(c)
+
+            if (dir === 0) {
+
+                //起始: 同時記至今之最高與最低, 先檢查漲
+                hi = hi === null ? lc : Math.max(hi, lc)
+                lo = lo === null ? lc : Math.min(lo, lc)
+                if (lc - lo >= theta) {
+                    dir = 1
+                    pivot = lo
+                    ext = lc
+                    iConf = i
+                }
+                else if (hi - lc >= theta) {
+                    dir = -1
+                    pivot = hi
+                    ext = lc
+                    iConf = i
+                }
+
+            }
+            else if (dir === 1) {
+
+                //漲: 創新高時更新ext, 自ext回落達門檻即換為跌(轉折點為換向前之ext)
+                if (lc > ext) {
+                    ext = lc
+                }
+                else if (ext - lc >= theta) {
+                    dir = -1
+                    pivot = ext
+                    ext = lc
+                    iConf = i
+                }
+
+            }
+            else {
+
+                //跌: 創新低時更新ext, 自ext反彈達門檻即換為漲(轉折點為換向前之ext)
+                if (lc < ext) {
+                    ext = lc
+                }
+                else if (lc - ext >= theta) {
+                    dir = 1
+                    pivot = ext
+                    ext = lc
+                    iConf = i
+                }
+
+            }
+
+            //確認前無值
+            if (dir === 0) {
+                continue
+            }
+
+            //push
+            rs.push({
+                time: arr[i][kTime],
+                dirState: dir, //已確認之方向
+                dirRetrace: dir === 1 ? (ext - lc) / theta : (lc - ext) / theta, //自極值逆向之回撤占門檻之比例
+                dirRun: dir === 1 ? (lc - pivot) / theta : (pivot - lc) / theta, //自轉折點順方向之對數報酬占門檻之比例
+                dirAge: i - iConf, //自確認起經過之根數
+            })
+
+        }
+        // console.log('rs', rs)
+
+        return rs
+    }
+
+    let caDirChanges = (arr, opt = {}) => {
+
+        //check, opt.intervalSec給了即檢核(無效即拋, 同其他calc); 門檻與K線週期無關, 標籤不換算
+        let intervalSecOpt = get(opt, 'intervalSec', null)
+        if (intervalSecOpt !== null && intervalSecOpt !== undefined) {
+            chkIntervalSec(intervalSecOpt)
+        }
+
+        //kp, 門檻表(opt.kp直接採用, 非預期之輸入視為未給而用內建表; 不給intervalSec故不換算標籤)
+        let kp = resolvePeriods(KP, { ...opt, intervalSec: null })
+
+        //rrs
+        let rrs = []
+        each(kp, (pct, period) => {
+
+            //caDirChange
+            let rs = caDirChange(arr, pct)
+
+            //push
+            rrs.push({
+                period,
+                len: 0,
+                pct,
+                vs: rs,
+            })
+            // console.log('rrs', rrs)
+
+        })
+
+        return rrs
+    }
+
+    let calcDirChange = async(arr, key, opt = {}) => {
+        // arr = [
+        //   {"time":"2020-01-01T00:00:00","Open":7195,"High":7225.62,"Low":7145.01,"Close":7173.32,...},
+        //   {"time":"2020-01-01T04:00:00","Open":7173.75,"High":7208.41,"Low":7165.1,"Close":7195.23,...},
+        //   ...
+        // ]
+
+        //caDirChanges
+        let rs = caDirChanges(arr, opt)
+
+        return rs
+    }
+
+    return calcDirChange
+})()
+
+
+export default calcDirChange
