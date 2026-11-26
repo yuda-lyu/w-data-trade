@@ -1,10 +1,10 @@
 {
   "name": "w-data-trade",
-  "version": "1.0.64",
+  "version": "1.0.65",
   "main": "dist/w-data-trade.umd.js",
   "dependencies": {
-    "w-statistic": "^1.0.81",
-    "wsemi": "^1.9.81"
+    "w-statistic": "^1.0.82",
+    "wsemi": "^1.9.82"
   },
   "devDependencies": {
     "w-package-tools": "^1.1.32"
