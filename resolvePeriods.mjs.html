@@ -29,7 +29,7 @@
 <nav >
     
     
-    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#caEma">caEma</a></li><li><a href="global.html#calcAdx">calcAdx</a></li><li><a href="global.html#calcAtr">calcAtr</a></li><li><a href="global.html#calcAts">calcAts</a></li><li><a href="global.html#calcBbpb">calcBbpb</a></li><li><a href="global.html#calcCandle">calcCandle</a></li><li><a href="global.html#calcCvd">calcCvd</a></li><li><a href="global.html#calcDirChange">calcDirChange</a></li><li><a href="global.html#calcDonchian">calcDonchian</a></li><li><a href="global.html#calcDown">calcDown</a></li><li><a href="global.html#calcEma">calcEma</a></li><li><a href="global.html#calcFlow">calcFlow</a></li><li><a href="global.html#calcIchimoku">calcIchimoku</a></li><li><a href="global.html#calcKdj">calcKdj</a></li><li><a href="global.html#calcKeltner">calcKeltner</a></li><li><a href="global.html#calcKlr">calcKlr</a></li><li><a href="global.html#calcMa">calcMa</a></li><li><a href="global.html#calcMacd">calcMacd</a></li><li><a href="global.html#calcMfi">calcMfi</a></li><li><a href="global.html#calcMomz">calcMomz</a></li><li><a href="global.html#calcObv">calcObv</a></li><li><a href="global.html#calcOrig">calcOrig</a></li><li><a href="global.html#calcRsi">calcRsi</a></li><li><a href="global.html#calcSupertrend">calcSupertrend</a></li><li><a href="global.html#calcVec">calcVec</a></li><li><a href="global.html#calcVolx">calcVolx</a></li><li><a href="global.html#calcVortex">calcVortex</a></li><li><a href="global.html#calcVwap">calcVwap</a></li><li><a href="global.html#chkIntervalSec">chkIntervalSec</a></li><li><a href="global.html#dataCalibrate">dataCalibrate</a></li><li><a href="global.html#dataConvert">dataConvert</a></li><li><a href="global.html#periodInfo">periodInfo</a></li><li><a href="global.html#resetWarned">resetWarned</a></li><li><a href="global.html#resolvePeriods">resolvePeriods</a></li><li><a href="global.html#spanLabelOf">spanLabelOf</a></li><li><a href="global.html#spanSecOf">spanSecOf</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#caEma">caEma</a></li><li><a href="global.html#calcAdx">calcAdx</a></li><li><a href="global.html#calcAtr">calcAtr</a></li><li><a href="global.html#calcAts">calcAts</a></li><li><a href="global.html#calcBbpb">calcBbpb</a></li><li><a href="global.html#calcCandle">calcCandle</a></li><li><a href="global.html#calcCvd">calcCvd</a></li><li><a href="global.html#calcDirChange">calcDirChange</a></li><li><a href="global.html#calcDonchian">calcDonchian</a></li><li><a href="global.html#calcDown">calcDown</a></li><li><a href="global.html#calcEma">calcEma</a></li><li><a href="global.html#calcFlow">calcFlow</a></li><li><a href="global.html#calcIchimoku">calcIchimoku</a></li><li><a href="global.html#calcKdj">calcKdj</a></li><li><a href="global.html#calcKeltner">calcKeltner</a></li><li><a href="global.html#calcKlr">calcKlr</a></li><li><a href="global.html#calcMa">calcMa</a></li><li><a href="global.html#calcMacd">calcMacd</a></li><li><a href="global.html#calcMfi">calcMfi</a></li><li><a href="global.html#calcMomz">calcMomz</a></li><li><a href="global.html#calcObv">calcObv</a></li><li><a href="global.html#calcOrig">calcOrig</a></li><li><a href="global.html#calcRsi">calcRsi</a></li><li><a href="global.html#calcSupertrend">calcSupertrend</a></li><li><a href="global.html#calcVec">calcVec</a></li><li><a href="global.html#calcVolx">calcVolx</a></li><li><a href="global.html#calcVortex">calcVortex</a></li><li><a href="global.html#calcVwap">calcVwap</a></li><li><a href="global.html#chkIntervalSec">chkIntervalSec</a></li><li><a href="global.html#dataCalibrate">dataCalibrate</a></li><li><a href="global.html#dataConvert">dataConvert</a></li><li><a href="global.html#periodInfo">periodInfo</a></li><li><a href="global.html#readIntervalSec">readIntervalSec</a></li><li><a href="global.html#resolvePeriods">resolvePeriods</a></li><li><a href="global.html#spanLabelOf">spanLabelOf</a></li><li><a href="global.html#spanSecOf">spanSecOf</a></li></ul>
     
 </nav>
 
@@ -46,11 +46,10 @@
     <section>
         <article>
             <pre class="prettyprint source linenums"><code>import each from 'lodash-es/each.js'
-import get from 'lodash-es/get.js'
 import isPlainObject from 'lodash-es/isPlainObject.js'
 import size from 'lodash-es/size.js'
-import isfun from 'wsemi/src/isfun.mjs'
 import iseint from 'wsemi/src/iseint.mjs'
+import getOptReader from 'wsemi/src/getOptReader.mjs'
 
 
 //INTERVAL_SEC_BASE, 各calc內建週期表之標籤所依之每根秒數(4hr=14400秒, 標籤之時間跨度 = 根數 × 14400秒), 亦為opt.intervalSec之預設
@@ -68,42 +67,8 @@ let UNIT_SEC = { day: 86400, hr: 3600, m: 60 }
 //RE_LABEL, 期別標籤之格式: 正整數(無前導零)接單位day、hr或m
 let RE_LABEL = /^([1-9][0-9]*)(day|hr|m)$/
 
-//warned, 已警告過之opt鍵(每個行程每個鍵只警告一次, 逐筆呼叫不洗版)
-let warned = new Set()
-
-
-//warnInvalid, opt.debug為true時輸出警告, 警告為固定詞彙, 只含函式名、鍵名、種類描述與所採之預設, 不含傳入之值
-let warnInvalid = (opt, key, desc, def) => {
-    try {
-        if (get(opt, 'debug', false) !== true) {
-            return
-        }
-        if (warned.has(key)) {
-            return
-        }
-        warned.add(key)
-        let msg = `[w-data-trade resolvePeriods] invalid ${key}: must be ${desc}, using default ${def}`
-        let funLog = get(opt, 'funLog', null)
-        if (isfun(funLog)) {
-            funLog(msg, { fn: 'resolvePeriods', reason: 'invalid', key })
-        }
-        else {
-            console.warn(msg)
-        }
-    }
-    catch (err) {} //警告出口拋錯一律忽略
-}
-
-
-/**
- * 重設已警告過之opt鍵紀錄，僅供測試使用
- *
- * @function
- * @returns {undefined} 無回傳值
- */
-let resetWarned = () => {
-    warned.clear()
-}
+//MSG_INTERVAL_SEC, opt.intervalSec無效時之固定訊息(不含輸入值)
+const MSG_INTERVAL_SEC = `invalid opt.intervalSec: must be a positive integer multiple of 60 up to ${INTERVAL_SEC_MAX}`
 
 
 /**
@@ -189,9 +154,41 @@ let spanSecOf = (label) => {
  */
 let chkIntervalSec = (v) => {
     if (!iseint(v, { min: 60, max: INTERVAL_SEC_MAX }) || Number(v) % 60 !== 0) {
-        throw new Error(`invalid opt.intervalSec: must be a positive integer multiple of 60 up to ${INTERVAL_SEC_MAX}`)
+        throw new Error(MSG_INTERVAL_SEC)
     }
     return Number(v)
+}
+
+
+/**
+ * 讀取opt.intervalSec並檢核(各處讀取opt.intervalSec之單一入口)
+ *
+ * opt.intervalSec為決定資料口徑之選項，屬跨套件規格K3之例外：給了而無效即throw，不改用預設(錯誤之每根秒數若改用預設4hr，期別標籤即參數鍵名會靜默錯置)
+ * 未給(opt非物件與非函數、鍵之值為undefined或null)回傳null；有效回傳轉為數值之秒數(檢測之值即使用之值)；無效回傳前throw(訊息固定、不含傳入之值)
+ * 鍵之讀取拋錯(存取器、陷阱、已撤銷之Proxy)視為給了而無效，同樣throw固定訊息，不洩漏拋出之訊息；opt只讀取一次該鍵
+ *
+ * @function
+ * @param {Object} [opt] 輸入設定物件，讀其intervalSec，非物件與非函數視為未給
+ * @param {Number|String} [opt.intervalSec] 輸入每根K線之秒數，60之正整數倍且至多31536000(數值或數字字串)
+ * @returns {Number|null} 回傳秒數，未給回傳null
+ * @example
+ *
+ * console.log(readIntervalSec({ intervalSec: '3600' }), readIntervalSec({}), readIntervalSec(null))
+ * // => 3600 null null
+ *
+ */
+let readIntervalSec = (opt) => {
+    let v
+    try {
+        v = ((typeof opt === 'object' &amp;&amp; opt !== null) || typeof opt === 'function') ? opt.intervalSec : undefined
+    }
+    catch (err) {
+        throw new Error(MSG_INTERVAL_SEC) //讀取拋錯視為無效, 訊息固定
+    }
+    if (v === undefined || v === null) {
+        return null
+    }
+    return chkIntervalSec(v)
 }
 
 
@@ -264,7 +261,7 @@ let chkKp = (kpOpt) => {
  * opt.kp給予時直接採用該表(標籤與值皆原樣，同時給opt.intervalSec亦不換算標籤)，優先於opt.intervalSec之換算；自訂週期表之標籤由呼叫端自負其義，不保證等於根數×每根時長(periodInfo不適用)
  * opt內之其他鍵(含已移除之舊選項barsPerDay)視為未知鍵，忽略
  *
- * 輸入檢核：kp為必須參數，無效時throw；opt.intervalSec給了而無效時throw(見chkIntervalSec，錯誤之每根秒數會使標籤即鍵名靜默錯置，故不改用預設，且先於其他處理)；opt.kp為opt類參數，給了非預期之輸入(含任一值無效)視為未給、改用內建表不拋錯，opt.debug為true時另輸出警告
+ * 輸入檢核：kp為必須參數，無效時throw；opt.intervalSec給了而無效時throw(見readIntervalSec，錯誤之每根秒數會使標籤即鍵名靜默錯置，故不改用預設，且先於其他處理)；opt.kp為opt類參數(經wsemi之getOptReader讀取)，給了非預期之輸入(含任一值無效、讀取拋錯)視為未給、改用內建表不拋錯，opt.debug為true時另輸出警告
  * 根數為本時(給opt.intervalSec，含14400)kp之標籤須為4hr之整數倍之標準標籤(各calc之內建表皆是)，否則throw；未給opt.intervalSec時不檢核標籤、原樣回傳(訊息皆不含傳入之值)
  *
  * @function
@@ -272,8 +269,8 @@ let chkKp = (kpOpt) => {
  * @param {Object} [opt={}] 輸入設定物件，預設{}
  * @param {Number|String} [opt.intervalSec=14400] 輸入每根K線之秒數，60之正整數倍且至多31536000(數值或數字字串)，4hr為14400、1hr為3600、15m為900、1day為86400，給予時根數不變、標籤依根數×每根秒數換算，預設14400(與內建表相同)，給了而無效時throw
  * @param {Object} [opt.kp] 輸入直接採用之週期表物件，鍵為週期標籤，值為正整數根數或參數物件(根數類欄位須為正整數)，給予時標籤與值皆原樣採用，預設採內建週期表，非預期之輸入(含任一值無效)視為未給
- * @param {Boolean} [opt.debug=false] 輸入是否於opt.kp出現非預期輸入時輸出警告布林值，非布林視為false，同一個鍵每個行程只警告一次，預設false
- * @param {Function} [opt.funLog] 輸入警告出口函數，以(msg, { fn, reason, key })呼叫，未給則用console.warn，預設未給
+ * @param {Boolean} [opt.debug=false] 輸入是否於opt.kp出現非預期輸入時輸出警告布林值，須恰為true才生效(非布林視為false)，警告為固定詞彙、不含傳入之值，同一個鍵每個行程只警告一次，預設false
+ * @param {Function} [opt.funLog] 輸入警告出口函數，以(msg, { fn: 'w-data-trade resolvePeriods', reason: 'invalid', key: 'kp' })呼叫，未給則用console.warn，其拋錯一律忽略，預設未給
  * @returns {Object} 回傳週期表物件(新物件，鍵序與輸入一致)
  * @example
  *
@@ -310,23 +307,18 @@ let resolvePeriods = (kp, opt = {}) => {
         }
     })
 
-    //opt各鍵只讀一次
-    let kpOpt = get(opt, 'kp', null)
-    let intervalSecOpt = get(opt, 'intervalSec', null)
+    //opt.intervalSec, 給了即檢核, 無效即拋(先於其他處理; K3之例外); 檢測之值即使用之值, 讀取一次
+    let intervalSec = readIntervalSec(opt)
 
-    //opt.intervalSec, 給了即檢核, 無效即拋(先於其他處理); 檢測之值即使用之值
-    let intervalSec = null
-    if (intervalSecOpt !== null &amp;&amp; intervalSecOpt !== undefined) {
-        intervalSec = chkIntervalSec(intervalSecOpt)
-    }
-
-    //opt.kp, 直接採用, 非預期之輸入視為未給
-    if (kpOpt !== null &amp;&amp; kpOpt !== undefined) {
-        let r = chkKp(kpOpt)
-        if (r !== null) {
-            return r
-        }
-        warnInvalid(opt, 'opt.kp', 'a non-empty object of positive integers or objects whose len, tenkan, kijun and senkouB are positive integers', 'the built-in table')
+    //opt.kp, 經getOptReader讀取: 給了即檢測(只檢測一次, 結果存於kpRes, 檢測之值即使用之值), 非預期之輸入視為未給而改用內建表, opt.debug為true時警告
+    let rd = getOptReader('w-data-trade resolvePeriods', opt)
+    let kpRes = null
+    let kpOpt = rd('kp', null, (v) => {
+        kpRes = chkKp(v)
+        return kpRes !== null
+    }, 'a non-empty object of positive integers or objects whose len, tenkan, kijun and senkouB are positive integers', 'the built-in table')
+    if (kpOpt !== null) {
+        return kpRes //直接採用(標籤與值皆原樣, 數字字串已轉為數值)
     }
 
     //relabel, 根數為本: 根數不變、標籤依根數×每根秒數換算
@@ -343,7 +335,7 @@ let resolvePeriods = (kp, opt = {}) => {
 }
 
 
-export { INTERVAL_SEC_BASE, INTERVAL_SEC_MAX, SCALE_KEYS, spanLabelOf, spanSecOf, chkIntervalSec, resetWarned }
+export { INTERVAL_SEC_BASE, INTERVAL_SEC_MAX, SCALE_KEYS, spanLabelOf, spanSecOf, chkIntervalSec, readIntervalSec }
 export default resolvePeriods
 </code></pre>
         </article>
@@ -359,7 +351,7 @@ export default resolvePeriods
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.5</a> on Sat Nov 28 2026 04:43:28 GMT+0800 (台北標準時間) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.5</a> on Sat Nov 28 2026 06:09:31 GMT+0800 (台北標準時間) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
 <script>prettyPrint();</script>

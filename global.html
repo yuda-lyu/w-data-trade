@@ -29,7 +29,7 @@
 <nav >
     
     
-    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#caEma">caEma</a></li><li><a href="global.html#calcAdx">calcAdx</a></li><li><a href="global.html#calcAtr">calcAtr</a></li><li><a href="global.html#calcAts">calcAts</a></li><li><a href="global.html#calcBbpb">calcBbpb</a></li><li><a href="global.html#calcCandle">calcCandle</a></li><li><a href="global.html#calcCvd">calcCvd</a></li><li><a href="global.html#calcDirChange">calcDirChange</a></li><li><a href="global.html#calcDonchian">calcDonchian</a></li><li><a href="global.html#calcDown">calcDown</a></li><li><a href="global.html#calcEma">calcEma</a></li><li><a href="global.html#calcFlow">calcFlow</a></li><li><a href="global.html#calcIchimoku">calcIchimoku</a></li><li><a href="global.html#calcKdj">calcKdj</a></li><li><a href="global.html#calcKeltner">calcKeltner</a></li><li><a href="global.html#calcKlr">calcKlr</a></li><li><a href="global.html#calcMa">calcMa</a></li><li><a href="global.html#calcMacd">calcMacd</a></li><li><a href="global.html#calcMfi">calcMfi</a></li><li><a href="global.html#calcMomz">calcMomz</a></li><li><a href="global.html#calcObv">calcObv</a></li><li><a href="global.html#calcOrig">calcOrig</a></li><li><a href="global.html#calcRsi">calcRsi</a></li><li><a href="global.html#calcSupertrend">calcSupertrend</a></li><li><a href="global.html#calcVec">calcVec</a></li><li><a href="global.html#calcVolx">calcVolx</a></li><li><a href="global.html#calcVortex">calcVortex</a></li><li><a href="global.html#calcVwap">calcVwap</a></li><li><a href="global.html#chkIntervalSec">chkIntervalSec</a></li><li><a href="global.html#dataCalibrate">dataCalibrate</a></li><li><a href="global.html#dataConvert">dataConvert</a></li><li><a href="global.html#periodInfo">periodInfo</a></li><li><a href="global.html#resetWarned">resetWarned</a></li><li><a href="global.html#resolvePeriods">resolvePeriods</a></li><li><a href="global.html#spanLabelOf">spanLabelOf</a></li><li><a href="global.html#spanSecOf">spanSecOf</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#caEma">caEma</a></li><li><a href="global.html#calcAdx">calcAdx</a></li><li><a href="global.html#calcAtr">calcAtr</a></li><li><a href="global.html#calcAts">calcAts</a></li><li><a href="global.html#calcBbpb">calcBbpb</a></li><li><a href="global.html#calcCandle">calcCandle</a></li><li><a href="global.html#calcCvd">calcCvd</a></li><li><a href="global.html#calcDirChange">calcDirChange</a></li><li><a href="global.html#calcDonchian">calcDonchian</a></li><li><a href="global.html#calcDown">calcDown</a></li><li><a href="global.html#calcEma">calcEma</a></li><li><a href="global.html#calcFlow">calcFlow</a></li><li><a href="global.html#calcIchimoku">calcIchimoku</a></li><li><a href="global.html#calcKdj">calcKdj</a></li><li><a href="global.html#calcKeltner">calcKeltner</a></li><li><a href="global.html#calcKlr">calcKlr</a></li><li><a href="global.html#calcMa">calcMa</a></li><li><a href="global.html#calcMacd">calcMacd</a></li><li><a href="global.html#calcMfi">calcMfi</a></li><li><a href="global.html#calcMomz">calcMomz</a></li><li><a href="global.html#calcObv">calcObv</a></li><li><a href="global.html#calcOrig">calcOrig</a></li><li><a href="global.html#calcRsi">calcRsi</a></li><li><a href="global.html#calcSupertrend">calcSupertrend</a></li><li><a href="global.html#calcVec">calcVec</a></li><li><a href="global.html#calcVolx">calcVolx</a></li><li><a href="global.html#calcVortex">calcVortex</a></li><li><a href="global.html#calcVwap">calcVwap</a></li><li><a href="global.html#chkIntervalSec">chkIntervalSec</a></li><li><a href="global.html#dataCalibrate">dataCalibrate</a></li><li><a href="global.html#dataConvert">dataConvert</a></li><li><a href="global.html#periodInfo">periodInfo</a></li><li><a href="global.html#readIntervalSec">readIntervalSec</a></li><li><a href="global.html#resolvePeriods">resolvePeriods</a></li><li><a href="global.html#spanLabelOf">spanLabelOf</a></li><li><a href="global.html#spanSecOf">spanSecOf</a></li></ul>
     
 </nav>
 
@@ -150,7 +150,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="caEma.mjs.html">caEma.mjs</a>, <a href="caEma.mjs.html#line39">line 39</a>
+        <a href="caEma.mjs.html">caEma.mjs</a>, <a href="caEma.mjs.html#line41">line 41</a>
     </li></ul></dd>
     
 
@@ -399,7 +399,85 @@
                 </td>
             
 
-            <td class="description last"><p>輸入是否將param改為(EMA-現值)/現值布林值，預設false</p></td>
+            <td class="description last"><p>輸入是否將param改為(EMA-現值)/現值布林值，預設false；只收true與false(不收1、0、'true'、'y'等)，非預期之輸入視為未給而改用預設，opt.debug恰為true時警告一次(固定詞彙、不含傳入之值，出口為opt.funLog或console.warn)</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>debug</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>false</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入是否於opt.norm出現非預期輸入時輸出警告布林值，須恰為true才生效，預設false</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>funLog</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入警告出口函數，以(msg, { fn, reason, key })呼叫，未給則用console.warn，預設未給</p></td>
         </tr>
 
     
@@ -927,7 +1005,7 @@ atrRatio於close為0時回0；atrRatioMod以diviProt保護分母(close+opt.plusC
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="calcAtr.mjs.html">calcAtr.mjs</a>, <a href="calcAtr.mjs.html#line51">line 51</a>
+        <a href="calcAtr.mjs.html">calcAtr.mjs</a>, <a href="calcAtr.mjs.html#line52">line 52</a>
     </li></ul></dd>
     
 
@@ -1257,7 +1335,7 @@ atrRatio於close為0時回0；atrRatioMod以diviProt保護分母(close+opt.plusC
                 </td>
             
 
-            <td class="description last"><p>輸入是否於opt.kp出現非預期輸入時輸出警告布林值，預設false</p></td>
+            <td class="description last"><p>輸入是否於opt.kp、opt.plusClose出現非預期輸入(視為未給、改用預設)時輸出警告布林值，須恰為true才生效，警告為固定詞彙、不含傳入之值，同一個鍵每個行程只警告一次，預設false</p></td>
         </tr>
 
     
@@ -1309,6 +1387,9 @@ atrRatio於close為0時回0；atrRatioMod以diviProt保護分母(close+opt.plusC
             
                 
 <span class="param-type">Number</span>
+|
+
+<span class="param-type">String</span>
 
 
 
@@ -1335,7 +1416,7 @@ atrRatio於close為0時回0；atrRatioMod以diviProt保護分母(close+opt.plusC
                 </td>
             
 
-            <td class="description last"><p>輸入偏移close以穩定atrRatioMod分母之數值，預設0</p></td>
+            <td class="description last"><p>輸入偏移close以穩定atrRatioMod分母之數值，須為有效數字(有限數值或數字字串，數字字串轉為數值使用)，預設0，非預期之輸入(含NaN、Infinity、非數字字串、布林、物件)視為未給而改用預設</p></td>
         </tr>
 
     
@@ -1864,7 +1945,7 @@ BBwidthMod、BBwidthChangeMod為以diviProt保護分母之修正版本，分母�
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="calcBbpb.mjs.html">calcBbpb.mjs</a>, <a href="calcBbpb.mjs.html#line55">line 55</a>
+        <a href="calcBbpb.mjs.html">calcBbpb.mjs</a>, <a href="calcBbpb.mjs.html#line56">line 56</a>
     </li></ul></dd>
     
 
@@ -2194,7 +2275,7 @@ BBwidthMod、BBwidthChangeMod為以diviProt保護分母之修正版本，分母�
                 </td>
             
 
-            <td class="description last"><p>輸入是否於opt.kp出現非預期輸入時輸出警告布林值，預設false</p></td>
+            <td class="description last"><p>輸入是否於opt.kp與下列數值選項出現非預期輸入(視為未給、改用預設)時輸出警告布林值，須恰為true才生效，警告為固定詞彙、不含傳入之值，同一個鍵每個行程只警告一次，預設false</p></td>
         </tr>
 
     
@@ -2246,6 +2327,9 @@ BBwidthMod、BBwidthChangeMod為以diviProt保護分母之修正版本，分母�
             
                 
 <span class="param-type">Number</span>
+|
+
+<span class="param-type">String</span>
 
 
 
@@ -2272,7 +2356,7 @@ BBwidthMod、BBwidthChangeMod為以diviProt保護分母之修正版本，分母�
                 </td>
             
 
-            <td class="description last"><p>輸入布林帶標準差倍數，預設2</p></td>
+            <td class="description last"><p>輸入布林帶標準差倍數，須為有效數字(有限數值或數字字串，數字字串轉為數值使用)，預設2，非預期之輸入(含NaN、Infinity、非數字字串、布林、物件)視為未給而改用預設</p></td>
         </tr>
 
     
@@ -2286,6 +2370,9 @@ BBwidthMod、BBwidthChangeMod為以diviProt保護分母之修正版本，分母�
             
                 
 <span class="param-type">Number</span>
+|
+
+<span class="param-type">String</span>
 
 
 
@@ -2312,7 +2399,7 @@ BBwidthMod、BBwidthChangeMod為以diviProt保護分母之修正版本，分母�
                 </td>
             
 
-            <td class="description last"><p>輸入自middle扣除之數值(去中心化)，預設0</p></td>
+            <td class="description last"><p>輸入自middle扣除之數值(去中心化)，有效數字，預設0，非預期之輸入同opt.k</p></td>
         </tr>
 
     
@@ -2326,6 +2413,9 @@ BBwidthMod、BBwidthChangeMod為以diviProt保護分母之修正版本，分母�
             
                 
 <span class="param-type">Number</span>
+|
+
+<span class="param-type">String</span>
 
 
 
@@ -2352,7 +2442,7 @@ BBwidthMod、BBwidthChangeMod為以diviProt保護分母之修正版本，分母�
                 </td>
             
 
-            <td class="description last"><p>輸入平移(去中心化後之)mid以遠離0之數值，預設0</p></td>
+            <td class="description last"><p>輸入平移(去中心化後之)mid以遠離0之數值，有效數字，預設0，非預期之輸入同opt.k</p></td>
         </tr>
 
     
@@ -2366,6 +2456,9 @@ BBwidthMod、BBwidthChangeMod為以diviProt保護分母之修正版本，分母�
             
                 
 <span class="param-type">Number</span>
+|
+
+<span class="param-type">String</span>
 
 
 
@@ -2392,7 +2485,7 @@ BBwidthMod、BBwidthChangeMod為以diviProt保護分母之修正版本，分母�
                 </td>
             
 
-            <td class="description last"><p>輸入對mid絕對值取冪次之次方數，保留原符號，預設1</p></td>
+            <td class="description last"><p>輸入對mid絕對值取冪次之次方數，保留原符號，有效數字，預設1，非預期之輸入同opt.k</p></td>
         </tr>
 
     
@@ -2406,6 +2499,9 @@ BBwidthMod、BBwidthChangeMod為以diviProt保護分母之修正版本，分母�
             
                 
 <span class="param-type">Number</span>
+|
+
+<span class="param-type">String</span>
 
 
 
@@ -2432,7 +2528,7 @@ BBwidthMod、BBwidthChangeMod為以diviProt保護分母之修正版本，分母�
                 </td>
             
 
-            <td class="description last"><p>輸入偏移bandWidth以穩定BBwidthMod分子之數值，預設0</p></td>
+            <td class="description last"><p>輸入偏移bandWidth以穩定BBwidthMod分子之數值，有效數字，預設0，非預期之輸入同opt.k</p></td>
         </tr>
 
     
@@ -3418,7 +3514,7 @@ dirAge為自最近一次確認起經過之根數，確認當根為0
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="calcDirChange.mjs.html">calcDirChange.mjs</a>, <a href="calcDirChange.mjs.html#line59">line 59</a>
+        <a href="calcDirChange.mjs.html">calcDirChange.mjs</a>, <a href="calcDirChange.mjs.html#line60">line 60</a>
     </li></ul></dd>
     
 
@@ -3867,7 +3963,7 @@ opt.excludeCurrent=false(預設)時，視窗為[i-len+1,i]含當前根，第1筆
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="calcDonchian.mjs.html">calcDonchian.mjs</a>, <a href="calcDonchian.mjs.html#line57">line 57</a>
+        <a href="calcDonchian.mjs.html">calcDonchian.mjs</a>, <a href="calcDonchian.mjs.html#line58">line 58</a>
     </li></ul></dd>
     
 
@@ -4197,7 +4293,7 @@ opt.excludeCurrent=false(預設)時，視窗為[i-len+1,i]含當前根，第1筆
                 </td>
             
 
-            <td class="description last"><p>輸入是否於opt.kp出現非預期輸入時輸出警告布林值，預設false</p></td>
+            <td class="description last"><p>輸入是否於opt.kp與下列選項出現非預期輸入(視為未給、改用預設)時輸出警告布林值，須恰為true才生效，警告為固定詞彙、不含傳入之值，同一個鍵每個行程只警告一次，預設false</p></td>
         </tr>
 
     
@@ -4275,7 +4371,7 @@ opt.excludeCurrent=false(預設)時，視窗為[i-len+1,i]含當前根，第1筆
                 </td>
             
 
-            <td class="description last"><p>輸入視窗是否排除當前根之布林值，預設false，預設含當前根</p></td>
+            <td class="description last"><p>輸入視窗是否排除當前根之布林值，預設false，預設含當前根；只收true與false(不收1、0、'true'、'y'等)，非預期之輸入視為未給而改用預設</p></td>
         </tr>
 
     
@@ -4289,6 +4385,9 @@ opt.excludeCurrent=false(預設)時，視窗為[i-len+1,i]含當前根，第1筆
             
                 
 <span class="param-type">Number</span>
+|
+
+<span class="param-type">String</span>
 
 
 
@@ -4315,7 +4414,7 @@ opt.excludeCurrent=false(預設)時，視窗為[i-len+1,i]含當前根，第1筆
                 </td>
             
 
-            <td class="description last"><p>輸入計算dcWidthMod前，mid去中心化之扣除量，預設0</p></td>
+            <td class="description last"><p>輸入計算dcWidthMod前，mid去中心化之扣除量，須為有效數字(有限數值或數字字串，數字字串轉為數值使用)，預設0，非預期之輸入(含NaN、Infinity、非數字字串、布林、物件)視為未給而改用預設</p></td>
         </tr>
 
     
@@ -4329,6 +4428,9 @@ opt.excludeCurrent=false(預設)時，視窗為[i-len+1,i]含當前根，第1筆
             
                 
 <span class="param-type">Number</span>
+|
+
+<span class="param-type">String</span>
 
 
 
@@ -4355,7 +4457,7 @@ opt.excludeCurrent=false(預設)時，視窗為[i-len+1,i]含當前根，第1筆
                 </td>
             
 
-            <td class="description last"><p>輸入mid去中心化後之平移量，避免mid趨近0時比值爆炸，預設0</p></td>
+            <td class="description last"><p>輸入mid去中心化後之平移量，避免mid趨近0時比值爆炸，有效數字，預設0，非預期之輸入同opt.subMid</p></td>
         </tr>
 
     
@@ -4369,6 +4471,9 @@ opt.excludeCurrent=false(預設)時，視窗為[i-len+1,i]含當前根，第1筆
             
                 
 <span class="param-type">Number</span>
+|
+
+<span class="param-type">String</span>
 
 
 
@@ -4395,7 +4500,7 @@ opt.excludeCurrent=false(預設)時，視窗為[i-len+1,i]含當前根，第1筆
                 </td>
             
 
-            <td class="description last"><p>輸入mid絕對值之次方數(保留原符號)，預設1</p></td>
+            <td class="description last"><p>輸入mid絕對值之次方數(保留原符號)，有效數字，預設1，非預期之輸入同opt.subMid</p></td>
         </tr>
 
     
@@ -4409,6 +4514,9 @@ opt.excludeCurrent=false(預設)時，視窗為[i-len+1,i]含當前根，第1筆
             
                 
 <span class="param-type">Number</span>
+|
+
+<span class="param-type">String</span>
 
 
 
@@ -4435,7 +4543,7 @@ opt.excludeCurrent=false(預設)時，視窗為[i-len+1,i]含當前根，第1筆
                 </td>
             
 
-            <td class="description last"><p>輸入bandWidth之偏移量，用於穩定dcWidthMod分子，預設0</p></td>
+            <td class="description last"><p>輸入bandWidth之偏移量，用於穩定dcWidthMod分子，有效數字，預設0，非預期之輸入同opt.subMid</p></td>
         </tr>
 
     
@@ -5055,7 +5163,7 @@ diff=EMA-現值，ratio=diff/現值(現值為0時ratio給0)</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="calcEma.mjs.html">calcEma.mjs</a>, <a href="calcEma.mjs.html#line44">line 44</a>
+        <a href="calcEma.mjs.html">calcEma.mjs</a>, <a href="calcEma.mjs.html#line45">line 45</a>
     </li></ul></dd>
     
 
@@ -5385,7 +5493,7 @@ diff=EMA-現值，ratio=diff/現值(現值為0時ratio給0)</p>
                 </td>
             
 
-            <td class="description last"><p>輸入是否於opt.kp出現非預期輸入時輸出警告布林值，預設false</p></td>
+            <td class="description last"><p>輸入是否於opt.kp、opt.norm出現非預期輸入(視為未給、改用預設)時輸出警告布林值，須恰為true才生效，警告為固定詞彙、不含傳入之值，同一個鍵每個行程只警告一次，預設false</p></td>
         </tr>
 
     
@@ -5463,7 +5571,7 @@ diff=EMA-現值，ratio=diff/現值(現值為0時ratio給0)</p>
                 </td>
             
 
-            <td class="description last"><p>輸入是否將param改為EMA與現值之偏離比例(EMA-現值)/現值布林值，預設false</p></td>
+            <td class="description last"><p>輸入是否將param改為EMA與現值之偏離比例(EMA-現值)/現值布林值，預設false；只收true與false(不收1、0、'true'、'y'等)，非預期之輸入視為未給而改用預設</p></td>
         </tr>
 
     
@@ -6090,7 +6198,7 @@ cloudTop=max(SenkouA,SenkouB)，cloudBot=min(SenkouA,SenkouB)，cloudMid=(cloudT
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="calcIchimoku.mjs.html">calcIchimoku.mjs</a>, <a href="calcIchimoku.mjs.html#line76">line 76</a>
+        <a href="calcIchimoku.mjs.html">calcIchimoku.mjs</a>, <a href="calcIchimoku.mjs.html#line77">line 77</a>
     </li></ul></dd>
     
 
@@ -6420,7 +6528,7 @@ cloudTop=max(SenkouA,SenkouB)，cloudBot=min(SenkouA,SenkouB)，cloudMid=(cloudT
                 </td>
             
 
-            <td class="description last"><p>輸入是否於opt.kp出現非預期輸入時輸出警告布林值，預設false</p></td>
+            <td class="description last"><p>輸入是否於opt.kp與下列數值選項出現非預期輸入(視為未給、改用預設)時輸出警告布林值，須恰為true才生效，警告為固定詞彙、不含傳入之值，同一個鍵每個行程只警告一次，預設false</p></td>
         </tr>
 
     
@@ -6472,6 +6580,9 @@ cloudTop=max(SenkouA,SenkouB)，cloudBot=min(SenkouA,SenkouB)，cloudMid=(cloudT
             
                 
 <span class="param-type">Number</span>
+|
+
+<span class="param-type">String</span>
 
 
 
@@ -6498,7 +6609,7 @@ cloudTop=max(SenkouA,SenkouB)，cloudBot=min(SenkouA,SenkouB)，cloudMid=(cloudT
                 </td>
             
 
-            <td class="description last"><p>輸入偏移Close之量，用於穩定cloudDistMod、cloudThickMod、tkDiffMod之分母，預設0</p></td>
+            <td class="description last"><p>輸入偏移Close之量，用於穩定cloudDistMod、cloudThickMod、tkDiffMod之分母，須為有效數字(有限數值或數字字串，數字字串轉為數值使用)，預設0，非預期之輸入(含NaN、Infinity、非數字字串、布林、物件)視為未給而改用預設</p></td>
         </tr>
 
     
@@ -6512,6 +6623,9 @@ cloudTop=max(SenkouA,SenkouB)，cloudBot=min(SenkouA,SenkouB)，cloudMid=(cloudT
             
                 
 <span class="param-type">Number</span>
+|
+
+<span class="param-type">String</span>
 
 
 
@@ -6538,7 +6652,7 @@ cloudTop=max(SenkouA,SenkouB)，cloudBot=min(SenkouA,SenkouB)，cloudMid=(cloudT
                 </td>
             
 
-            <td class="description last"><p>輸入偏移cloudMid之量，用於穩定cloudDistMod之分子，預設0</p></td>
+            <td class="description last"><p>輸入偏移cloudMid之量，用於穩定cloudDistMod之分子，有效數字，預設0，非預期之輸入同opt.plusClose</p></td>
         </tr>
 
     
@@ -6552,6 +6666,9 @@ cloudTop=max(SenkouA,SenkouB)，cloudBot=min(SenkouA,SenkouB)，cloudMid=(cloudT
             
                 
 <span class="param-type">Number</span>
+|
+
+<span class="param-type">String</span>
 
 
 
@@ -6578,7 +6695,7 @@ cloudTop=max(SenkouA,SenkouB)，cloudBot=min(SenkouA,SenkouB)，cloudMid=(cloudT
                 </td>
             
 
-            <td class="description last"><p>輸入偏移cloudTop-cloudBot(bandWidth)之量，用於穩定cloudThickMod之分子，預設0</p></td>
+            <td class="description last"><p>輸入偏移cloudTop-cloudBot(bandWidth)之量，用於穩定cloudThickMod之分子，有效數字，預設0，非預期之輸入同opt.plusClose</p></td>
         </tr>
 
     
@@ -6592,6 +6709,9 @@ cloudTop=max(SenkouA,SenkouB)，cloudBot=min(SenkouA,SenkouB)，cloudMid=(cloudT
             
                 
 <span class="param-type">Number</span>
+|
+
+<span class="param-type">String</span>
 
 
 
@@ -6618,7 +6738,7 @@ cloudTop=max(SenkouA,SenkouB)，cloudBot=min(SenkouA,SenkouB)，cloudMid=(cloudT
                 </td>
             
 
-            <td class="description last"><p>輸入偏移Tenkan(與Kijun同步)之量，用於穩定tkDiffMod之分子，預設0</p></td>
+            <td class="description last"><p>輸入偏移Tenkan(與Kijun同步)之量，用於穩定tkDiffMod之分子，有效數字，預設0，非預期之輸入同opt.plusClose</p></td>
         </tr>
 
     
@@ -7158,7 +7278,7 @@ middle=EMA(Close,len)，ATR以Wilder平滑遞推(種子為前len筆TR之算術�
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="calcKeltner.mjs.html">calcKeltner.mjs</a>, <a href="calcKeltner.mjs.html#line61">line 61</a>
+        <a href="calcKeltner.mjs.html">calcKeltner.mjs</a>, <a href="calcKeltner.mjs.html#line62">line 62</a>
     </li></ul></dd>
     
 
@@ -7488,7 +7608,7 @@ middle=EMA(Close,len)，ATR以Wilder平滑遞推(種子為前len筆TR之算術�
                 </td>
             
 
-            <td class="description last"><p>輸入是否於opt.kp出現非預期輸入時輸出警告布林值，預設false</p></td>
+            <td class="description last"><p>輸入是否於opt.kp、opt.plusMiddle出現非預期輸入(視為未給、改用預設)時輸出警告布林值，須恰為true才生效，警告為固定詞彙、不含傳入之值，同一個鍵每個行程只警告一次，預設false</p></td>
         </tr>
 
     
@@ -7540,6 +7660,9 @@ middle=EMA(Close,len)，ATR以Wilder平滑遞推(種子為前len筆TR之算術�
             
                 
 <span class="param-type">Number</span>
+|
+
+<span class="param-type">String</span>
 
 
 
@@ -7566,7 +7689,7 @@ middle=EMA(Close,len)，ATR以Wilder平滑遞推(種子為前len筆TR之算術�
                 </td>
             
 
-            <td class="description last"><p>輸入偏移middle之量，用於穩定kcWidthMod之分母，預設0</p></td>
+            <td class="description last"><p>輸入偏移middle之量，用於穩定kcWidthMod之分母，須為有效數字(有限數值或數字字串，數字字串轉為數值使用)，預設0，非預期之輸入(含NaN、Infinity、非數字字串、布林、物件)視為未給而改用預設</p></td>
         </tr>
 
     
@@ -7646,7 +7769,7 @@ ho=H/O，lo=L/O，co=C/O，hc=H/C，lc=L/C，hl=H/L，六比值皆先將O/H/L/C�
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="calcKlr.mjs.html">calcKlr.mjs</a>, <a href="calcKlr.mjs.html#line50">line 50</a>
+        <a href="calcKlr.mjs.html">calcKlr.mjs</a>, <a href="calcKlr.mjs.html#line51">line 51</a>
     </li></ul></dd>
     
 
@@ -7976,7 +8099,7 @@ ho=H/O，lo=L/O，co=C/O，hc=H/C，lc=L/C，hl=H/L，六比值皆先將O/H/L/C�
                 </td>
             
 
-            <td class="description last"><p>輸入是否於opt.kp出現非預期輸入時輸出警告布林值，預設false</p></td>
+            <td class="description last"><p>輸入是否於opt.kp、opt.plusClose出現非預期輸入(視為未給、改用預設)時輸出警告布林值，須恰為true才生效，警告為固定詞彙、不含傳入之值，同一個鍵每個行程只警告一次，預設false</p></td>
         </tr>
 
     
@@ -8028,6 +8151,9 @@ ho=H/O，lo=L/O，co=C/O，hc=H/C，lc=L/C，hl=H/L，六比值皆先將O/H/L/C�
             
                 
 <span class="param-type">Number</span>
+|
+
+<span class="param-type">String</span>
 
 
 
@@ -8054,7 +8180,7 @@ ho=H/O，lo=L/O，co=C/O，hc=H/C，lc=L/C，hl=H/L，六比值皆先將O/H/L/C�
                 </td>
             
 
-            <td class="description last"><p>輸入對Open/High/Low/Close同步加上之偏移量，加完後才計算六比值，預設0</p></td>
+            <td class="description last"><p>輸入對Open/High/Low/Close同步加上之偏移量，加完後才計算六比值，須為有效數字(有限數值或數字字串，數字字串轉為數值使用)，預設0，非預期之輸入(含NaN、Infinity、非數字字串、布林、物件)視為未給而改用預設</p></td>
         </tr>
 
     
@@ -8463,7 +8589,7 @@ ho=H/O，lo=L/O，co=C/O，hc=H/C，lc=L/C，hl=H/L，六比值皆先將O/H/L/C�
                 </td>
             
 
-            <td class="description last"><p>輸入是否於opt.kp出現非預期輸入時輸出警告布林值，預設false</p></td>
+            <td class="description last"><p>輸入是否於opt.kp、opt.norm出現非預期輸入(視為未給、改用預設)時輸出警告布林值，須恰為true才生效，警告為固定詞彙、不含傳入之值，同一個鍵每個行程只警告一次，預設false</p></td>
         </tr>
 
     
@@ -8541,7 +8667,7 @@ ho=H/O，lo=L/O，co=C/O，hc=H/C，lc=L/C，hl=H/L，六比值皆先將O/H/L/C�
                 </td>
             
 
-            <td class="description last"><p>輸入是否將param改為均線與現值之偏離比例(MA-現值)/現值布林值，預設false</p></td>
+            <td class="description last"><p>輸入是否將param改為均線與現值之偏離比例(MA-現值)/現值布林值，預設false；只收true與false(不收1、0、'true'、'y'等)，非預期之輸入視為未給而改用預設</p></td>
         </tr>
 
     
@@ -9073,7 +9199,7 @@ MFIdiv為MFI與len根前之MFI取正負號比較，與Close之len根漲跌方向
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="calcMfi.mjs.html">calcMfi.mjs</a>, <a href="calcMfi.mjs.html#line49">line 49</a>
+        <a href="calcMfi.mjs.html">calcMfi.mjs</a>, <a href="calcMfi.mjs.html#line50">line 50</a>
     </li></ul></dd>
     
 
@@ -9403,7 +9529,7 @@ MFIdiv為MFI與len根前之MFI取正負號比較，與Close之len根漲跌方向
                 </td>
             
 
-            <td class="description last"><p>輸入是否於opt.kp出現非預期輸入時輸出警告布林值，預設false</p></td>
+            <td class="description last"><p>輸入是否於opt.kp、opt.eps出現非預期輸入(視為未給、改用預設)時輸出警告布林值，須恰為true才生效，警告為固定詞彙、不含傳入之值，同一個鍵每個行程只警告一次，預設false</p></td>
         </tr>
 
     
@@ -9455,6 +9581,9 @@ MFIdiv為MFI與len根前之MFI取正負號比較，與Close之len根漲跌方向
             
                 
 <span class="param-type">Number</span>
+|
+
+<span class="param-type">String</span>
 
 
 
@@ -9481,7 +9610,7 @@ MFIdiv為MFI與len根前之MFI取正負號比較，與Close之len根漲跌方向
                 </td>
             
 
-            <td class="description last"><p>輸入視為0之資金流門檻值，預設1e-12</p></td>
+            <td class="description last"><p>輸入視為0之資金流門檻值，須為不小於0之有效數字(有限數值或數字字串，數字字串轉為數值使用)，預設1e-12，非預期之輸入(含負數、NaN、Infinity、非數字字串、布林、物件)視為未給而改用預設</p></td>
         </tr>
 
     
@@ -10703,7 +10832,7 @@ avgGain與avgLoss皆小於等於opt.eps時RSI給50(完全平盤)，僅avgLoss小
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="calcRsi.mjs.html">calcRsi.mjs</a>, <a href="calcRsi.mjs.html#line51">line 51</a>
+        <a href="calcRsi.mjs.html">calcRsi.mjs</a>, <a href="calcRsi.mjs.html#line52">line 52</a>
     </li></ul></dd>
     
 
@@ -11033,7 +11162,7 @@ avgGain與avgLoss皆小於等於opt.eps時RSI給50(完全平盤)，僅avgLoss小
                 </td>
             
 
-            <td class="description last"><p>輸入是否於opt.kp出現非預期輸入時輸出警告布林值，預設false</p></td>
+            <td class="description last"><p>輸入是否於opt.kp、opt.seed、opt.eps出現非預期輸入(視為未給、改用預設)時輸出警告布林值，須恰為true才生效，警告為固定詞彙、不含傳入之值，同一個鍵每個行程只警告一次，預設false</p></td>
         </tr>
 
     
@@ -11111,7 +11240,7 @@ avgGain與avgLoss皆小於等於opt.eps時RSI給50(完全平盤)，僅avgLoss小
                 </td>
             
 
-            <td class="description last"><p>輸入種子avgGain、avgLoss之計算方式，'sma'為前len根之算術平均，'first'為取第1根再以Wilder遞推至第len根，預設'sma'</p></td>
+            <td class="description last"><p>輸入種子avgGain、avgLoss之計算方式，'sma'為前len根之算術平均，'first'為取第1根再以Wilder遞推至第len根，預設'sma'；只收'sma'與'first'(區分大小寫)，非預期之輸入視為未給而改用預設'sma'</p></td>
         </tr>
 
     
@@ -11125,6 +11254,9 @@ avgGain與avgLoss皆小於等於opt.eps時RSI給50(完全平盤)，僅avgLoss小
             
                 
 <span class="param-type">Number</span>
+|
+
+<span class="param-type">String</span>
 
 
 
@@ -11151,7 +11283,7 @@ avgGain與avgLoss皆小於等於opt.eps時RSI給50(完全平盤)，僅avgLoss小
                 </td>
             
 
-            <td class="description last"><p>輸入視avgGain、avgLoss為0之門檻值，預設1e-12</p></td>
+            <td class="description last"><p>輸入視avgGain、avgLoss為0之門檻值，須為不小於0之有效數字(有限數值或數字字串，數字字串轉為數值使用)，預設1e-12，非預期之輸入(含負數、NaN、Infinity、非數字字串、布林、物件)視為未給而改用預設</p></td>
         </tr>
 
     
@@ -11237,7 +11369,7 @@ stDistanceMod=diviProt(Close+opt.plusClose-line, Close+opt.plusClose)，opt.plus
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="calcSupertrend.mjs.html">calcSupertrend.mjs</a>, <a href="calcSupertrend.mjs.html#line53">line 53</a>
+        <a href="calcSupertrend.mjs.html">calcSupertrend.mjs</a>, <a href="calcSupertrend.mjs.html#line54">line 54</a>
     </li></ul></dd>
     
 
@@ -11567,7 +11699,7 @@ stDistanceMod=diviProt(Close+opt.plusClose-line, Close+opt.plusClose)，opt.plus
                 </td>
             
 
-            <td class="description last"><p>輸入是否於opt.kp出現非預期輸入時輸出警告布林值，預設false</p></td>
+            <td class="description last"><p>輸入是否於opt.kp、opt.plusClose出現非預期輸入(視為未給、改用預設)時輸出警告布林值，須恰為true才生效，警告為固定詞彙、不含傳入之值，同一個鍵每個行程只警告一次，預設false</p></td>
         </tr>
 
     
@@ -11619,6 +11751,9 @@ stDistanceMod=diviProt(Close+opt.plusClose-line, Close+opt.plusClose)，opt.plus
             
                 
 <span class="param-type">Number</span>
+|
+
+<span class="param-type">String</span>
 
 
 
@@ -11645,7 +11780,7 @@ stDistanceMod=diviProt(Close+opt.plusClose-line, Close+opt.plusClose)，opt.plus
                 </td>
             
 
-            <td class="description last"><p>輸入stDistanceMod計算時對Close之偏移量，用以避免Close接近0時除法爆炸，預設0</p></td>
+            <td class="description last"><p>輸入stDistanceMod計算時對Close之偏移量，用以避免Close接近0時除法爆炸，須為有效數字(有限數值或數字字串，數字字串轉為數值使用)，預設0，非預期之輸入(含NaN、Infinity、非數字字串、布林、物件)視為未給而改用預設</p></td>
         </tr>
 
     
@@ -12054,7 +12189,7 @@ stDistanceMod=diviProt(Close+opt.plusClose-line, Close+opt.plusClose)，opt.plus
                 </td>
             
 
-            <td class="description last"><p>輸入是否於opt.kp出現非預期輸入時輸出警告布林值，預設false</p></td>
+            <td class="description last"><p>輸入是否於opt.kp、opt.norm出現非預期輸入(視為未給、改用預設)時輸出警告布林值，須恰為true才生效，警告為固定詞彙、不含傳入之值，同一個鍵每個行程只警告一次，預設false</p></td>
         </tr>
 
     
@@ -12132,7 +12267,7 @@ stDistanceMod=diviProt(Close+opt.plusClose-line, Close+opt.plusClose)，opt.plus
                 </td>
             
 
-            <td class="description last"><p>輸入是否將param改為差值對現值之比例(value[i]-value[i-len])/value[i]布林值，預設false</p></td>
+            <td class="description last"><p>輸入是否將param改為差值對現值之比例(value[i]-value[i-len])/value[i]布林值，預設false；只收true與false(不收1、0、'true'、'y'等)，非預期之輸入視為未給而改用預設</p></td>
         </tr>
 
     
@@ -13739,7 +13874,7 @@ vwapDist於Close為0時給0；vwapDistATR於ATR為0時給0</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="resolvePeriods.mjs.html">resolvePeriods.mjs</a>, <a href="resolvePeriods.mjs.html#line143">line 143</a>
+        <a href="resolvePeriods.mjs.html">resolvePeriods.mjs</a>, <a href="resolvePeriods.mjs.html#line108">line 108</a>
     </li></ul></dd>
     
 
@@ -14652,7 +14787,8 @@ dataCalibrate(calcFn, arr, arr, ['X'], { a: 0 }, { optMethodRef: { a: 0.1 } })
 呼叫kp<a href="arr,keyIn,optMethod">method</a>取得rrs(各期{period,len,vs}結果)後，對每個deal依其keyOut取值並以(值-avg)/std正規化，若deal.keyIn有指定則僅處理keyIn相符者，其餘略過
 deal.nm.byPeriod(選配，null與undefined視為未給)為物件，鍵為期別標籤(即各期之period)、值為{avg,std}：某期別於byPeriod有自己之鍵(自有且可列舉者，與檢核所走訪之鍵相同)者用其avg與std正規化，否則用nm.avg與nm.std；byPeriod之各鍵與各值於檢核時只讀取一次(讀取拋錯視為無效)，其後正規化用檢核時讀得之值；未給byPeriod時行為與既有相同
 除非opt.denyOutput為true，否則會將各期正規化後之序列以檔名<code>${cointpe}_${keyKind}_${keyIn}_${keyOut}_${method}_${period}.json</code>寫入fdSelfData資料夾
-全部檢核先於任何計算(含opt.funAddKeysIn與calc)與寫檔：keysIn各元素、methods各元素(須為物件，method須為字串且存在於kp，deals須為非空陣列，各deal之keyOut須為字串、nm須為物件、nm.byPeriod有給時須為一般物件(可為空物件)且各值為物件、avg為有限數值、std為有限數值且大於0(只收數值，不收數字字串)，deal.keyIn有指定而不在keysIn內之deal不會被處理故不檢核)、各methods[i].optMethod之intervalSec(每根秒數，見resolvePeriods)；任一無效即reject且不寫出任何檔，nm.byPeriod無效時訊息為固定之<code>invalid deal.nm.byPeriod: must be an object of { avg, std } with a finite avg and a finite std &gt; 0</code>(不含輸入值)
+全部檢核先於任何計算(含opt.funAddKeysIn與calc)與寫檔：keysIn各元素、methods各元素(須為物件，method須為字串且存在於kp，deals須為非空陣列，各deal之keyOut須為字串、nm須為物件、nm.avg與nm.std有給時須為有限數值且std大於0(只收typeof為number者，不收數字字串與BigInt；未給或null為avg 0、std 1)、nm.byPeriod有給時須為一般物件(可為空物件)且各值為物件、avg為有限數值、std為有限數值且大於0(同樣只收數值，不收數字字串)，deal.keyIn有指定而不在keysIn內之deal不會被處理故不檢核)、各methods[i].optMethod之intervalSec(每根秒數，見resolvePeriods)；任一無效即reject且不寫出任何檔
+檢核失敗之訊息皆為固定詞彙(只含位置與期望之種類，不含輸入值)，亦不以console輸出輸入：<code>invalid opt.keysIn[i]: must be a non-empty string</code>、<code>invalid methods[i]: must be a non-empty object</code>、<code>invalid methods[i].method: must be a non-empty string</code>、<code>invalid methods[i].method: must be a key of kp</code>、<code>invalid methods[i].deals: must be a non-empty array</code>、<code>invalid deal.keyOut: must be a non-empty string</code>、<code>invalid deal.nm: must be a non-empty object</code>、<code>invalid deal.nm.avg: must be a finite number</code>、<code>invalid deal.nm.std: must be a finite number greater than 0</code>、<code>invalid deal.nm.byPeriod: must be an object of { avg, std } with a finite avg and a finite std &gt; 0</code>；nm.avg、nm.std、nm.byPeriod與其各鍵於檢核時只讀取一次(讀取拋錯視為無效)，其後正規化只用檢核時讀得之值
 同一次呼叫內各method之optMethod.intervalSec須相同(未給視為14400，數字字串與數值視為同值)，否則reject <code>invalid methods[i].optMethod.intervalSec: must be the same in every method</code>(i為第一個與先前不一致者之索引)，以免不同每根時長之序列靜默寫進同一資料夾；各method之optMethod.intervalSec皆未給時行為與既有相同
 最終計算全期攤平後序列(各期以其自己之常數正規化後)之avg、std、min、max，另增n、median、q25、q75與periods(依各期次序之陣列，各元素{period,len,n,avg,std,min,max,median,q25,q75}為該期正規化後序列之統計)，彙整為單筆結果；nm為{avg:0,std:1}且未給byPeriod時，periods即為各期原值之統計
 回傳列與periods之全部統計(n、avg、std、min、max、median、q25、q75)只取有限數值：NaN、±Infinity與非數值皆不計入(例如nm.std極小使正規化後溢位為±Infinity者亦不計入)，n為有限值之個數，avg與std用w-statistic之arrAverage與arrStd(取用之母體相同)，min與max為有限值中之極值，median、q25、q75為第7型分位數(排序後h=(n-1)<em>q，x[floor(h)]+(h-floor(h))</em>(x[floor(h)+1]-x[floor(h)])，n為1時即該值)；n為0者(無有限值)其餘統計欄皆為null，回傳列之min與max亦然；正規化本身不變，非有限之值仍照常逐值寫出</p></li></ul></dd>
@@ -14661,7 +14797,7 @@ deal.nm.byPeriod(選配，null與undefined視為未給)為物件，鍵為期別�
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="dataConvert.mjs.html">dataConvert.mjs</a>, <a href="dataConvert.mjs.html#line164">line 164</a>
+        <a href="dataConvert.mjs.html">dataConvert.mjs</a>, <a href="dataConvert.mjs.html#line191">line 191</a>
     </li></ul></dd>
     
 
@@ -15367,7 +15503,7 @@ opt.intervalSec未給時視為每根4hr：每根1day之標籤須給opt.intervalS
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="periodInfo.mjs.html">periodInfo.mjs</a>, <a href="periodInfo.mjs.html#line47">line 47</a>
+        <a href="periodInfo.mjs.html">periodInfo.mjs</a>, <a href="periodInfo.mjs.html#line46">line 46</a>
     </li></ul></dd>
     
 
@@ -15643,7 +15779,7 @@ opt.intervalSec未給時視為每根4hr：每根1day之標籤須給opt.intervalS
 
     
 
-    <h4 class="name" id="resetWarned"><span class="type-signature"></span>resetWarned<span class="signature">()</span><span class="type-signature"> &rarr; {undefined}</span></h4>
+    <h4 class="name" id="readIntervalSec"><span class="type-signature"></span>readIntervalSec<span class="signature">(opt<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Number|null}</span></h4>
 
     
 
@@ -15653,13 +15789,16 @@ opt.intervalSec未給時視為每根4hr：每根1day之標籤須給opt.intervalS
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>重設已警告過之opt鍵紀錄，僅供測試使用</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>讀取opt.intervalSec並檢核(各處讀取opt.intervalSec之單一入口)</p>
+<p>opt.intervalSec為決定資料口徑之選項，屬跨套件規格K3之例外：給了而無效即throw，不改用預設(錯誤之每根秒數若改用預設4hr，期別標籤即參數鍵名會靜默錯置)
+未給(opt非物件與非函數、鍵之值為undefined或null)回傳null；有效回傳轉為數值之秒數(檢測之值即使用之值)；無效回傳前throw(訊息固定、不含傳入之值)
+鍵之讀取拋錯(存取器、陷阱、已撤銷之Proxy)視為給了而無效，同樣throw固定訊息，不洩漏拋出之訊息；opt只讀取一次該鍵</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="resolvePeriods.mjs.html">resolvePeriods.mjs</a>, <a href="resolvePeriods.mjs.html#line57">line 57</a>
+        <a href="resolvePeriods.mjs.html">resolvePeriods.mjs</a>, <a href="resolvePeriods.mjs.html#line133">line 133</a>
     </li></ul></dd>
     
 
@@ -15704,6 +15843,138 @@ opt.intervalSec未給時視為每根4hr：每根1day之標籤須給opt.intervalS
 
 
 
+    <h5 class="h5-examples">Example</h5>
+    
+    <pre class="prettyprint"><code>console.log(readIntervalSec({ intervalSec: '3600' }), readIntervalSec({}), readIntervalSec(null))// => 3600 null null</code></pre>
+
+
+
+
+    <h5 class="h5-parameters">Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>opt</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>輸入設定物件，讀其intervalSec，非物件與非函數視為未給</p>
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>intervalSec</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+|
+
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>輸入每根K線之秒數，60之正整數倍且至多31536000(數值或數字字串)</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
 
 
 
@@ -15724,7 +15995,7 @@ opt.intervalSec未給時視為每根4hr：每根1day之標籤須給opt.intervalS
 
         
 <div class="param-desc">
-    <p>無回傳值</p>
+    <p>回傳秒數，未給回傳null</p>
 </div>
 
 
@@ -15735,7 +16006,10 @@ opt.intervalSec未給時視為每根4hr：每根1day之標籤須給opt.intervalS
     </dt>
     <dd>
         
-<span class="param-type">undefined</span>
+<span class="param-type">Number</span>
+|
+
+<span class="param-type">null</span>
 
 
 
@@ -15767,14 +16041,14 @@ opt.intervalSec未給時視為每根4hr：每根1day之標籤須給opt.intervalS
 opt.intervalSec未給時視為每根4hr(14400)：各期原樣回傳(新物件)；給14400時標籤亦逐一重現內建表之標籤，與未給之輸出完全相同
 opt.kp給予時直接採用該表(標籤與值皆原樣，同時給opt.intervalSec亦不換算標籤)，優先於opt.intervalSec之換算；自訂週期表之標籤由呼叫端自負其義，不保證等於根數×每根時長(periodInfo不適用)
 opt內之其他鍵(含已移除之舊選項barsPerDay)視為未知鍵，忽略</p>
-<p>輸入檢核：kp為必須參數，無效時throw；opt.intervalSec給了而無效時throw(見chkIntervalSec，錯誤之每根秒數會使標籤即鍵名靜默錯置，故不改用預設，且先於其他處理)；opt.kp為opt類參數，給了非預期之輸入(含任一值無效)視為未給、改用內建表不拋錯，opt.debug為true時另輸出警告
+<p>輸入檢核：kp為必須參數，無效時throw；opt.intervalSec給了而無效時throw(見readIntervalSec，錯誤之每根秒數會使標籤即鍵名靜默錯置，故不改用預設，且先於其他處理)；opt.kp為opt類參數(經wsemi之getOptReader讀取)，給了非預期之輸入(含任一值無效、讀取拋錯)視為未給、改用內建表不拋錯，opt.debug為true時另輸出警告
 根數為本時(給opt.intervalSec，含14400)kp之標籤須為4hr之整數倍之標準標籤(各calc之內建表皆是)，否則throw；未給opt.intervalSec時不檢核標籤、原樣回傳(訊息皆不含傳入之值)</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="resolvePeriods.mjs.html">resolvePeriods.mjs</a>, <a href="resolvePeriods.mjs.html#line254">line 254</a>
+        <a href="resolvePeriods.mjs.html">resolvePeriods.mjs</a>, <a href="resolvePeriods.mjs.html#line251">line 251</a>
     </li></ul></dd>
     
 
@@ -16068,7 +16342,7 @@ opt內之其他鍵(含已移除之舊選項barsPerDay)視為未知鍵，忽略</
                 </td>
             
 
-            <td class="description last"><p>輸入是否於opt.kp出現非預期輸入時輸出警告布林值，非布林視為false，同一個鍵每個行程只警告一次，預設false</p></td>
+            <td class="description last"><p>輸入是否於opt.kp出現非預期輸入時輸出警告布林值，須恰為true才生效(非布林視為false)，警告為固定詞彙、不含傳入之值，同一個鍵每個行程只警告一次，預設false</p></td>
         </tr>
 
     
@@ -16106,7 +16380,7 @@ opt內之其他鍵(含已移除之舊選項barsPerDay)視為未知鍵，忽略</
                 </td>
             
 
-            <td class="description last"><p>輸入警告出口函數，以(msg, { fn, reason, key })呼叫，未給則用console.warn，預設未給</p></td>
+            <td class="description last"><p>輸入警告出口函數，以(msg, { fn: 'w-data-trade resolvePeriods', reason: 'invalid', key: 'kp' })呼叫，未給則用console.warn，其拋錯一律忽略，預設未給</p></td>
         </tr>
 
     
@@ -16185,7 +16459,7 @@ opt內之其他鍵(含已移除之舊選項barsPerDay)視為未知鍵，忽略</
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="resolvePeriods.mjs.html">resolvePeriods.mjs</a>, <a href="resolvePeriods.mjs.html#line78">line 78</a>
+        <a href="resolvePeriods.mjs.html">resolvePeriods.mjs</a>, <a href="resolvePeriods.mjs.html#line43">line 43</a>
     </li></ul></dd>
     
 
@@ -16349,7 +16623,7 @@ opt內之其他鍵(含已移除之舊選項barsPerDay)視為未知鍵，忽略</
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="resolvePeriods.mjs.html">resolvePeriods.mjs</a>, <a href="resolvePeriods.mjs.html#line109">line 109</a>
+        <a href="resolvePeriods.mjs.html">resolvePeriods.mjs</a>, <a href="resolvePeriods.mjs.html#line74">line 74</a>
     </li></ul></dd>
     
 
@@ -16514,7 +16788,7 @@ opt內之其他鍵(含已移除之舊選項barsPerDay)視為未知鍵，忽略</
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.5</a> on Sat Nov 28 2026 04:43:28 GMT+0800 (台北標準時間) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.5</a> on Sat Nov 28 2026 06:09:31 GMT+0800 (台北標準時間) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
 <script>prettyPrint();</script>
