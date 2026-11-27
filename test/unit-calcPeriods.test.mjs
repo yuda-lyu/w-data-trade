@@ -268,8 +268,11 @@ describe('各calc之週期表(opt.intervalSec / opt.kp)', function() {
             assert.strictEqual(r1.max, Math.max(...ps))
             assertNear(r1.avg, ps.reduce((a, b) => a + b, 0) / ps.length, 1e-9)
 
-            //根數不變: 統計同未給時(只有標籤不同)
-            assert.deepStrictEqual(r1, r4)
+            //根數不變: 統計同未給時(只有標籤不同; 回傳列之periods各元素帶期別標籤, 故比對時去除各期之period)
+            let noLabel = (r) => ({ ...r, periods: r.periods.map(({ period, ...o }) => o) })
+            assert.deepStrictEqual(noLabel(r1), noLabel(r4))
+            assert.deepStrictEqual(r1.periods.map((v) => v.period), ['6day', '12day', '24day', '42day', '90day', '180day'])
+            assert.deepStrictEqual(r4.periods.map((v) => v.period), ['1day', '2day', '4day', '7day', '15day', '30day'])
         })
 
         it('dataCalibrate: 未給opt.params時預設搜尋optMethodInit全部鍵(含intervalSec); 未給optMethodRef時參考側不帶intervalSec', async function() {

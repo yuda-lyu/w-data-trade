@@ -8,6 +8,7 @@ import max from 'lodash-es/max.js'
 import isestr from 'wsemi/src/isestr.mjs'
 import isearr from 'wsemi/src/isearr.mjs'
 import iseobj from 'wsemi/src/iseobj.mjs'
+import isobj from 'wsemi/src/isobj.mjs'
 import isfun from 'wsemi/src/isfun.mjs'
 import pmSeries from 'wsemi/src/pmSeries.mjs'
 import ispm from 'wsemi/src/ispm.mjs'
@@ -18,16 +19,109 @@ import arrStd from 'w-statistic/src/arrStd.mjs'
 import { INTERVAL_SEC_BASE, chkIntervalSec } from './resolvePeriods.mjs'
 
 
+//MSG_BY_PERIOD, nm.byPeriod無效時之固定訊息(不含輸入值)
+const MSG_BY_PERIOD = 'invalid deal.nm.byPeriod: must be an object of { avg, std } with a finite avg and a finite std > 0'
+
+
+//snapByPeriod, 讀取並檢核deal.nm.byPeriod(各鍵與各值只讀取一次, 讀取拋錯視為無效; 檢測之值即使用之值):
+//  null與undefined視為未給, 回傳{ ok: true, snap: null }; 須為一般物件(可為空物件), 各值須為物件且avg為有限數值、std為有限數值且大於0(只收數值，不收數字字串與BigInt);
+//  有效時snap為Map(自有且可列舉之期別標籤 => { avg, std }, 為檢核當下讀得之值), 其後正規化只用此快照, 不再讀取呼叫端之物件; 無效回傳{ ok: false, snap: null }
+let snapByPeriod = (nm) => {
+    try {
+        let byPeriod = get(nm, 'byPeriod')
+        if (byPeriod === null || byPeriod === undefined) {
+            return { ok: true, snap: null }
+        }
+        if (!isobj(byPeriod)) {
+            return { ok: false, snap: null }
+        }
+        let snap = new Map()
+        for (let k of Object.keys(byPeriod)) {
+            let v = byPeriod[k]
+            if (!isobj(v)) {
+                return { ok: false, snap: null }
+            }
+            let avg = v.avg
+            let std = v.std
+            if (typeof avg !== 'number' || !Number.isFinite(avg)) {
+                return { ok: false, snap: null }
+            }
+            if (typeof std !== 'number' || !Number.isFinite(std) || std <= 0) {
+                return { ok: false, snap: null }
+            }
+            snap.set(k, { avg, std })
+        }
+        return { ok: true, snap }
+    }
+    catch (err) {
+        return { ok: false, snap: null }
+    }
+}
+
+
+//quantile7, 已排序陣列(長度至少1)之第7型分位數: h = (n - 1) * q，x[floor(h)] + (h - floor(h)) * (x[floor(h) + 1] - x[floor(h)])，h為整數時即x[h]
+//  相鄰兩值a、b任一為±Infinity(且0 < f < 1)時，內插值即該無限端(同為Infinity者仍為Infinity)，a + b即得，以免a + f * (b - a)之Infinity - Infinity與-Infinity + Infinity得NaN；-Infinity與Infinity之間無定義而為NaN
+let quantile7 = (xs, q) => {
+    let h = (xs.length - 1) * q
+    let i = Math.floor(h)
+    let f = h - i
+    if (f === 0) {
+        return xs[i]
+    }
+    let a = xs[i]
+    let b = xs[i + 1]
+    if (!Number.isFinite(a) || !Number.isFinite(b)) {
+        return a + b
+    }
+    return a + f * (b - a)
+}
+
+
+//sortedOf, 數值序列中非NaN之數值(含±Infinity; 同w-statistic之arrAverage與arrStd只取有效數字)由小到大排序後之Float64Array
+let sortedOf = (ps) => {
+    let vs = []
+    each(ps, (x) => {
+        if (typeof x === 'number' && !Number.isNaN(x)) {
+            vs.push(x)
+        }
+    })
+    return Float64Array.from(vs).sort()
+}
+
+
+//quantOf, 已排序數值之個數與分位數{n,median,q25,q75}(第7型); n為0時分位數為null
+let quantOf = (xs) => {
+    let n = xs.length
+    if (n === 0) {
+        return { n, median: null, q25: null, q75: null }
+    }
+    return { n, median: quantile7(xs, 0.5), q25: quantile7(xs, 0.25), q75: quantile7(xs, 0.75) }
+}
+
+
+//statOf, 一期序列之統計{n,avg,std,min,max,median,q25,q75}: 只計非NaN之數值，avg與std用w-statistic之arrAverage與arrStd(同回傳列之既有欄位)，分位數為第7型；n為0時其餘欄皆為null
+let statOf = (ps) => {
+    let xs = sortedOf(ps)
+    let n = xs.length
+    if (n === 0) {
+        return { n, avg: null, std: null, min: null, max: null, median: null, q25: null, q75: null }
+    }
+    let q = quantOf(xs)
+    return { n, avg: arrAverage(ps), std: arrStd(ps), min: xs[0], max: xs[n - 1], median: q.median, q25: q.q25, q75: q.q75 }
+}
+
+
 /**
  * 依methods內各method呼叫kp對應之calc函式產生指標序列，再依各deal之nm(avg,std)做z-score正規化，並輸出各method/keyIn/keyOut組合之統計量
  *
  * 若opt.funAddKeysIn為函式，會先逐筆對arrOhlc呼叫該函式(可回傳Promise)以轉換/擴增輸入資料
  * 對keysIn(輸入計算所用數值欄位名稱)與methods(指標方法設定)做雙層迴圈，各methods[i]需含method(對應kp之鍵)、deals(輸出設定陣列)、optMethod(傳入calc函式之opt，可選，預設{})
  * 呼叫kp[method](arr,keyIn,optMethod)取得rrs(各期{period,len,vs}結果)後，對每個deal依其keyOut取值並以(值-avg)/std正規化，若deal.keyIn有指定則僅處理keyIn相符者，其餘略過
+ * deal.nm.byPeriod(選配，null與undefined視為未給)為物件，鍵為期別標籤(即各期之period)、值為{avg,std}：某期別於byPeriod有自己之鍵(自有且可列舉者，與檢核所走訪之鍵相同)者用其avg與std正規化，否則用nm.avg與nm.std；byPeriod之各鍵與各值於檢核時只讀取一次(讀取拋錯視為無效)，其後正規化用檢核時讀得之值；未給byPeriod時行為與既有相同
  * 除非opt.denyOutput為true，否則會將各期正規化後之序列以檔名`${cointpe}_${keyKind}_${keyIn}_${keyOut}_${method}_${period}.json`寫入fdSelfData資料夾
- * 全部檢核先於任何計算(含opt.funAddKeysIn與calc)與寫檔：keysIn各元素、methods各元素(須為物件，method須為字串且存在於kp，deals須為非空陣列，各deal之keyOut須為字串、nm須為物件，deal.keyIn有指定而不在keysIn內之deal不會被處理故不檢核)、各methods[i].optMethod之intervalSec(每根秒數，見resolvePeriods)；任一無效即reject且不寫出任何檔
+ * 全部檢核先於任何計算(含opt.funAddKeysIn與calc)與寫檔：keysIn各元素、methods各元素(須為物件，method須為字串且存在於kp，deals須為非空陣列，各deal之keyOut須為字串、nm須為物件、nm.byPeriod有給時須為一般物件(可為空物件)且各值為物件、avg為有限數值、std為有限數值且大於0(只收數值，不收數字字串)，deal.keyIn有指定而不在keysIn內之deal不會被處理故不檢核)、各methods[i].optMethod之intervalSec(每根秒數，見resolvePeriods)；任一無效即reject且不寫出任何檔，nm.byPeriod無效時訊息為固定之`invalid deal.nm.byPeriod: must be an object of { avg, std } with a finite avg and a finite std > 0`(不含輸入值)
  * 同一次呼叫內各method之optMethod.intervalSec須相同(未給視為14400，數字字串與數值視為同值)，否則reject `invalid methods[i].optMethod.intervalSec: must be the same in every method`(i為第一個與先前不一致者之索引)，以免不同每根時長之序列靜默寫進同一資料夾；各method之optMethod.intervalSec皆未給時行為與既有相同
- * 最終以w-statistic計算全期攤平後序列之avg、std、min、max，彙整為單筆結果
+ * 最終以w-statistic計算全期攤平後序列(各期以其自己之常數正規化後)之avg、std、min、max，另增n(非NaN值之個數)、median、q25、q75(第7型分位數：排序後h=(n-1)*q，x[floor(h)]+(h-floor(h))*(x[floor(h)+1]-x[floor(h)])，n為1時即該值；相鄰兩值任一為±Infinity時內插值即該無限端，-Infinity與Infinity之間無定義而為NaN)與periods(依各期次序之陣列，各元素{period,len,n,avg,std,min,max,median,q25,q75}為該期正規化後序列之統計)，彙整為單筆結果；n為0者其餘統計欄皆為null；nm為{avg:0,std:1}且未給byPeriod時，periods即為各期原值之統計
  *
  * @function
  * @param {String} name 輸入名稱字串
@@ -35,7 +129,7 @@ import { INTERVAL_SEC_BASE, chkIntervalSec } from './resolvePeriods.mjs'
  * @param {String} interval 輸入K線週期字串，例如'4hr'
  * @param {String} cointpe 輸入幣別類型字串，用於組合輸出檔名，例如'price'
  * @param {String} keyKind 輸入資料種類字串，用於組合輸出檔名，例如'ohlc'
- * @param {Array} methods 輸入指標方法設定陣列，各元素為{method,deals,optMethod}，method需存在於kp，deals為{keyIn,keyOut,nm:{avg,std}}之陣列，optMethod為傳入calc函式之opt(可選，預設{})
+ * @param {Array} methods 輸入指標方法設定陣列，各元素為{method,deals,optMethod}，method需存在於kp，deals為{keyIn,keyOut,nm:{avg,std,byPeriod}}之陣列(byPeriod為選配，見上)，optMethod為傳入calc函式之opt(可選，預設{})
  * @param {Array} arrOhlc 輸入K線陣列
  * @param {Object} kp 輸入method名稱對應calc函式之映射物件，函式簽章為(arr,keyIn,optMethod)=>rrs
  * @param {String} fdSelfData 輸入輸出json檔案所在資料夾路徑字串
@@ -43,7 +137,7 @@ import { INTERVAL_SEC_BASE, chkIntervalSec } from './resolvePeriods.mjs'
  * @param {Function} [opt.funAddKeysIn] 輸入用於逐筆轉換/擴增arrOhlc之函式，可回傳Promise，預設不轉換
  * @param {Array} [opt.keysIn=['none']] 輸入計算所用數值欄位名稱字串陣列，預設['none']
  * @param {Boolean} [opt.denyOutput=null] 輸入是否禁止寫出json檔案布林值，為true時不寫檔，預設null(不禁止)
- * @returns {Promise} 回傳Promise，resolve為各method/keyIn/keyOut組合之統計結果陣列，各元素為{method,keyIn,keyOut,avg,std,min,max}
+ * @returns {Promise} 回傳Promise，resolve為各method/keyIn/keyOut組合之統計結果陣列，各元素為{method,keyIn,keyOut,avg,std,min,max,n,median,q25,q75,periods}
  * @example
  *
  * import calcMa from './calcMa.mjs'
@@ -79,9 +173,16 @@ import { INTERVAL_SEC_BASE, chkIntervalSec } from './resolvePeriods.mjs'
  *         //     avg: 99.968791151179,
  *         //     std: 1.3207330769565093,
  *         //     min: 95.38244060380985,
- *         //     max: 104.64005705802747
+ *         //     max: 104.64005705802747,
+ *         //     n: 852,
+ *         //     median: 99.98218642034857,
+ *         //     q25: 99.60840606727731,
+ *         //     q75: 100.35553691748575,
+ *         //     periods: [ [Object], [Object], [Object], [Object], [Object], [Object] ]
  *         //   }
  *         // ]
+ *         console.log(rs[0].periods.map((v) => `${v.period}:${v.len}:${v.n}`).join(' '))
+ *         // => 1day:6:195 2day:12:189 4day:24:177 7day:42:159 15day:90:111 30day:180:21
  *     })
  *
  */
@@ -134,6 +235,7 @@ let dataConvert = async (name, symbol, interval, cointpe, keyKind, methods, arrO
         }
     })
     let intervalSecFirst = null
+    let snaps = new Map() //deal => nm.byPeriod之快照(檢核時讀得且已檢核之值; 每個deal物件只讀取一次)
     each(methods, (m, i) => {
 
         //check
@@ -202,6 +304,15 @@ let dataConvert = async (name, symbol, interval, cointpe, keyKind, methods, arrO
                 throw new Error(`invalid deal.nm[${nm}]`)
             }
 
+            //byPeriod, 選配(null與undefined視為未給), 給了即檢核(訊息固定, 不含輸入值), 並取快照供其後正規化使用
+            if (!snaps.has(deal)) { //同一deal物件重複出現(例如多個method共用同一deals陣列)時, 沿用已檢核之快照, 不重讀
+                let { ok, snap } = snapByPeriod(nm)
+                if (!ok) {
+                    throw new Error(MSG_BY_PERIOD)
+                }
+                snaps.set(deal, snap)
+            }
+
         })
 
         //check, optMethod.intervalSec(每根秒數): 給了而無效即拒(訊息同calc); 各method須同一每根秒數(未給視為14400, 檢測之值即使用之值), 否則不同每根時長之序列會寫進同一資料夾
@@ -237,7 +348,8 @@ let dataConvert = async (name, symbol, interval, cointpe, keyKind, methods, arrO
     }
 
     //nor: 正規化 rrs 各期之 keyOut 為 param 序列, 每期呼叫 funPeriod(可選, 不傳=純轉換不落地), 回傳攤平之全期 param
-    let nor = (rrs, keyOut, _avg, _std, funPeriod) => {
+    //  byPeriod(可選, null=未給): 檢核時取得之快照(Map, 期別 => { avg, std }), 某期別有自己之鍵者用其avg與std, 否則用_avg與_std
+    let nor = (rrs, keyOut, _avg, _std, funPeriod, byPeriod = null) => {
 
         // //強制數據為未修正狀態
         // _avg = 0
@@ -247,9 +359,18 @@ let dataConvert = async (name, symbol, interval, cointpe, keyKind, methods, arrO
         each(rrs, (v) => {
             // console.log('v.vs', v.vs)
 
+            //avgP, stdP
+            let avgP = _avg
+            let stdP = _std
+            if (byPeriod !== null && byPeriod.has(v.period)) {
+                let own = byPeriod.get(v.period)
+                avgP = own.avg
+                stdP = own.std
+            }
+
             //corr
             let vs = map(v.vs, (m) => {
-                let param = (m[keyOut] - _avg) / _std
+                let param = (m[keyOut] - avgP) / stdP
                 let v = {
                     time: m.time,
                     param,
@@ -313,6 +434,9 @@ let dataConvert = async (name, symbol, interval, cointpe, keyKind, methods, arrO
                 let avg = get(nm, `avg`, 0)
                 let std = get(nm, `std`, 1)
 
+                //byPeriod, 各檢核已於上方先行完成(先於任何計算與寫檔), 此處只用檢核時取得之快照(不再讀取呼叫端之物件); 未給(null與undefined)為null
+                let byPeriod = snaps.get(deal) || null
+
                 //funOut
                 let funOut = (v, vs, ps) => {
 
@@ -331,8 +455,15 @@ let dataConvert = async (name, symbol, interval, cointpe, keyKind, methods, arrO
                     funOut = () => {}
                 }
 
+                //funPeriod, 各期正規化後之統計(periods)先於寫出該期
+                let periods = []
+                let funPeriod = (v, vs, ps) => {
+                    periods.push({ period: v.period, len: v.len, ...statOf(ps) })
+                    funOut(v, vs, ps)
+                }
+
                 //pss
-                let pss = nor(rrs, keyOut, avg, std, funOut)
+                let pss = nor(rrs, keyOut, avg, std, funPeriod, byPeriod)
 
                 //r
                 let r = {}
@@ -343,6 +474,7 @@ let dataConvert = async (name, symbol, interval, cointpe, keyKind, methods, arrO
                     let stdAll = arrStd(pss)
                     let minAll = min(pss)
                     let maxAll = max(pss)
+                    let qAll = quantOf(sortedOf(pss))
                     //console.log('keyIn', keyIn, 'method', method, 'keyOut', keyOut)
                     //console.log('avg:', avgAll, ',')
                     //console.log('std:', stdAll, ',')
@@ -359,6 +491,11 @@ let dataConvert = async (name, symbol, interval, cointpe, keyKind, methods, arrO
                         std: stdAll,
                         min: minAll,
                         max: maxAll,
+                        n: qAll.n,
+                        median: qAll.median,
+                        q25: qAll.q25,
+                        q75: qAll.q75,
+                        periods,
                     }
 
                 }

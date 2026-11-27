@@ -153,6 +153,26 @@ let rs = await wdt.dataCalibrate(calcFn, arrSrc, arrRef, ['param'], { intervalSe
 - The output file names of `dataConvert` contain the period label (for example `..._ma_6day.json`) but not the K-line interval. With `opt.intervalSec` a label means the real time span, and the same label can stand for different bar counts on different intervals (for example `'1day'` is 6 bars at 4hr and 1 bar at 1day), so use a different output folder for each interval. Use `wdt.periodInfo` to get the bar count of a label.
 - `dataCalibrate` searches every key of `optMethodInit` unless `opt.params` is given, so list the keys to search in `opt.params` and leave `intervalSec` out. The reference side uses `opt.optMethodRef` (default `{}`), so give `intervalSec` there too when the reference data has the same interval.
 
+#### dataConvert: per-period normalization constants and period statistics:
+`deal.nm.byPeriod` (optional) gives each period its own `avg` and `std`; the returned rows also carry quantiles and per-period statistics.
+```alias
+//keys of byPeriod are period labels (the `period` of each calc result); a period with its own key uses its avg and std, the others use nm.avg and nm.std
+let methods = [
+    {
+        method: 'ma',
+        deals: [{ keyOut: 'param', nm: { avg: 0, std: 1, byPeriod: { '1day': { avg: 99.9, std: 2.4 }, '2day': { avg: 99.8, std: 3.1 } } } }],
+        optMethod: {},
+    },
+]
+let rs = await wdt.dataConvert('demo', 'BTCUSDT', '4hr', 'price', 'ohlc', methods, arr, kp, fdOut, { keysIn: ['Close'] })
+//rs[0]: { method, keyIn, keyOut, avg, std, min, max, n, median, q25, q75, periods }
+//rs[0].periods[i]: { period, len, n, avg, std, min, max, median, q25, q75 } of the normalized series of that period
+```
+- `byPeriod` is `null` / `undefined` (not given) or a plain object (an empty object is allowed) whose values are objects with a finite number `avg` and a finite number `std` greater than 0 (numeric strings and BigInt are rejected). It is checked before any calculation and before any file is written, together with the other checks; an invalid one rejects with `invalid deal.nm.byPeriod: must be an object of { avg, std } with a finite avg and a finite std > 0` (the given value is not in the message) and nothing is written. A deal whose `keyIn` is given but is not in `keysIn` is not processed and therefore not checked. Only own enumerable keys count, so a period named `toString` is not affected by inherited keys. The keys and values of `byPeriod` are read once, during the check, and the normalization uses the values read then (a getter that returns something else on a later read, or a change made after the check, has no effect); a read that throws counts as invalid.
+- Without `byPeriod` the files written and the existing fields of the returned rows (`method`, `keyIn`, `keyOut`, `avg`, `std`, `min`, `max`) are the same as before. The added fields are appended after them.
+- `n` is the number of values that are not `NaN` (the values `avg` and `std` use), `median`, `q25` and `q75` are the type 7 quantiles (sorted `x`, `h = (n − 1) × q`, `x[⌊h⌋] + (h − ⌊h⌋) × (x[⌊h⌋ + 1] − x[⌊h⌋])`) of the flattened series after normalization. `Infinity` and `-Infinity` are counted in `n`; a quantile between a finite value and an infinite one is that infinity, and between `-Infinity` and `Infinity` it is `NaN`. A period with `n` 0 has `null` in all its statistics (the existing `min` and `max` of the row stay `undefined` for no value, as before); `std` is `null` when `n` is 1. Calling with `nm: { avg: 0, std: 1 }` and `denyOutput: true` gives the statistics of the raw values of every period, from which per-period constants can be made (for example `avg` and `std`, or `median` and `(q75 − q25) / 1.349`).
+- `periods[i].period` is the label of the period, so rows from different `intervalSec` differ in these labels even when everything else is equal.
+
 #### Example for directional change (calcDirChange, a threshold table instead of bar counts):
 ```alias
 //calcDirChange, 方向改變法: 只用收盤, 逐根只看到當根; 自至今之極值反向達門檻(對數報酬 θ = ln(1 + 門檻% / 100))即確認換向
