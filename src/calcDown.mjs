@@ -1,0 +1,235 @@
+import isNumber from 'lodash-es/isNumber.js'
+import get from 'lodash-es/get.js'
+import size from 'lodash-es/size.js'
+import each from 'lodash-es/each.js'
+import isestr from 'wsemi/src/isestr.mjs'
+import isenum from 'wsemi/src/isenum.mjs'
+import iseint from 'wsemi/src/iseint.mjs'
+import getOptReader from 'wsemi/src/getOptReader.mjs'
+import resolvePeriods from './resolvePeriods.mjs'
+
+
+/**
+ * 計算各週期下跌之統計(收跌根數比例、收跌根之量占比、暴跌根數)
+ *
+ * 讀取key欄位與Volumn欄位，只用當根(含)以前之資料，逐根因果
+ * 記號：lc=ln(key欄位)，r(i)=lc(i)-lc(i-1)(i至少為1)，視窗W(i,m)為第i-m+1至i根(含當根共m根)，期別之根數為len，σ(j)為r於W(j,opt.volLen)之母體標準差(需j至少為opt.volLen；全部相同者為0，不大於1e-12者亦視為0：完全等比之序列其r僅差浮點捨入，σ殘值約1e-17，不致使r/σ放大而逐根計為暴跌)
+ * 各欄(第i根)：
+ * downBars=W(i,len)內r小於0之根數/len，收跌根數比例，範圍[0,1]
+ * downVol=W(i,len)內r小於0之根之Volumn之和/W(i,len)內Volumn之和，收跌根之量占比，範圍[0,1]，分母不大於0時回0.5
+ * crashN=W(i,len)內「σ(j)大於0且r(j)/σ(j)不大於-opt.crashK」之根數，暴跌根數(σ(j)含第j根自身之報酬)，為0至len之整數
+ * 各期第一筆對應輸入索引len+opt.volLen-1(視窗內最早一根j=i-len+1需有σ(j)，即j至少為opt.volLen)，其後逐根對齊至最後一根，資料筆數n小於其加1時該期vs回空陣列
+ * 各欄於資料充足時皆為有限數值(不輸出NaN或Infinity)
+ *
+ * Unit Test: {@link https://github.com/yuda-lyu/w-data-trade/blob/master/test/unit-calcDown.test.mjs Github}
+ * @function
+ * @param {Array} arr 輸入K線陣列，各元素需含time、Volumn與key指定之欄位，key欄位須為正之有限數、Volumn須為不小於0之有限數，否則reject(任一根無效即整批reject；訊息不含輸入值)；null、undefined、{}(以lodash size計為0根)視為無資料，各期vs為空陣列
+ * @param {String} key 輸入計算所用數值欄位名稱字串，如'Close'，須為非空字串，否則reject
+ * @param {Object} [opt={}] 輸入設定物件，預設{}
+ * @param {Number|String} [opt.volLen=30] 輸入計算σ所用之根數，至少為2之整數(數值或數字字串，數字字串轉為數值使用)，預設30，非預期之輸入(含小於2、非整數、非數值)視為未給而改用預設
+ * @param {Number|String} [opt.crashK=1.5] 輸入暴跌之門檻倍數，有限且大於0之數值(數值或數字字串，數字字串轉為數值使用)，預設1.5，非預期之輸入(含0、負數、非有限數、非數值)視為未給而改用預設
+ * @param {Number|String} [opt.intervalSec=14400] 輸入每根K線之秒數，60之正整數倍且至多31536000(數值或數字字串)，各期根數不變(根數為本)，期別標籤為根數×每根秒數之時間跨度(例：每根1day時3根之期為'3day')，預設14400(每根4hr，標籤與根數皆同內建表)，無效時reject
+ * @param {Object} [opt.kp] 輸入直接採用之週期表物件，鍵為週期標籤，值為正整數根數，給予時不換算，預設採內建週期表，非預期之輸入(非物件、空物件、任一值非正整數)視為未給；值為參數物件者reject
+ * @param {Boolean} [opt.debug=false] 輸入是否於opt.kp、opt.volLen、opt.crashK出現非預期輸入(視為未給、改用預設)時輸出警告布林值，預設false；警告為固定詞彙、不含傳入之值，同一個鍵每個行程只警告一次
+ * @param {Function} [opt.funLog] 輸入警告出口函數，以(msg, { fn, reason, key })呼叫，未給則用console.warn，預設未給
+ * @returns {Promise} 回傳Promise，resolve為各期結果陣列，各元素為{period,len,vs}，vs內各元素為{time,downBars,downVol,crashN}
+ * @example
+ *
+ * let arr = [
+ *     { time: '2020-01-01T00:00:00', Close: 100, Volumn: 10 },
+ *     { time: '2020-01-01T04:00:00', Close: 102, Volumn: 20 },
+ *     { time: '2020-01-01T08:00:00', Close: 104, Volumn: 30 },
+ *     { time: '2020-01-01T12:00:00', Close: 97, Volumn: 40 },
+ *     { time: '2020-01-01T16:00:00', Close: 100, Volumn: 50 },
+ *     { time: '2020-01-01T20:00:00', Close: 96, Volumn: 100 },
+ * ]
+ *
+ * calcDown(arr, 'Close', { volLen: 2, crashK: 1.5, kp: { '12hr': 3 } })
+ *     .then((rs) => {
+ *         console.log(rs[0])
+ *         // => {
+ *         //   period: '12hr',
+ *         //   len: 3,
+ *         //   vs: [
+ *         //     { time: '2020-01-01T16:00:00', downBars: 0.3333333333333333, downVol: 0.3333333333333333, crashN: 1 },
+ *         //     { time: '2020-01-01T20:00:00', downBars: 0.6666666666666666, downVol: 0.7368421052631579, crashN: 1 }
+ *         //   ]
+ *         // }
+ *     })
+ *
+ */
+let calcDown = (() => {
+
+    let KP = { //內建週期表(值為根數; 標籤以每根4hr寫定: '12hr'=3根、'1day'=6根), 實際週期表由resolvePeriods依opt.intervalSec(根數不變、標籤換算)或opt.kp決定
+        '12hr': 3,
+        '16hr': 4,
+        '20hr': 5,
+        '1day': 6,
+        '2day': 12,
+        '4day': 24,
+        '7day': 42,
+        '15day': 90,
+        '30day': 180,
+    }
+
+    //預設值
+    let VOL_LEN_DEF = 30
+    let CRASH_K_DEF = 1.5
+
+    //SIG_ZERO, σ不大於此值者視為0(r為對數報酬, 真實資料之σ遠大於此; 完全等比之序列其r僅差浮點捨入, σ殘值約1e-17, 不視為0則r/σ放大而逐根計為暴跌, 且隨平台之Math.log捨入而異)
+    let SIG_ZERO = 1e-12
+
+    //popStd, x於索引a至b(含)之母體標準差; 不大於SIG_ZERO者回0(全部相同者之平均值捨入所留之殘值亦包含在內)
+    let popStd = (x, a, b) => {
+        let m = b - a + 1
+        let s = 0
+        for (let j = a; j <= b; j++) {
+            s += x[j]
+        }
+        let mean = s / m
+        let q = 0
+        for (let j = a; j <= b; j++) {
+            let d = x[j] - mean
+            q += d * d
+        }
+        let sd = Math.sqrt(q / m)
+        return sd > SIG_ZERO ? sd : 0
+    }
+
+    let caDown = (arr, r, vol, sig, len, volLen, crashK) => {
+
+        //n
+        let n = size(arr)
+
+        //s0, 第一筆對應之輸入索引
+        //  視窗W(i,len)之最早一根j=i-len+1需有σ(j), 即j>=volLen(σ(j)用r於W(j,volLen), 需j-volLen+1>=1); downBars、downVol需i-len+1>=1, 已含於其中
+        let s0 = len + volLen - 1
+
+        //check, 筆數不足
+        if (n < s0 + 1) {
+            return []
+        }
+
+        let kTime = 'time'
+
+        //rs
+        let rs = []
+        for (let i = s0; i < n; i++) {
+
+            let nDown = 0
+            let vDown = 0
+            let vAll = 0
+            let nCrash = 0
+            for (let j = i - len + 1; j <= i; j++) {
+                vAll += vol[j]
+                if (r[j] < 0) {
+                    nDown++
+                    vDown += vol[j]
+                }
+                if (sig[j] > 0 && r[j] / sig[j] <= -crashK) {
+                    nCrash++
+                }
+            }
+
+            rs.push({
+                time: arr[i][kTime],
+                downBars: nDown / len,
+                downVol: vAll > 0 ? vDown / vAll : 0.5,
+                crashN: nCrash,
+            })
+        }
+        // console.log('rs', rs)
+
+        return rs
+    }
+
+    let caDowns = (arr, key, opt = {}) => {
+
+        //check, key為必須參數(先於opt)
+        if (!isestr(key)) {
+            throw new Error(`invalid key: must be a non-empty string`)
+        }
+
+        //kp, 週期表(resolvePeriods: opt.intervalSec根數不變、標籤依根數×每根時長換算, 未給時同內建表; opt.kp直接採用; opt.intervalSec無效即拋)
+        let kp = resolvePeriods(KP, opt)
+
+        //check, 各期之值須為正整數(opt.kp之值為參數物件者於此拒絕)
+        each(kp, (len) => {
+            if (!(Number.isInteger(len) && len >= 1)) {
+                throw new Error(`invalid opt.kp: must be an object of positive integers`)
+            }
+        })
+
+        //volLen、crashK, opt各鍵經getOptReader讀取(給了即檢測, 非預期之輸入視為未給而改用預設, opt.debug為true時警告); 檢測通過之數字字串轉為數值後使用
+        let rd = getOptReader('w-data-trade calcDown', opt)
+        let volLen = Number(rd('volLen', VOL_LEN_DEF, (v) => iseint(v, { min: 2 }), 'an integer >= 2', `${VOL_LEN_DEF}`))
+        let crashK = Number(rd('crashK', CRASH_K_DEF, (v) => isenum(v) && Number(v) > 0, 'a positive number', `${CRASH_K_DEF}`))
+
+        //n
+        let n = size(arr)
+
+        //check, 逐根檢核(任一根無效即拒)
+        let lc = new Array(n)
+        let vol = new Array(n)
+        for (let i = 0; i < n; i++) {
+            let v = get(arr[i], key)
+            if (!isNumber(v) || !Number.isFinite(v) || !(v > 0)) {
+                throw new Error(`invalid arr: must have a positive finite value of key in every element`)
+            }
+            lc[i] = Math.log(v)
+            let vv = get(arr[i], 'Volumn')
+            if (!isNumber(vv) || !Number.isFinite(vv) || !(vv >= 0)) {
+                throw new Error(`invalid arr: must have a finite Volumn >= 0 in every element`)
+            }
+            vol[i] = vv
+        }
+
+        //r, 對數報酬(r[0]不用)
+        let r = new Array(n).fill(0)
+        for (let i = 1; i < n; i++) {
+            r[i] = lc[i] - lc[i - 1]
+        }
+
+        //sig, σ(j)=r於W(j,volLen)之母體標準差, 自索引volLen起(各期共用)
+        let sig = new Array(n).fill(0)
+        for (let j = volLen; j < n; j++) {
+            sig[j] = popStd(r, j - volLen + 1, j)
+        }
+
+        //rrs
+        let rrs = []
+        each(kp, (len, period) => {
+
+            //caDown
+            let rs = caDown(arr, r, vol, sig, len, volLen, crashK)
+
+            //push
+            rrs.push({
+                period,
+                len,
+                vs: rs,
+            })
+            // console.log('rrs', rrs)
+
+        })
+
+        return rrs
+    }
+
+    let calcDown = async(arr, key, opt = {}) => {
+        // arr = [
+        //   {"time":"2020-01-01T00:00:00","Open":7195,...,"Close":7173.32,"Volumn":4657.972543,...},
+        //   ...
+        // ]
+
+        //caDowns
+        let rs = caDowns(arr, key, opt)
+
+        return rs
+    }
+
+    return calcDown
+})()
+
+
+export default calcDown

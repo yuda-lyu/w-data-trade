@@ -1,0 +1,229 @@
+import isNumber from 'lodash-es/isNumber.js'
+import get from 'lodash-es/get.js'
+import size from 'lodash-es/size.js'
+import each from 'lodash-es/each.js'
+import iseint from 'wsemi/src/iseint.mjs'
+import getOptReader from 'wsemi/src/getOptReader.mjs'
+import resolvePeriods from './resolvePeriods.mjs'
+
+
+/**
+ * 計算各週期累積主動買賣量之水準、速度與加速度(Taker flow level, velocity, acceleration)
+ *
+ * 讀取Volumn與TakerBuyBaseAssetVolume欄位(key目前未被使用，僅為與其他指標介面一致而保留)，只用當根(含)以前之資料，逐根因果
+ * 量之尺度s(j)=第j根之前(不含當根)至多opt.scaleWin根(第max(0,j-opt.scaleWin)至j-1根)之Volumn平均，需j至少為opt.scaleMin，s(j)不大於0時該根之buy、sell皆記0
+ * 逐根之量：buy(j)=TakerBuyBaseAssetVolume/s(j)，sell(j)=(Volumn-TakerBuyBaseAssetVolume)/s(j)，net(j)=buy(j)-sell(j)
+ * 視窗W(i,len)為第i-len+1至i根(含當根共len根)，期別之根數為len；M(i)為x於W(i,len)之平均(x為buy、sell、net)，share之M(i)=W(i,len)內(2×TakerBuyBaseAssetVolume-Volumn)之和/Volumn之和(和不大於0時回0)
+ * 三階(各欄之M為其x之M)：水準L=M(i)，速度V=M(i)-M(i-len)，加速度A=M(i)-2M(i-len)+M(i-2len)
+ * 輸出12欄：buyL、buyV、buyA、sellL、sellV、sellA、netL、netV、netA、shareL、shareV、shareA
+ * 各期第一筆對應輸入索引s0=opt.scaleMin+3×len-1(M(i-2len)之視窗最早一根為i-3len+1，需至少為opt.scaleMin)，其後逐根對齊至最後一根，資料筆數n小於s0+1時該期vs回空陣列
+ * 各欄於資料充足時皆為有限數值(不輸出NaN或Infinity)
+ *
+ * Unit Test: {@link https://github.com/yuda-lyu/w-data-trade/blob/master/test/unit-calcFlow.test.mjs Github}
+ * @function
+ * @param {Array} arr 輸入K線陣列，各元素需含time、Volumn、TakerBuyBaseAssetVolume欄位，須滿足Volumn為不小於0之有限數、TakerBuyBaseAssetVolume為有限數且0<=TakerBuyBaseAssetVolume<=Volumn×(1+1e-9)，否則reject(任一根無效即整批reject；訊息不含輸入值)；null、undefined、{}(以lodash size計為0根)視為無資料，各期vs為空陣列
+ * @param {String} key 輸入計算所用數值欄位名稱字串，本指標固定讀取Volumn/TakerBuyBaseAssetVolume欄位，key目前未被使用，僅為與其他指標介面一致而保留
+ * @param {Object} [opt={}] 輸入設定物件，預設{}
+ * @param {Number|String} [opt.scaleWin=90] 輸入量之尺度所用之最多根數，至少為1之整數(數值或數字字串，數字字串轉為數值使用)，預設90，非預期之輸入(含小於1、非整數、非數值)視為未給而改用預設
+ * @param {Number|String} [opt.scaleMin=30] 輸入量之尺度所需之最少根數，至少為1且不大於opt.scaleWin之整數(數值或數字字串，數字字串轉為數值使用)，預設為30與opt.scaleWin之較小者，非預期之輸入(含大於opt.scaleWin者；opt.scaleWin取用其有效值或預設)視為未給而改用預設
+ * @param {Number|String} [opt.intervalSec=14400] 輸入每根K線之秒數，60之正整數倍且至多31536000(數值或數字字串)，各期根數不變(根數為本)，期別標籤為根數×每根秒數之時間跨度(例：每根1day時3根之期為'3day')，預設14400(每根4hr，標籤與根數皆同內建表)，無效時reject
+ * @param {Object} [opt.kp] 輸入直接採用之週期表物件，鍵為週期標籤，值為正整數根數，給予時不換算，預設採內建週期表，非預期之輸入(非物件、空物件、任一值非正整數)視為未給；值為參數物件者reject
+ * @param {Boolean} [opt.debug=false] 輸入是否於opt.kp、opt.scaleWin、opt.scaleMin出現非預期輸入(視為未給、改用預設)時輸出警告布林值，預設false；警告為固定詞彙、不含傳入之值，同一個鍵每個行程只警告一次
+ * @param {Function} [opt.funLog] 輸入警告出口函數，以(msg, { fn, reason, key })呼叫，未給則用console.warn，預設未給
+ * @returns {Promise} 回傳Promise，resolve為各期結果陣列，各元素為{period,len,vs}，vs內各元素為{time,buyL,buyV,buyA,sellL,sellV,sellA,netL,netV,netA,shareL,shareV,shareA}
+ * @example
+ *
+ * let arr = [
+ *     { time: '2020-01-01T00:00:00', Volumn: 10, TakerBuyBaseAssetVolume: 6 },
+ *     { time: '2020-01-01T04:00:00', Volumn: 20, TakerBuyBaseAssetVolume: 12 },
+ *     { time: '2020-01-01T08:00:00', Volumn: 30, TakerBuyBaseAssetVolume: 15 },
+ *     { time: '2020-01-01T12:00:00', Volumn: 40, TakerBuyBaseAssetVolume: 30 },
+ *     { time: '2020-01-01T16:00:00', Volumn: 50, TakerBuyBaseAssetVolume: 20 },
+ *     { time: '2020-01-01T20:00:00', Volumn: 60, TakerBuyBaseAssetVolume: 45 },
+ * ]
+ *
+ * calcFlow(arr, 'Close', { scaleWin: 3, scaleMin: 2, kp: { '4hr': 1 } })
+ *     .then((rs) => {
+ *         console.log(rs[0])
+ *         // => {
+ *         //   period: '4hr',
+ *         //   len: 1,
+ *         //   vs: [
+ *         //     { time: '2020-01-01T16:00:00', buyL: 0.6666666666666666, buyV: -0.8333333333333334, buyA: -1.3333333333333335, sellL: 1, sellV: 0.5, sellA: 1, netL: -0.33333333333333337, netV: -1.3333333333333335, netA: -2.3333333333333335, shareL: -0.2, shareV: -0.7, shareA: -1.2 },
+ *         //     { time: '2020-01-01T20:00:00', buyL: 1.125, buyV: 0.45833333333333337, buyA: 1.2916666666666667, sellL: 0.375, sellV: -0.625, sellA: -1.125, netL: 0.75, netV: 1.0833333333333335, netA: 2.416666666666667, shareL: 0.5, shareV: 0.7, shareA: 1.4 }
+ *         //   ]
+ *         // }
+ *     })
+ *
+ */
+let calcFlow = (() => {
+
+    let KP = { //內建週期表(值為根數; 標籤以每根4hr寫定: '12hr'=3根、'1day'=6根), 實際週期表由resolvePeriods依opt.intervalSec(根數不變、標籤換算)或opt.kp決定
+        '12hr': 3,
+        '16hr': 4,
+        '20hr': 5,
+        '1day': 6,
+        '2day': 12,
+        '4day': 24,
+        '7day': 42,
+        '15day': 90,
+        '30day': 180,
+    }
+
+    //預設值
+    let SCALE_WIN_DEF = 90
+    let SCALE_MIN_DEF = 30
+
+    //輸出欄(依序), 各欄為「x之M」之三階L、V、A
+    let COLS = ['buy', 'sell', 'net', 'share']
+
+    let caFlow = (arr, buy, sell, net, vol, tb, len, scaleMin) => {
+
+        //n
+        let n = size(arr)
+
+        //s0, 第一筆對應之輸入索引
+        //  M(i)之視窗W(i,len)需i-len+1>=scaleMin(s(j)自j=scaleMin起), 即i>=scaleMin+len-1
+        //  加速度需M(i-2len), 其視窗最早一根為i-3len+1, 需>=scaleMin, 故s0=scaleMin+3len-1
+        let s0 = scaleMin + 3 * len - 1
+
+        //check, 筆數不足
+        if (n < s0 + 1) {
+            return []
+        }
+
+        let kTime = 'time'
+
+        //M, 各欄於W(i,len)之平均, 自索引scaleMin+len-1起(i-2len之M最早為s0-2len=scaleMin+len-1)
+        let iM = scaleMin + len - 1
+        let M = {}
+        each(COLS, (col) => {
+            M[col] = new Array(n).fill(0)
+        })
+        for (let i = iM; i < n; i++) {
+            let a = i - len + 1
+            let sb = 0
+            let ss = 0
+            let sn = 0
+            let sRaw = 0
+            let sVol = 0
+            for (let j = a; j <= i; j++) {
+                sb += buy[j]
+                ss += sell[j]
+                sn += net[j]
+                sRaw += 2 * tb[j] - vol[j]
+                sVol += vol[j]
+            }
+            M.buy[i] = sb / len
+            M.sell[i] = ss / len
+            M.net[i] = sn / len
+            M.share[i] = sVol > 0 ? sRaw / sVol : 0
+        }
+
+        //rs
+        let rs = []
+        for (let i = s0; i < n; i++) {
+            let v = { time: arr[i][kTime] }
+            each(COLS, (col) => {
+                let m = M[col]
+                v[`${col}L`] = m[i]
+                v[`${col}V`] = m[i] - m[i - len]
+                v[`${col}A`] = m[i] - 2 * m[i - len] + m[i - 2 * len]
+            })
+            rs.push(v)
+        }
+        // console.log('rs', rs)
+
+        return rs
+    }
+
+    let caFlows = (arr, opt = {}) => {
+
+        //kp, 週期表(resolvePeriods: opt.intervalSec根數不變、標籤依根數×每根時長換算, 未給時同內建表; opt.kp直接採用; opt.intervalSec無效即拋)
+        let kp = resolvePeriods(KP, opt)
+
+        //check, 各期之值須為正整數(opt.kp之值為參數物件者於此拒絕)
+        each(kp, (len) => {
+            if (!(Number.isInteger(len) && len >= 1)) {
+                throw new Error(`invalid opt.kp: must be an object of positive integers`)
+            }
+        })
+
+        //scaleWin、scaleMin, opt各鍵經getOptReader讀取(給了即檢測, 非預期之輸入視為未給而改用預設, opt.debug為true時警告); 檢測通過之數字字串轉為數值後使用
+        let rd = getOptReader('w-data-trade calcFlow', opt)
+        let scaleWin = Number(rd('scaleWin', SCALE_WIN_DEF, (v) => iseint(v, { min: 1 }), 'a positive integer', `${SCALE_WIN_DEF}`))
+
+        //scaleMin, 須不大於scaleWin(跨鍵依賴: 大於者視為非預期); 未給時取預設與scaleWin之較小者(只調小scaleWin時不致因預設值而落到scaleWin之外)
+        let scaleMin = Number(rd('scaleMin', Math.min(SCALE_MIN_DEF, scaleWin), (v) => iseint(v, { min: 1 }) && Number(v) <= scaleWin, 'a positive integer <= opt.scaleWin', 'the smaller of 30 and opt.scaleWin'))
+
+        //n
+        let n = size(arr)
+
+        //check, 逐根檢核(任一根無效即拒)
+        let vol = new Array(n)
+        let tb = new Array(n)
+        for (let i = 0; i < n; i++) {
+            let v = get(arr[i], 'Volumn')
+            let t = get(arr[i], 'TakerBuyBaseAssetVolume')
+            if (!isNumber(v) || !Number.isFinite(v) || !(v >= 0) || !isNumber(t) || !Number.isFinite(t) || !(t >= 0) || !(t <= v * (1 + 1e-9))) {
+                throw new Error(`invalid arr: must have a finite Volumn >= 0 and a finite TakerBuyBaseAssetVolume in [0, Volumn] in every element`)
+            }
+            vol[i] = v
+            tb[i] = t
+        }
+
+        //buy、sell、net, 逐根(未達scaleMin或尺度不大於0者記0)
+        let buy = new Array(n).fill(0)
+        let sell = new Array(n).fill(0)
+        let net = new Array(n).fill(0)
+        for (let j = scaleMin; j < n; j++) {
+            let from = Math.max(0, j - scaleWin)
+            let s = 0
+            for (let k = from; k <= j - 1; k++) {
+                s += vol[k]
+            }
+            s /= (j - from)
+            if (s > 0) {
+                buy[j] = tb[j] / s
+                sell[j] = (vol[j] - tb[j]) / s
+                net[j] = buy[j] - sell[j]
+            }
+        }
+
+        //rrs
+        let rrs = []
+        each(kp, (len, period) => {
+
+            //caFlow
+            let rs = caFlow(arr, buy, sell, net, vol, tb, len, scaleMin)
+
+            //push
+            rrs.push({
+                period,
+                len,
+                vs: rs,
+            })
+            // console.log('rrs', rrs)
+
+        })
+
+        return rrs
+    }
+
+    let calcFlow = async(arr, key, opt = {}) => {
+        // arr = [
+        //   {"time":"2020-01-01T00:00:00","Open":7195,...,"Volumn":4657.972543,...,"TakerBuyBaseAssetVolume":2161.591103,...},
+        //   ...
+        // ]
+
+        //caFlows
+        let rs = caFlows(arr, opt)
+
+        return rs
+    }
+
+    return calcFlow
+})()
+
+
+export default calcFlow

@@ -1,13 +1,13 @@
 # 現況(w-data-trade)
 
 > 當前已開發功能之最新狀態;只記現況,不寫過程(過程見 `sgud/exp/experience.md`).規則見 `sgud/rule/rulebook.md`.
-> 基準版本:1.0.57(`package.json`);Gitea #209(方向改變法 `calcDirChange`、`periodInfo` 認 `${N}pct`)為 1.0.57 之後、尚未發布之變更;Gitea #180(週期表改為根數為本、移除 `opt.barsPerDay`、`dataConvert` 入口檢核、`calcAts` 首筆)之驗證紀錄見下(其對照基準為當時之 1.0.49).
+> 基準版本:1.0.66(`package.json`);Gitea #227(特徵族 `calcMomz`、`calcVolx`、`calcDown`、`calcFlow`)為 1.0.66 之後、尚未發布之變更(未提交);Gitea #209(方向改變法 `calcDirChange`、`periodInfo` 認 `${N}pct`)已含於 1.0.66;Gitea #180(週期表改為根數為本、移除 `opt.barsPerDay`、`dataConvert` 入口檢核、`calcAts` 首筆)之驗證紀錄見下(其對照基準為當時之 1.0.49).
 
 ## 功能
 
 | 功能 | 狀態 | 規則 | 測試 |
 |---|---|---|---|
-| 21 個 `calc*` 之內建週期表(值為根數,標籤以每根 4hr 寫定)與輸出 | 完成;未給 `opt.intervalSec`(或為 14400)時與 1.0.33/1.0.49 逐位相同(唯一例外:`calcAts` len = 1 之首筆,見下) | R-PER-01、R-PER-02 | `unit-calc*.test.mjs`(既有)、`unit-contract.test.mjs`、`unit-calcPeriods.test.mjs` 〈恆等〉、`unit-intervalSec.test.mjs` |
+| 21 個(1.0.33 已有者;1.0.66 之後新增之特徵族四個見下,其週期表同此寫法)`calc*` 之內建週期表(值為根數,標籤以每根 4hr 寫定)與輸出 | 完成;未給 `opt.intervalSec`(或為 14400)時與 1.0.33/1.0.49 逐位相同(唯一例外:`calcAts` len = 1 之首筆,見下) | R-PER-01、R-PER-02 | `unit-calc*.test.mjs`(既有)、`unit-contract.test.mjs`、`unit-calcPeriods.test.mjs` 〈恆等〉、`unit-intervalSec.test.mjs` |
 | 根數為本 `opt.intervalSec`(每根秒數) | 完成:根數不變、不剔除;期別標籤 = 根數 × 每根秒數之時間跨度(每根 1day:`'4hr'`→`'1day'`、`'12hr'`→`'3day'`、`'1day'`→`'6day'`、`'30day'`→`'180day'`);給了而無效即拋(K3 之例外,主控已登記);給時 `len`、`vs` 與未給逐筆相同 | R-PER-14、R-PER-16、R-PER-20 | `unit-intervalSec.test.mjs` 〈S1/S2〉〈S4〉、`unit-calcPeriods.test.mjs` 〈給intervalSec〉 |
 | 期別標籤規則 `spanLabelOf`/`spanSecOf` | 完成:整日 `day`、否則整小時 `hr`、否則 `m`;非整分鐘 throw;標籤與秒數一一對應 | R-PER-15 | `unit-intervalSec.test.mjs` 〈S2 標籤規則〉 |
 | `periodInfo(period, { intervalSec })` | 完成:回傳 `{ period, bars, spanSec }`,對內建表 bars 即 len;未給 intervalSec 視為 4hr;只收期別標籤;只適用於內建表(不適用於 `opt.kp` 之標籤);`'none'` 與 `${N}pct`(`^[1-9][0-9]*pct$`,`calcDirChange` 之門檻標籤)回 0 根 0 秒;聚合匯出 `wdt.periodInfo` | R-PER-11、R-PER-19 | `unit-intervalSec.test.mjs` 〈S7〉、〈S6 自訂表之標籤由呼叫端自負其義〉 |
@@ -19,6 +19,7 @@
 | `dataCalibrate` 之 `intervalSec` 入口檢核 | 完成:`optMethodInit`、`opt.optMethodRef` 之 `intervalSec` 給了而無效 ⇒ 未呼叫 `calcFn` 即拒;預設 `opt.params` 仍為 `optMethodInit` 全部鍵(須自行排除 `intervalSec`) | R-PER-12 | `unit-intervalSec.test.mjs` 〈S8〉、`unit-calcPeriods.test.mjs` 〈dataConvert / dataCalibrate 經optMethod透傳intervalSec〉 |
 | `calcAts` 首筆 `atsChange`(len = 1) | 完成:無前根可比為 0(原為 NaN);len ≥ 2 不變 | R-PER-21 | `unit-calcAts.test.mjs` 〈len = 1〉〈len = 2〉 |
 | README 與 JSDoc | 完成(根數為本;Breaking changes and fix 一節載明 `barsPerDay` 移除與 `calcAts` 修正;敘述據實:`dataConvert` 只比對各 method 所給之 `optMethod.intervalSec`) | R-PER-13 | — |
+| 特徵族 `calcMomz`(以波動標準化之動能、速度、加速度、已漲之幅、效率比)、`calcVolx`(波動之延伸:`rv`、`park`、`gk`、`rs`、`rvRatio`、`chop`、`downShare`、`jumpShare`、`varRatio`、`volOfVol`)、`calcDown`(`downBars`、`downVol`、`crashN`)、`calcFlow`(主動買賣量之水準、速度、加速度 12 欄) | 完成(1.0.66 之後、尚未發布;Gitea #227):內建週期表同 `calcCvd`(9 期);逐根因果;各欄資料充足時皆為有限數值;八個數值選項(`volLen`、`crashK`、`longMult`、`vrLag`、`vovLen`、`eps`、`scaleWin`、`scaleMin`)以 wsemi `getOptReader` 宣告,非預期改用預設、`opt.debug` 警告(K3);`opt.kp` 之值為參數物件或(`calcMomz`、`calcVolx`)為 1 拒(K3 之例外,已列需裁示);`calcMomz`、`calcDown` 之 `key` 須為非空字串;σ ≤ 1e-12 視為 0;`calcVolx` 拒高低未涵蓋開收之 K 線;`jumpShare` 不截斷;README 不宣稱為有效因子;既有 22 個 calc 之輸出不變(HEAD 之既有測試配新 src 全過) | R-FEA-01～R-FEA-11、R-PER-01/13/20(盤點數已更新) | `unit-calcMomz`、`unit-calcVolx`、`unit-calcDown`、`unit-calcFlow`、`unit-setupFeat`(共用層)、`unit-contract`、`unit-intervalSec` |
 | 方向改變法 `calcDirChange`(只用收盤、因果;`dirState`、`dirRetrace`、`dirRun`、`dirAge`;內建門檻表 4、6、8、10%,標籤 `${pct}pct`、`len` 0、`pct`) | 完成(1.0.57 之後、尚未發布;Gitea #209):門檻與 K 線週期無關(`opt.intervalSec` 只檢核);`opt.kp` 沿用 `resolvePeriods`(只收正整數百分比,值為物件者拒);`Close` 須為正之有限數;`periodInfo` 認其標籤 `${N}pct`(R-PER-19);`dataConvert` 照常可用;既有 22 個 calc 與其餘匯出之輸出逐位不變(`periodInfo` 對既有輸入之回傳與拒絕訊息亦不變) | R-DIR-01～R-DIR-06、R-PER-19 | `unit-calcDirChange.test.mjs`、`unit-contract.test.mjs`、`unit-intervalSec.test.mjs` 〈S7 Npct〉 |
 
 ## 最近一次驗證(2026-11-18,Gitea #180 修正輪,對工作樹起始之 1.0.49)
@@ -43,9 +44,20 @@
 - 工具:eslint(`.eslintrc.js`)對 `src/*.mjs`、`test/*.mjs`、`g.mjs` 0 問題;自有套件使用界線掃描(L0e)掃描 40 檔必修 0、待判讀 0;private-guard CLEAN;`@example` 實跑之值與 JSDoc、README 相同.
 - 獨立複審(sonnet,唯讀):因果性 7,500 次截斷比對 0 差異;與獨立撰寫之參考實作(6 組隨機漫步 × 4 門檻、3,000 組格點、邊界構造)0 差異;`periodInfo` 55 種標籤 × 27 種 opt 差異僅 75 組(皆 `Npct` × 有效 `intervalSec`);缺陷 5 項皆為文件類(狀態檔未更新、`RE_PCT` 行數、「先出現之極值已確認」之理由敘述、非陣列 `arr` 之敘述、`opt.debug` 警告文字),已修.
 
+## 最近一次驗證(2026-11-28,Gitea #227:特徵族 `calcMomz`、`calcVolx`、`calcDown`、`calcFlow`,對 1.0.66)
+
+- 全套 `npm test`(`--parallel`)連跑 5 次、`--no-parallel` 1 次:皆 755 通過、0 失敗、0 略過(1.0.66 為 656;新增 99 = 四個新測試檔 71〔`unit-calcMomz` 18、`unit-calcVolx` 21、`unit-calcDown` 18、`unit-calcFlow` 14;提案草案為 60,另加 11〕+ `unit-contract` 24 + `unit-intervalSec` 4).發布包(`npm pack`)解開之目錄(自建 `node_modules`、不建目錄連結):755 通過、0 失敗、0 略過(`npm install` 自建 `node_modules`、不建目錄連結;本輪未掛模組解析守門,解開目錄位於本庫 `./tmp/` 之下)。
+- 既有 656 案原樣通過(R-PER-02):HEAD 之 31 個測試檔(未改)配新 `src`,`--parallel`:656 通過、0 失敗、0 略過.
+- 提案草案之 60 案配最終 `src`:53 通過、7 案紅,7 案皆為本案有意改變之行為(無效選項 reject 改為改用預設 4 案、`key` 訊息 2 案、OHLC 不一致之 K 線 1 案).
+- 修前紅(最終測試配草案 `src`):223 通過、11 案紅——σ 之下限 4(`calcMomz` 2、`calcDown` 2)、K3 選項 4(四個 calc 各 1)、`key` 檢核 2、OHLC 一致性 1;其餘為守門與行為保持案(暖機根數、`jumpShare` 不截斷、手算例等,於草案 `src` 亦綠).
+- 變異 94 項(本套件無變異工具,手動植入於鏡像根,每項跑該 calc 之測試檔與 `unit-contract`;錨點須恰中 1 次;無摘要者判未判定):殺死 90、存活 4、未判定 0.含提案〈驗證建議〉5 之四項(`calcFlow` 之 `scaleMin` 預設改回固定 30、`calcDown` 之 σ 改為不含當根、`calcVolx` 之 tr 改為只取當根高低差、`calcMomz` 之 σ 改為樣本標準差)皆殺死;σ 下限之放大(1e-8)、縮小(1e-14)、移除,OHLC 檢核之 5 種局部放寬或移除,`jumpShare` 截斷,偷看下一根(4 處),`scaleMin` 跨鍵檢核之移除與放寬,K3 邊界(`min` 放寬 5 處、`eps`/`crashK` 接受 0),警告 tag 與描述之錯置,`key` 檢核之移除與次序,暖機與 s0 各項.存活 4 項皆為等價:①`MZ-S4`(`sd >= SIG_ZERO`)——僅 σ 恰等於 1e-12 時不同,隨機 300 萬窗 0 次、1e-12 非 2^-50 之整數倍(r 為 lc 之差,不可能恰為 ±1e-12);②`DN-S16`(`crashK` 不轉數值)——僅用於 `-crashK`,隱式轉型同值;③`DN-S17`(`downVol` 分子含平盤量)——植入處位於 `r < 0` 分支內,`r === 0` 不可達(變異設計之誤,不可達碼);④`VX-S14`(`chop` 不防 tr 之和為 0)——高低涵蓋開收之 K 線(已強制)高低差 > 0 則 tr 之和必 > 0,4,000 組隨機合法序列(平盤同價位、平盤跳空、一般)× 3 期對拍 0 差異.
+- 工具:eslint(`.eslintrc.js`)對改動之 12 個 `src`/`test` 檔 0 問題(草案之測試檔原有 29 項,已修);JSDoc(`npx jsdoc -c .jsdoc`,輸出至暫存夾)無 ERROR/WARN,四個 calc 之 `@example` 實跑之值與 JSDoc 相符;自有套件使用界線掃描(L0e)掃描 44 檔必修 0、待判讀 0;private-guard CLEAN.
+- 效能(合成資料、全部 9 期):2,971 根各 5~22 毫秒、20,000 根各 30~170 毫秒.
+
 ## 已知缺口與待辦
 
 - `docs/`、`dist/` 由發布流程產製,不在本次變更內.
+- 特徵族(Gitea #227)待裁示/限制:①`opt.kp` 之值為參數物件或(`calcMomz`、`calcVolx`)為 1 拒絕,為跨套件規格 K3 之例外,與 `calcDirChange` 同形,規格庫尚未登記(R-FEA-02);②`calcVolx` 拒高低未涵蓋開收之 K 線,既有 calc(`calcAtr`、`calcCandle` 等)只檢型別而不檢一致性,僅新增者收嚴,不改既有 calc(R-FEA-05);③`calcMomz`、`calcDown` 之 `key` 非字串即拒(訊息 `invalid key: …`),既有 calc 之 `key`/`arr` 檢核寫法各異(`calcMa` 系經 `pickValue`),不在本案統一;④`opt` 為已撤銷之 Proxy 時 `resolvePeriods` 讀取拋 TypeError 而 reject(既有 calc 同,見 R-FEA-03 限制與回饋);⑤既有 23 個 calc 之 opt 檢測仍為舊寫法(`resolvePeriods` 自寫 `warnInvalid` 與 `chkIntervalSec`),新增之四個以 `getOptReader` 宣告,同套件內寫法並存(行為一致:非預期改用預設、`opt.debug` 警告、`opt.intervalSec` 例外拒絕),統一為另案.
 - `calcDirChange`:`opt.kp` 只收正整數百分比(小數門檻須另寫檢核);`opt.kp` 之值為物件時拒(跨套件規格 K3「非預期視為未給」之例外,R-DIR-03 已載,規格庫尚未登記);`opt.debug` 警告文字沿用 `resolvePeriods`(提及參數物件,於 `calcDirChange` 實為拒絕),且 `opt.kp` 之警告每個行程只一次(與其他 calc 共用同一鍵);對拍工具(`cmp`/`cmpdiff`/變異腳本)為暫存,未入庫(`test/tools/` 尚無).
 - 限制(已載於 README 與規則):`dataConvert` 輸出檔名不含 K 線週期(同一標籤於不同週期為不同根數,須分資料夾);`dataCalibrate` 須以 `opt.params` 排除 `intervalSec`;根數為本下長期別之暖機根數同 4hr(日線約一年,見經驗第 15 條);`dataConvert` 之各 method 一致性只比對所給之 `optMethod.intervalSec`(不讀 `arrOhlc`、`interval`;不讀選項之 `calcOrig` 亦須給同值).
 - `calcMa`、`calcEma`、`calcVec` 先轉換輸入資料(`pickValue`)再取週期表,故 `arr`/`key` 無效時先以其訊息拒絕,不先報 `opt.intervalSec` 無效(其餘 18 個 calc 先報);已載於 README 與 R-PER-16.

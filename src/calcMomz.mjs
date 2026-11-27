@@ -1,0 +1,265 @@
+import isNumber from 'lodash-es/isNumber.js'
+import get from 'lodash-es/get.js'
+import size from 'lodash-es/size.js'
+import each from 'lodash-es/each.js'
+import isestr from 'wsemi/src/isestr.mjs'
+import iseint from 'wsemi/src/iseint.mjs'
+import getOptReader from 'wsemi/src/getOptReader.mjs'
+import resolvePeriods from './resolvePeriods.mjs'
+
+
+/**
+ * 計算各週期以波動標準化之動能、速度、加速度、已漲之幅與效率比(Momentum in volatility units)
+ *
+ * 只用當根(含)以前之資料，逐根因果：lc=ln(key欄位)，r(i)=lc(i)-lc(i-1)(i至少為1)，視窗W(i,m)為第i-m+1至i根(含當根共m根)
+ * σ(i)為r於W(i,volLen)之母體標準差(需i至少為volLen；全部相同者為0，不大於1e-12者亦視為0：完全等比之序列其r僅差浮點捨入，σ殘值約1e-17，不致使各欄放大至1e13量級)，期別之根數為len，各欄(第i根)：
+ * momZ=(lc(i)-lc(i-len))/(σ(i)×√len)，起漲力道，σ為0時回0
+ * vel=lc於W(i,len)對x=0至len-1之最小平方斜率/σ(i)，速度(以每根之波動為單位)，σ為0時回0
+ * acc=vel(i)-vel(i-len)，加速度，為前後各一個len之速度之差
+ * ext=(lc(i)-W(i,len)內lc之最小)/(σ(i)×√len)，已漲之幅，不小於0，σ為0時回0
+ * er=|lc(i)-lc(i-len)|/Σ|r(j)|(j為W(i,len)內各根)，效率比(淨位移占路徑長之比例)，範圍[0,1]，分母為0時回0
+ * 各期第一筆對應輸入索引len+max(len-1,volLen)(acc需第i-len根之vel，該根需有vel與σ)，其後逐根對齊至最後一根，資料筆數n小於其加1時該期vs回空陣列
+ * len須為至少2之整數(內建週期表皆符合；opt.kp之值不符時reject)，各欄於資料充足時皆為有限數值(不輸出NaN或Infinity)
+ *
+ * Unit Test: {@link https://github.com/yuda-lyu/w-data-trade/blob/master/test/unit-calcMomz.test.mjs Github}
+ * @function
+ * @param {Array} arr 輸入K線陣列，各元素需含time與key指定之欄位，key欄位須為正之有限數，否則reject(任一根無效即整批reject；訊息不含輸入值)；null、undefined、{}(以lodash size計為0根)視為無資料，各期vs為空陣列
+ * @param {String} key 輸入計算所用數值欄位名稱字串，如'Close'，須為非空字串，否則reject
+ * @param {Object} [opt={}] 輸入設定物件，預設{}
+ * @param {Number|String} [opt.volLen=30] 輸入計算σ所用之根數，至少為2之整數(數值或數字字串，數字字串轉為數值使用)，預設30，非預期之輸入(含小於2、非整數、非數值)視為未給而改用預設
+ * @param {Number|String} [opt.intervalSec=14400] 輸入每根K線之秒數，60之正整數倍且至多31536000(數值或數字字串)，各期根數不變(根數為本)，期別標籤為根數×每根秒數之時間跨度(例：每根1day時3根之期為'3day')，預設14400(每根4hr，標籤與根數皆同內建表)，無效時reject
+ * @param {Object} [opt.kp] 輸入直接採用之週期表物件，鍵為週期標籤，值為至少為2之整數根數，給予時不換算，預設採內建週期表，非預期之輸入(非物件、空物件、任一值非正整數)視為未給；值為正整數但小於2或為參數物件者reject(給了而不適用於本指標之週期表若改用內建表，期別與標籤將與呼叫端所要不同，故不依非預期視為未給)
+ * @param {Boolean} [opt.debug=false] 輸入是否於opt.kp、opt.volLen出現非預期輸入(視為未給、改用預設)時輸出警告布林值，預設false；警告為固定詞彙、不含傳入之值，同一個鍵每個行程只警告一次
+ * @param {Function} [opt.funLog] 輸入警告出口函數，以(msg, { fn, reason, key })呼叫，未給則用console.warn，預設未給
+ * @returns {Promise} 回傳Promise，resolve為各期結果陣列，各元素為{period,len,vs}，vs內各元素為{time,momZ,vel,acc,ext,er}
+ * @example
+ *
+ * let arr = [
+ *     { time: '2020-01-01T00:00:00', Close: 100 },
+ *     { time: '2020-01-01T04:00:00', Close: 101 },
+ *     { time: '2020-01-01T08:00:00', Close: 103 },
+ *     { time: '2020-01-01T12:00:00', Close: 102 },
+ *     { time: '2020-01-01T16:00:00', Close: 106 },
+ *     { time: '2020-01-01T20:00:00', Close: 105 },
+ *     { time: '2020-01-02T00:00:00', Close: 107 },
+ * ]
+ *
+ * calcMomz(arr, 'Close', { volLen: 2, kp: { '8hr': 2 } })
+ *     .then((rs) => {
+ *         console.log(rs[0])
+ *         // => {
+ *         //   period: '8hr',
+ *         //   len: 2,
+ *         //   vs: [
+ *         //     { time: '2020-01-01T16:00:00', momZ: 0.8419774659983006, vel: 1.595367975813664, acc: -2.465138561007665, ext: 1.1280955141856979, er: 0.5953679758136642 },
+ *         //     { time: '2020-01-01T20:00:00', momZ: 0.8550327791475775, vel: -0.3954005237279683, acc: 0.2690838929738175, ext: 0, er: 0.6045994762720317 },
+ *         //     { time: '2020-01-02T00:00:00', momZ: 0.4684443229726495, vel: 1.3312401573823016, acc: -0.26412781843136246, ext: 0.9413289426728721, er: 0.33124015738230167 }
+ *         //   ]
+ *         // }
+ *     })
+ *
+ */
+let calcMomz = (() => {
+
+    let KP = { //內建週期表(值為根數; 標籤以每根4hr寫定: '12hr'=3根、'1day'=6根), 實際週期表由resolvePeriods依opt.intervalSec(根數不變、標籤換算)或opt.kp決定
+        '12hr': 3,
+        '16hr': 4,
+        '20hr': 5,
+        '1day': 6,
+        '2day': 12,
+        '4day': 24,
+        '7day': 42,
+        '15day': 90,
+        '30day': 180,
+    }
+
+    //σ之根數(預設)
+    let VOL_LEN_DEF = 30
+
+    //SIG_ZERO, σ不大於此值者視為0(r為對數報酬, 真實資料之σ遠大於此; 完全等比之序列其r僅差浮點捨入, σ殘值約1e-17, 不視為0則momZ等欄放大至1e13量級且隨平台之Math.log捨入而異)
+    let SIG_ZERO = 1e-12
+
+    //popStd, x於索引a至b(含)之母體標準差; 不大於SIG_ZERO者回0(全部相同者之平均值捨入所留之殘值亦包含在內)
+    let popStd = (x, a, b) => {
+        let m = b - a + 1
+        let s = 0
+        for (let j = a; j <= b; j++) {
+            s += x[j]
+        }
+        let mean = s / m
+        let q = 0
+        for (let j = a; j <= b; j++) {
+            let d = x[j] - mean
+            q += d * d
+        }
+        let sd = Math.sqrt(q / m)
+        return sd > SIG_ZERO ? sd : 0
+    }
+
+    let caMomz = (arr, lc, r, sig, len, volLen) => {
+
+        //n
+        let n = size(arr)
+
+        //s0, 第一筆對應之輸入索引
+        //  momZ、er需i-len>=0與σ(i)(i>=volLen); vel、ext需i-len+1>=0與σ(i); acc另需vel(i-len), 即i-len>=max(len-1,volLen)
+        //  故s0=len+max(len-1,volLen); r(j)需j>=1, er之視窗W(i,len)需i-len+1>=1, 已含於其中
+        let iVel = Math.max(len - 1, volLen) //vel第一個可算之索引
+        let s0 = len + iVel
+
+        //check, 筆數不足
+        if (n < s0 + 1) {
+            return []
+        }
+
+        let kTime = 'time'
+
+        //斜率之分母: Σ(x-xm)², x=0至len-1
+        let xm = (len - 1) / 2
+        let sxx = 0
+        for (let x = 0; x < len; x++) {
+            sxx += (x - xm) * (x - xm)
+        }
+
+        //vel, 自索引iVel起(acc需往前len根之vel)
+        let vel = new Array(n).fill(0)
+        for (let i = iVel; i < n; i++) {
+            if (!(sig[i] > 0)) {
+                continue //σ為0, vel回0
+            }
+            let a = i - len + 1
+            let ym = 0
+            for (let j = a; j <= i; j++) {
+                ym += lc[j]
+            }
+            ym /= len
+            let sxy = 0
+            for (let j = a; j <= i; j++) {
+                sxy += (j - a - xm) * (lc[j] - ym)
+            }
+            vel[i] = sxy / sxx / sig[i]
+        }
+
+        //rs
+        let sqrtLen = Math.sqrt(len)
+        let rs = []
+        for (let i = s0; i < n; i++) {
+
+            let a = i - len + 1
+
+            //路徑長與視窗內lc之最小
+            let path = 0
+            let mn = Infinity
+            for (let j = a; j <= i; j++) {
+                path += Math.abs(r[j])
+                if (lc[j] < mn) {
+                    mn = lc[j]
+                }
+            }
+
+            let dis = lc[i] - lc[i - len]
+            let sg = sig[i]
+            let momZ = 0
+            let ext = 0
+            if (sg > 0) {
+                momZ = dis / (sg * sqrtLen)
+                ext = (lc[i] - mn) / (sg * sqrtLen)
+            }
+
+            rs.push({
+                time: arr[i][kTime],
+                momZ,
+                vel: vel[i],
+                acc: vel[i] - vel[i - len],
+                ext,
+                er: path > 0 ? Math.abs(dis) / path : 0,
+            })
+        }
+        // console.log('rs', rs)
+
+        return rs
+    }
+
+    let caMomzs = (arr, key, opt = {}) => {
+
+        //check, key為必須參數(先於opt)
+        if (!isestr(key)) {
+            throw new Error(`invalid key: must be a non-empty string`)
+        }
+
+        //kp, 週期表(resolvePeriods: opt.intervalSec根數不變、標籤依根數×每根時長換算, 未給時同內建表; opt.kp直接採用; opt.intervalSec無效即拋)
+        let kp = resolvePeriods(KP, opt)
+
+        //check, 各期之值須為至少2之整數(vel需至少2點; opt.kp之值為參數物件或小於2者於此拒絕)
+        each(kp, (len) => {
+            if (!(Number.isInteger(len) && len >= 2)) {
+                throw new Error(`invalid opt.kp: must be an object of integers >= 2`)
+            }
+        })
+
+        //volLen, opt各鍵經getOptReader讀取(給了即檢測, 非預期之輸入視為未給而改用預設, opt.debug為true時警告); 檢測通過之數字字串轉為數值後使用
+        let rd = getOptReader('w-data-trade calcMomz', opt)
+        let volLen = Number(rd('volLen', VOL_LEN_DEF, (v) => iseint(v, { min: 2 }), 'an integer >= 2', `${VOL_LEN_DEF}`))
+
+        //n
+        let n = size(arr)
+
+        //lc, 逐根檢核(任一根無效即拒)
+        let lc = new Array(n)
+        for (let i = 0; i < n; i++) {
+            let v = get(arr[i], key)
+            if (!isNumber(v) || !Number.isFinite(v) || !(v > 0)) {
+                throw new Error(`invalid arr: must have a positive finite value of key in every element`)
+            }
+            lc[i] = Math.log(v)
+        }
+
+        //r, 對數報酬(r[0]不用)
+        let r = new Array(n).fill(0)
+        for (let i = 1; i < n; i++) {
+            r[i] = lc[i] - lc[i - 1]
+        }
+
+        //sig, σ(i)=r於W(i,volLen)之母體標準差, 自索引volLen起(各期共用)
+        let sig = new Array(n).fill(0)
+        for (let i = volLen; i < n; i++) {
+            sig[i] = popStd(r, i - volLen + 1, i)
+        }
+
+        //rrs
+        let rrs = []
+        each(kp, (len, period) => {
+
+            //caMomz
+            let rs = caMomz(arr, lc, r, sig, len, volLen)
+
+            //push
+            rrs.push({
+                period,
+                len,
+                vs: rs,
+            })
+            // console.log('rrs', rrs)
+
+        })
+
+        return rrs
+    }
+
+    let calcMomz = async(arr, key, opt = {}) => {
+        // arr = [
+        //   {"time":"2020-01-01T00:00:00","Open":7195,"High":7225.62,"Low":7145.01,"Close":7173.32,...},
+        //   ...
+        // ]
+
+        //caMomzs
+        let rs = caMomzs(arr, key, opt)
+
+        return rs
+    }
+
+    return calcMomz
+})()
+
+
+export default calcMomz

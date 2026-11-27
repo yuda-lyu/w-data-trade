@@ -13,7 +13,9 @@ import calcCandle from './calcCandle.mjs'
 import calcCvd from './calcCvd.mjs'
 import calcDirChange from './calcDirChange.mjs'
 import calcDonchian from './calcDonchian.mjs'
+import calcDown from './calcDown.mjs'
 import calcEma from './calcEma.mjs'
+import calcFlow from './calcFlow.mjs'
 import calcIchimoku from './calcIchimoku.mjs'
 import calcKdj from './calcKdj.mjs'
 import calcKeltner from './calcKeltner.mjs'
@@ -21,11 +23,13 @@ import calcKlr from './calcKlr.mjs'
 import calcMa from './calcMa.mjs'
 import calcMacd from './calcMacd.mjs'
 import calcMfi from './calcMfi.mjs'
+import calcMomz from './calcMomz.mjs'
 import calcObv from './calcObv.mjs'
 import calcOrig from './calcOrig.mjs'
 import calcRsi from './calcRsi.mjs'
 import calcSupertrend from './calcSupertrend.mjs'
 import calcVec from './calcVec.mjs'
+import calcVolx from './calcVolx.mjs'
 import calcVortex from './calcVortex.mjs'
 import calcVwap from './calcVwap.mjs'
 
@@ -46,7 +50,9 @@ let r = {
     calcCvd,
     calcDirChange,
     calcDonchian,
+    calcDown,
     calcEma,
+    calcFlow,
     calcIchimoku,
     calcKdj,
     calcKeltner,
@@ -54,11 +60,13 @@ let r = {
     calcMa,
     calcMacd,
     calcMfi,
+    calcMomz,
     calcObv,
     calcOrig,
     calcRsi,
     calcSupertrend,
     calcVec,
+    calcVolx,
     calcVortex,
     calcVwap,
 }
