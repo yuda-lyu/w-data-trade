@@ -60,6 +60,7 @@ import isfun from 'wsemi/src/isfun.mjs'
 import pmSeries from 'wsemi/src/pmSeries.mjs'
 import ispm from 'wsemi/src/ispm.mjs'
 import haskey from 'wsemi/src/haskey.mjs'
+import arrFilterByENum from 'wsemi/src/arrFilterByENum.mjs'
 import fsWriteJson from 'wsemi/src/fsWriteJson.mjs'
 import arrAverage from 'w-statistic/src/arrAverage.mjs'
 import arrStd from 'w-statistic/src/arrStd.mjs'
@@ -106,8 +107,7 @@ let snapByPeriod = (nm) => {
 }
 
 
-//quantile7, 已排序陣列(長度至少1)之第7型分位數: h = (n - 1) * q，x[floor(h)] + (h - floor(h)) * (x[floor(h) + 1] - x[floor(h)])，h為整數時即x[h]
-//  相鄰兩值a、b任一為±Infinity(且0 &lt; f &lt; 1)時，內插值即該無限端(同為Infinity者仍為Infinity)，a + b即得，以免a + f * (b - a)之Infinity - Infinity與-Infinity + Infinity得NaN；-Infinity與Infinity之間無定義而為NaN
+//quantile7, 已排序陣列(長度至少1, 皆為有限數值)之第7型分位數: h = (n - 1) * q，x[floor(h)] + (h - floor(h)) * (x[floor(h) + 1] - x[floor(h)])，h為整數時即x[h]
 let quantile7 = (xs, q) => {
     let h = (xs.length - 1) * q
     let i = Math.floor(h)
@@ -115,46 +115,20 @@ let quantile7 = (xs, q) => {
     if (f === 0) {
         return xs[i]
     }
-    let a = xs[i]
-    let b = xs[i + 1]
-    if (!Number.isFinite(a) || !Number.isFinite(b)) {
-        return a + b
-    }
-    return a + f * (b - a)
+    return xs[i] + f * (xs[i + 1] - xs[i])
 }
 
 
-//sortedOf, 數值序列中非NaN之數值(含±Infinity; 同w-statistic之arrAverage與arrStd只取有效數字)由小到大排序後之Float64Array
-let sortedOf = (ps) => {
-    let vs = []
-    each(ps, (x) => {
-        if (typeof x === 'number' &amp;&amp; !Number.isNaN(x)) {
-            vs.push(x)
-        }
-    })
-    return Float64Array.from(vs).sort()
-}
-
-
-//quantOf, 已排序數值之個數與分位數{n,median,q25,q75}(第7型); n為0時分位數為null
-let quantOf = (xs) => {
-    let n = xs.length
-    if (n === 0) {
-        return { n, median: null, q25: null, q75: null }
-    }
-    return { n, median: quantile7(xs, 0.5), q25: quantile7(xs, 0.25), q75: quantile7(xs, 0.75) }
-}
-
-
-//statOf, 一期序列之統計{n,avg,std,min,max,median,q25,q75}: 只計非NaN之數值，avg與std用w-statistic之arrAverage與arrStd(同回傳列之既有欄位)，分位數為第7型；n為0時其餘欄皆為null
+//statOf, 一組數值序列之統計{n,avg,std,min,max,median,q25,q75}(各期與攤平之全期皆用本函數): 只取有限數值(wsemi之arrFilterByENum; NaN、±Infinity與非數值皆不計入，與w-statistic之arrAverage、arrStd取用之母體相同)，n為有限值之個數；n為0時其餘欄皆為null
+//  avg與std用w-statistic之arrAverage與arrStd，min與max用lodash(取原順序中之極值，平手取先出現者，與回傳列既有之min、max相同)，分位數為第7型(排序後之有限值，相鄰兩值皆有限，無須特例)
 let statOf = (ps) => {
-    let xs = sortedOf(ps)
-    let n = xs.length
+    let vs = arrFilterByENum(ps)
+    let n = vs.length
     if (n === 0) {
         return { n, avg: null, std: null, min: null, max: null, median: null, q25: null, q75: null }
     }
-    let q = quantOf(xs)
-    return { n, avg: arrAverage(ps), std: arrStd(ps), min: xs[0], max: xs[n - 1], median: q.median, q25: q.q25, q75: q.q75 }
+    let xs = Float64Array.from(vs).sort()
+    return { n, avg: arrAverage(vs), std: arrStd(vs), min: min(vs), max: max(vs), median: quantile7(xs, 0.5), q25: quantile7(xs, 0.25), q75: quantile7(xs, 0.75) }
 }
 
 
@@ -168,7 +142,8 @@ let statOf = (ps) => {
  * 除非opt.denyOutput為true，否則會將各期正規化後之序列以檔名`${cointpe}_${keyKind}_${keyIn}_${keyOut}_${method}_${period}.json`寫入fdSelfData資料夾
  * 全部檢核先於任何計算(含opt.funAddKeysIn與calc)與寫檔：keysIn各元素、methods各元素(須為物件，method須為字串且存在於kp，deals須為非空陣列，各deal之keyOut須為字串、nm須為物件、nm.byPeriod有給時須為一般物件(可為空物件)且各值為物件、avg為有限數值、std為有限數值且大於0(只收數值，不收數字字串)，deal.keyIn有指定而不在keysIn內之deal不會被處理故不檢核)、各methods[i].optMethod之intervalSec(每根秒數，見resolvePeriods)；任一無效即reject且不寫出任何檔，nm.byPeriod無效時訊息為固定之`invalid deal.nm.byPeriod: must be an object of { avg, std } with a finite avg and a finite std > 0`(不含輸入值)
  * 同一次呼叫內各method之optMethod.intervalSec須相同(未給視為14400，數字字串與數值視為同值)，否則reject `invalid methods[i].optMethod.intervalSec: must be the same in every method`(i為第一個與先前不一致者之索引)，以免不同每根時長之序列靜默寫進同一資料夾；各method之optMethod.intervalSec皆未給時行為與既有相同
- * 最終以w-statistic計算全期攤平後序列(各期以其自己之常數正規化後)之avg、std、min、max，另增n(非NaN值之個數)、median、q25、q75(第7型分位數：排序後h=(n-1)*q，x[floor(h)]+(h-floor(h))*(x[floor(h)+1]-x[floor(h)])，n為1時即該值；相鄰兩值任一為±Infinity時內插值即該無限端，-Infinity與Infinity之間無定義而為NaN)與periods(依各期次序之陣列，各元素{period,len,n,avg,std,min,max,median,q25,q75}為該期正規化後序列之統計)，彙整為單筆結果；n為0者其餘統計欄皆為null；nm為{avg:0,std:1}且未給byPeriod時，periods即為各期原值之統計
+ * 最終計算全期攤平後序列(各期以其自己之常數正規化後)之avg、std、min、max，另增n、median、q25、q75與periods(依各期次序之陣列，各元素{period,len,n,avg,std,min,max,median,q25,q75}為該期正規化後序列之統計)，彙整為單筆結果；nm為{avg:0,std:1}且未給byPeriod時，periods即為各期原值之統計
+ * 回傳列與periods之全部統計(n、avg、std、min、max、median、q25、q75)只取有限數值：NaN、±Infinity與非數值皆不計入(例如nm.std極小使正規化後溢位為±Infinity者亦不計入)，n為有限值之個數，avg與std用w-statistic之arrAverage與arrStd(取用之母體相同)，min與max為有限值中之極值，median、q25、q75為第7型分位數(排序後h=(n-1)*q，x[floor(h)]+(h-floor(h))*(x[floor(h)+1]-x[floor(h)])，n為1時即該值)；n為0者(無有限值)其餘統計欄皆為null，回傳列之min與max亦然；正規化本身不變，非有限之值仍照常逐值寫出
  *
  * @function
  * @param {String} name 輸入名稱字串
@@ -516,17 +491,13 @@ let dataConvert = async (name, symbol, interval, cointpe, keyKind, methods, arrO
                 let r = {}
                 if (true) {
 
-                    //avgAll, stdAll, minAll, maxAll
-                    let avgAll = arrAverage(pss)
-                    let stdAll = arrStd(pss)
-                    let minAll = min(pss)
-                    let maxAll = max(pss)
-                    let qAll = quantOf(sortedOf(pss))
+                    //all, 全期攤平後之統計(只取有限數值, 與各期之統計同口徑)
+                    let all = statOf(pss)
                     //console.log('keyIn', keyIn, 'method', method, 'keyOut', keyOut)
-                    //console.log('avg:', avgAll, ',')
-                    //console.log('std:', stdAll, ',')
-                    //console.log('min:', minAll, ',')
-                    //console.log('max:', maxAll, ',')
+                    //console.log('avg:', all.avg, ',')
+                    //console.log('std:', all.std, ',')
+                    //console.log('min:', all.min, ',')
+                    //console.log('max:', all.max, ',')
                     //console.log(' ')
 
                     //save
@@ -534,14 +505,14 @@ let dataConvert = async (name, symbol, interval, cointpe, keyKind, methods, arrO
                         method,
                         keyIn,
                         keyOut,
-                        avg: avgAll,
-                        std: stdAll,
-                        min: minAll,
-                        max: maxAll,
-                        n: qAll.n,
-                        median: qAll.median,
-                        q25: qAll.q25,
-                        q75: qAll.q75,
+                        avg: all.avg,
+                        std: all.std,
+                        min: all.min,
+                        max: all.max,
+                        n: all.n,
+                        median: all.median,
+                        q25: all.q25,
+                        q75: all.q75,
                         periods,
                     }
 
@@ -575,7 +546,7 @@ export default dataConvert
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.5</a> on Sat Nov 28 2026 01:54:38 GMT+0800 (台北標準時間) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.5</a> on Sat Nov 28 2026 04:43:28 GMT+0800 (台北標準時間) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
 <script>prettyPrint();</script>
