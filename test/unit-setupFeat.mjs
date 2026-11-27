@@ -207,7 +207,8 @@ let numBads = () => {
 //  call(opt) 回 Promise(rrs); base 為未給該鍵(含 extra)之結果; name 為鍵名; invalids 為非預期之值; sames 為合格而等同預設之寫法(結果同 base 且不警告)
 //  tag、desc、defDesc 為警告文字之三段: `[${tag}] invalid opt.${name}: must be ${desc}, using default ${defDesc}`
 //  extra 為其他需併給之 opt(如另一鍵之有效值), 併於每次呼叫
-let assertOptK3 = async({ call, base, name, invalids, sames = [], tag, desc, defDesc, extra = {} }) => {
+//  probe 為「該鍵之非預期之值」之代表(用於 (d)~(g) 之重複呼叫), 預設 -3.5(適用於須為正數、整數之鍵; 於「任何有限數皆有效」之鍵須改給其他非預期之值, 如 NaN)
+let assertOptK3 = async({ call, base, name, invalids, sames = [], tag, desc, defDesc, extra = {}, probe = -3.5 }) => {
     let msgExp = `[${tag}] invalid opt.${name}: must be ${desc}, using default ${defDesc}`
 
     //(a) 非預期之輸入視為未給: 不 reject、結果同未給(結果須取得之斷言以 assert.ok 加固定訊息, 值可能不可讀)
@@ -243,7 +244,7 @@ let assertOptK3 = async({ call, base, name, invalids, sames = [], tag, desc, def
     getOptReader.resetWarned()
     let logs3 = []
     for (let k = 0; k < 2; k++) {
-        await call({ ...extra, [name]: -3.5, debug: true, funLog: (m) => logs3.push(m) })
+        await call({ ...extra, [name]: probe, debug: true, funLog: (m) => logs3.push(m) })
     }
     assert.ok(logs3.length === 1, `opt.${name} 同一鍵警告一次, 實際 ${logs3.length}`)
 
@@ -254,7 +255,7 @@ let assertOptK3 = async({ call, base, name, invalids, sames = [], tag, desc, def
     try {
         for (let dbg of ['true', 1, 'yes', {}, [], null, undefined, false]) {
             getOptReader.resetWarned()
-            await call({ ...extra, [name]: -3.5, debug: dbg })
+            await call({ ...extra, [name]: probe, debug: dbg })
         }
         getOptReader.resetWarned()
         for (let v of [undefined, null, ...sames]) {
@@ -267,7 +268,7 @@ let assertOptK3 = async({ call, base, name, invalids, sames = [], tag, desc, def
         for (let f of [undefined, null, 'x', 5, {}]) {
             getOptReader.resetWarned()
             warns.length = 0
-            await call({ ...extra, [name]: -3.5, debug: true, funLog: f })
+            await call({ ...extra, [name]: probe, debug: true, funLog: f })
             assert.ok(warns.length === 1 && warns[0].length === 1 && warns[0][0] === msgExp, `opt.${name} funLog ${labelOf(f)} 時 console.warn 恰一則`)
         }
     }
@@ -280,10 +281,10 @@ let assertOptK3 = async({ call, base, name, invalids, sames = [], tag, desc, def
     let funThrow = () => {
         throw new Error('boom')
     }
-    let r1 = await call({ ...extra, [name]: -3.5, debug: true, funLog: funThrow })
+    let r1 = await call({ ...extra, [name]: probe, debug: true, funLog: funThrow })
     assert.ok(JSON.stringify(r1) === JSON.stringify(base), `opt.${name} funLog 拋錯不影響結果`)
     getOptReader.resetWarned()
-    let r2 = await call({ ...extra, [name]: -3.5, debug: true, funLog: () => Promise.reject(new Error('boom')) })
+    let r2 = await call({ ...extra, [name]: probe, debug: true, funLog: () => Promise.reject(new Error('boom')) })
     assert.ok(JSON.stringify(r2) === JSON.stringify(base), `opt.${name} funLog 回傳 rejection 不影響結果`)
 
     //(h) 鍵之讀取拋錯(存取器)視為未給, 不 reject、不警告

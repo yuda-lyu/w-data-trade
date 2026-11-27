@@ -1,6 +1,5 @@
-import get from 'lodash-es/get.js'
 import isestr from 'wsemi/src/isestr.mjs'
-import { INTERVAL_SEC_BASE, spanSecOf, chkIntervalSec } from './resolvePeriods.mjs'
+import { INTERVAL_SEC_BASE, spanSecOf, readIntervalSec } from './resolvePeriods.mjs'
 
 
 //RE_PCT, 門檻標籤(calcDirChange之期別)之格式: 正整數(無前導零)接pct
@@ -51,11 +50,10 @@ let periodInfo = (period, opt = {}) => {
         throw new Error(`invalid period: must be 'none' or a period label whose time span is a multiple of opt.intervalSec`)
     }
 
-    //intervalSec
-    let intervalSec = INTERVAL_SEC_BASE
-    let intervalSecOpt = get(opt, 'intervalSec', null)
-    if (intervalSecOpt !== null && intervalSecOpt !== undefined) {
-        intervalSec = chkIntervalSec(intervalSecOpt)
+    //intervalSec, 給了而無效即拋(K3之例外); 未給視為每根4hr
+    let intervalSec = readIntervalSec(opt)
+    if (intervalSec === null) {
+        intervalSec = INTERVAL_SEC_BASE
     }
 
     //none, calcOrig之期別

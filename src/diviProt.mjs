@@ -1,9 +1,16 @@
-import get from 'lodash-es/get.js'
+import isenum from 'wsemi/src/isenum.mjs'
+import getOptReader from 'wsemi/src/getOptReader.mjs'
 
 
-let diviProt = (u, d, opt = {}) => {
+let diviProt = (u, d, opt) => {
 
-    let plusDenominator = get(opt, 'plusDenominator', 0)
+    //plusDenominator, 經getOptReader讀取(給了即檢測, 非預期之輸入視為未給而改用預設0, opt.debug為true時警告); 檢測通過之數字字串轉為數值後使用
+    //  未給opt時(各calc於逐根迴圈內之呼叫)不建立讀取函數, 維持熱路徑之成本
+    let plusDenominator = 0
+    if (opt !== undefined) {
+        let rd = getOptReader('w-data-trade diviProt', opt)
+        plusDenominator = Number(rd('plusDenominator', 0, (v) => isenum(v), 'a valid number', '0'))
+    }
 
     //先 push 分母離開 0 (對 d=0 預設用正方向)
     if (plusDenominator !== 0) {

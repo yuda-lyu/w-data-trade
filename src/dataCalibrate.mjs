@@ -14,7 +14,7 @@ import isearr from 'wsemi/src/isearr.mjs'
 import iseobj from 'wsemi/src/iseobj.mjs'
 import isestr from 'wsemi/src/isestr.mjs'
 import haskey from 'wsemi/src/haskey.mjs'
-import { chkIntervalSec } from './resolvePeriods.mjs'
+import { readIntervalSec } from './resolvePeriods.mjs'
 
 
 /**
@@ -140,10 +140,7 @@ let dataCalibrate = async (calcFn, arrSrc, arrRef, pairs, optMethodInit, opt = {
 
     //check, optMethodInit與optMethodRef之intervalSec(每根秒數)先行檢核, 給了而無效即拒(與calc同一檢核, 先於任何計算)
     each([optMethodInit, optMethodRef], (om) => {
-        let intervalSecOpt = get(om, 'intervalSec', null)
-        if (intervalSecOpt !== null && intervalSecOpt !== undefined) {
-            chkIntervalSec(intervalSecOpt)
-        }
+        readIntervalSec(om)
     })
 
     //pool: 跑 calc 後彙集指定 keyOut 之全期有限值

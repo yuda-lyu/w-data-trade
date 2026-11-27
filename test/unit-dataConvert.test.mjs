@@ -442,17 +442,22 @@ describe('dataConvert(正規化常數依期別、各期統計)', function() {
             await expectInvalid(mkMethods('x'), 'denyOutput', { denyOutput: true })
         })
 
-        it('同時有其他檢核失敗時, 各檢核之優先順序: nm非物件之訊息(invalid deal.nm[...])先於byPeriod之檢核(同一deal)', async function() {
+        it('同時有其他檢核失敗時, 各檢核之優先順序: nm非物件之訊息(invalid deal.nm: must be a non-empty object)先於byPeriod之檢核(同一deal)', async function() {
             let { kp, st } = fixedCalc([{ period: 'a', len: 1, xs: [1, 2, 3] }])
             let fd = fresh()
-            let log = console.log
-            console.log = () => {} //既有之檢核於拒絕時輸出除錯用console.log, 此處靜音
+            //行為改變(第688項): 訊息改為固定詞彙(原為`invalid deal.nm[x]`, 方括號內為輸入值), 且不再以console輸出輸入(原需靜音)
+            let logs = []
+            let org = console.log
+            console.log = (...a) => {
+                logs.push(a)
+            }
             try {
-                await assert.rejects(call(dealOf('x'), kp, fd), { message: 'invalid deal.nm[x]' })
+                await assert.rejects(call(dealOf('x'), kp, fd), { message: 'invalid deal.nm: must be a non-empty object' })
             }
             finally {
-                console.log = log
+                console.log = org
             }
+            assert.strictEqual(logs.length, 0, '不得以console輸出')
             assert.strictEqual(st.calls, 0)
         })
 
@@ -687,19 +692,8 @@ describe('dataConvert(正規化常數依期別、各期統計)', function() {
             assert.ok(Number.isFinite(p.avg) && Number.isFinite(p.std), 'avg與std為有限數值(不因Infinity而異常)')
         })
 
-        it('BigInt不是數值(同arrAverage與arrStd只取有限數值): nm之avg與std為BigInt而值亦為BigInt時, 該期之n為0且各統計欄為null, 回傳列之min與max亦為null, 不拋錯(denyOutput)', async function() {
-            let { kp } = fixedCalc([{ period: 'big', len: 1, xs: [5n, 7n] }])
-            let r = (await call(dealOf({ avg: 0n, std: 1n }), kp, fresh(), { denyOutput: true }))[0]
-            assert.strictEqual(r.periods.length, 1)
-            assert.strictEqual(r.periods[0].n, 0)
-            assert.strictEqual(r.periods[0].median, null)
-            assert.strictEqual(r.periods[0].avg, null)
-            assert.strictEqual(r.periods[0].min, null)
-            assert.strictEqual(r.n, 0)
-            assert.strictEqual(r.median, null)
-            assert.strictEqual(r.min, null)
-            assert.strictEqual(r.max, null)
-        })
+        //行為改變(第688項): 原案以nm之avg與std為BigInt(0n、1n)使BigInt之值可相減, 驗BigInt不計入統計; nm.avg、nm.std現只收有限數值(typeof為number), BigInt即reject(見D7), 該案不再可能成立而刪除
+        //  BigInt不計入統計(同arrAverage與arrStd只取有限數值)由arrFilterByENum之母體限定所保證, 見上〈n與avg、std取用之母體相同〉與〈含±Infinity與NaN之期〉等案
 
         it('合成資料(各期尺度相差逾100倍、含重尾與0根、1根之期)之periods與攤平之n、median、q25、q75皆等於另寫之暴力計算(含avg、std、min、max), 於未正規化與正規化兩種nm下', async function() {
             let rrs = await synCalc(ARR, 'none', {})
@@ -905,6 +899,279 @@ describe('dataConvert(正規化常數依期別、各期統計)', function() {
             assert.deepStrictEqual(readP(fd, 'a'), [-1, 0, 1])
             assert.deepStrictEqual(readP(fd, 'b'), [-1, 0, 1])
             assert.deepStrictEqual(readP(fd, 'c'), [7, 8, 9])
+        })
+
+    })
+
+    describe('D7 nm.avg與nm.std之檢核(第688項; 先於任何計算與寫檔, 訊息固定; 未給時行為不變)', function() {
+
+        let MSG_AVG = 'invalid deal.nm.avg: must be a finite number'
+        let MSG_STD = 'invalid deal.nm.std: must be a finite number greater than 0'
+
+        //revoked, 已撤銷之Proxy(任何讀取皆拋TypeError); 斷言只取訊息與計數, 不檢視此值(§6.3)
+        let revoked = () => {
+            let { proxy, revoke } = Proxy.revocable({}, {})
+            revoke()
+            return proxy
+        }
+
+        //expectMsg, 斷言以指定之固定訊息reject、輸出夾為空、calc未被呼叫、未以console輸出
+        let expectMsg = async (methods, msg, tag, opt = {}) => {
+            let { kp, st } = fixedCalc([{ period: 'a', len: 1, xs: [1, 2, 3] }])
+            let fd = fresh()
+            let err = null
+            let n = 0
+            let names = ['log', 'warn', 'error', 'info', 'debug']
+            let orgs = {}
+            names.forEach((k) => {
+                orgs[k] = console[k]
+                console[k] = () => {
+                    n++
+                }
+            })
+            try {
+                await call(methods, kp, fd, opt)
+            }
+            catch (e) {
+                err = e
+            }
+            finally {
+                names.forEach((k) => {
+                    console[k] = orgs[k]
+                })
+            }
+            assert.ok(err !== null, `${tag} 應reject`)
+            assert.ok(err.message === msg, `${tag} 訊息(實際 ${err.message})`)
+            assert.deepStrictEqual(fs.readdirSync(fd), [], `${tag} 輸出夾須為空`)
+            assert.strictEqual(st.calls, 0, `${tag} calc不得被呼叫`)
+            assert.strictEqual(n, 0, `${tag} 不得以console輸出`)
+        }
+
+        let BAD_AVG = [
+            ['NaN', NaN], ['Infinity', Infinity], ['-Infinity', -Infinity], ['數字字串', '1'], ['含機敏樣式之字串', 'sk-secret-7q9x'], ['空字串', ''], ['BigInt', 1n],
+            ['true', true], ['false', false], ['空陣列', []], ['陣列', [1]], ['物件', {}], ['包裝物件', Object(1)], ['函數', () => 1], ['Symbol', Symbol('s')], ['已撤銷之Proxy', revoked()],
+        ]
+        BAD_AVG.forEach(([tag, v], i) => {
+            it(`nm.avg無效[${i}: ${tag}] ⇒ reject固定訊息、夾為空、calc未被呼叫、不以console輸出`, async function() {
+                await expectMsg(dealOf({ avg: v, std: 1 }), MSG_AVG, `avg ${i}`)
+                //std未給時亦拒
+                await expectMsg(dealOf({ avg: v }), MSG_AVG, `avg ${i} 無std`)
+            })
+        })
+
+        let BAD_STD = [
+            ['0', 0], ['-0', -0], ['負數', -1], ['極小負數', -1e-300], ['NaN', NaN], ['Infinity', Infinity], ['-Infinity', -Infinity], ['數字字串', '1'], ['含機敏樣式之字串', 'sk-secret-7q9x'], ['空字串', ''], ['BigInt', 1n],
+            ['true', true], ['false', false], ['空陣列', []], ['陣列', [1]], ['物件', {}], ['包裝物件', Object(1)], ['函數', () => 1], ['Symbol', Symbol('s')], ['已撤銷之Proxy', revoked()],
+        ]
+        BAD_STD.forEach(([tag, v], i) => {
+            it(`nm.std無效[${i}: ${tag}] ⇒ reject固定訊息、夾為空、calc未被呼叫、不以console輸出`, async function() {
+                await expectMsg(dealOf({ avg: 0, std: v }), MSG_STD, `std ${i}`)
+                await expectMsg(dealOf({ std: v }), MSG_STD, `std ${i} 無avg`)
+            })
+        })
+
+        it('同時有多項無效: nm.avg之訊息先於nm.std, nm.std先於nm.byPeriod; nm非物件之訊息先於三者', async function() {
+            await expectMsg(dealOf({ avg: 'x', std: 'y', byPeriod: 5 }), MSG_AVG, 'avg先於std與byPeriod')
+            await expectMsg(dealOf({ avg: 0, std: 'y', byPeriod: 5 }), MSG_STD, 'std先於byPeriod')
+            await expectMsg(dealOf({ avg: 0, std: 1, byPeriod: 5 }), MSG, 'byPeriod')
+            await expectMsg(dealOf('x'), 'invalid deal.nm: must be a non-empty object', 'nm非物件')
+        })
+
+        it('讀取拋錯之nm.avg、nm.std(存取器、Proxy陷阱) ⇒ 視為無效而reject各自之固定訊息(不洩漏拋出之訊息)', async function() {
+            let thrower = () => {
+                throw new Error('boom-secret')
+            }
+            let nmA = { std: 1 }
+            Object.defineProperty(nmA, 'avg', { enumerable: true, get: thrower })
+            let nmS = { avg: 0 }
+            Object.defineProperty(nmS, 'std', { enumerable: true, get: thrower })
+            await expectMsg(dealOf(nmA), MSG_AVG, 'avg存取器')
+            await expectMsg(dealOf(nmS), MSG_STD, 'std存取器')
+            //nm本身為讀取即拋錯之Proxy: 無法判定為非空物件, 同為無效(固定訊息, 不洩漏拋出之訊息)
+            let px = new Proxy({ avg: 0, std: 1 }, { get: thrower })
+            await expectMsg(dealOf(px), 'invalid deal.nm: must be a non-empty object', 'Proxy get陷阱')
+        })
+
+        it('給了而無效之檢核先於任何計算與寫檔: 第1個method有效、第2個method之deal之nm.avg或nm.std無效 ⇒ 第1個method之檔亦不寫出, calc與funAddKeysIn皆未被呼叫', async function() {
+            for (let [bad, msg] of [[{ avg: '0', std: 1 }, MSG_AVG], [{ avg: 0, std: 0 }, MSG_STD]]) {
+                let { kp, st } = fixedCalc([{ period: 'a', len: 1, xs: [1, 2, 3] }])
+                let kp2 = { ...kp, fy: kp.fx }
+                let adds = 0
+                let fd = fresh()
+                let methods = [
+                    { method: 'fx', deals: [{ keyOut: 'X', nm: { avg: 0, std: 1 } }], optMethod: {} },
+                    { method: 'fy', deals: [{ keyOut: 'X', nm: { avg: 0, std: 1 } }, { keyOut: 'X', nm: bad }], optMethod: {} },
+                ]
+                let funAddKeysIn = (v) => {
+                    adds++
+                    return v
+                }
+                await assert.rejects(call(methods, kp2, fd, { funAddKeysIn }), (e) => e.message === msg)
+                assert.deepStrictEqual(fs.readdirSync(fd), [])
+                assert.strictEqual(st.calls, 0)
+                assert.strictEqual(adds, 0)
+            }
+        })
+
+        it('deal.keyIn有指定而不在keysIn內者不處理故不檢核nm.avg與nm.std(無效亦不拒); 在keysIn內者照檢核', async function() {
+            let { kp } = fixedCalc([{ period: 'a', len: 1, xs: [1, 2, 3] }])
+            let fd = fresh()
+            let methods = [{ method: 'fx', deals: [{ keyIn: 'other', keyOut: 'X', nm: { avg: '1', std: 0 } }, { keyOut: 'X', nm: { avg: 0, std: 1 } }], optMethod: {} }]
+            let rs = await call(methods, kp, fd)
+            assert.strictEqual(rs.length, 1)
+            await expectMsg([{ method: 'fx', deals: [{ keyIn: 'none', keyOut: 'X', nm: { avg: '1', std: 1 } }], optMethod: {} }], MSG_AVG, 'keyIn在keysIn內')
+        })
+
+        it('未給(undefined、null、缺鍵)時行為不變: avg預設0、std預設1, 輸出與明給{avg:0,std:1}逐位相同(寫出之檔與回傳列)', async function() {
+            let xs = [4, 8, 15, 16, 23, 42, -3.5, 0]
+            let run = async (nm) => {
+                let { kp } = fixedCalc([{ period: 'a', len: 1, xs }, { period: 'b', len: 2, xs: [...xs].reverse() }])
+                let fd = fresh()
+                let rs = await call(dealOf(nm), kp, fd)
+                return { rs, a: readP(fd, 'a'), b: readP(fd, 'b'), files: fs.readdirSync(fd) }
+            }
+            let ref = await run({ avg: 0, std: 1 })
+            for (let nm of [{ byPeriod: {} }, { avg: undefined, std: undefined }, { avg: null, std: null }, { avg: 0 }, { std: 1 }, { avg: undefined, std: 1 }, { avg: 0, std: null }, { avg: null, std: 1, byPeriod: null }]) {
+                assert.deepStrictEqual(await run(nm), ref, JSON.stringify(nm))
+            }
+        })
+
+        it('合法值逐位不變: 有限數值之avg(含0、-0、負數、極小、極大)與std(大於0之有限數值, 含極小)與以往之 (值 − avg) ÷ std 逐位相同; 只給其一時另一為預設', async function() {
+            let xs = [4, 8, 15, 16, 23, 42, -3.5, 0, 1e300, 5e-324]
+            for (let [avg, std] of [[50, 10], [-7.25, 0.5], [0, 1e-300], [1e308, 3], [-0, 2], [5e-324, 1e308], [3, 5e-324]]) {
+                let { kp } = fixedCalc([{ period: 'a', len: 1, xs }])
+                let fd = fresh()
+                await call(dealOf({ avg, std }), kp, fd)
+                let exp = xs.map((x) => (x - avg) / std)
+                let got = readP(fd, 'a')
+                //檔案為JSON: 非有限值寫成null、-0寫成0; 其餘逐位相同(期望值經同一JSON往返)
+                assert.deepStrictEqual(got, JSON.parse(JSON.stringify(exp)), `avg ${avg} std ${std}`)
+            }
+            let { kp } = fixedCalc([{ period: 'a', len: 1, xs: [10, 20, 30] }])
+            let fd1 = fresh()
+            await call(dealOf({ avg: 20 }), kp, fd1)
+            assert.deepStrictEqual(readP(fd1, 'a'), [-10, 0, 10])
+            let fd2 = fresh()
+            await call(dealOf({ std: 10 }), kp, fd2)
+            assert.deepStrictEqual(readP(fd2, 'a'), [1, 2, 3])
+        })
+
+        it('檢測之值即使用之值(V11): nm.avg、nm.std只讀取一次(存取器第2次讀取回傳他值、檢核後被改動皆不影響使用), 同一deal物件於多個method共用時只讀取一次', async function() {
+            let reads = { avg: 0, std: 0 }
+            let nm = {}
+            Object.defineProperty(nm, 'avg', {
+                enumerable: true,
+                get() {
+                    reads.avg++
+                    return reads.avg === 1 ? 20 : 1e9
+                },
+            })
+            Object.defineProperty(nm, 'std', {
+                enumerable: true,
+                get() {
+                    reads.std++
+                    return reads.std === 1 ? 10 : -1
+                },
+            })
+            let { kp: kp0 } = fixedCalc([{ period: 'a', len: 1, xs: [10, 20, 30] }])
+            let kp = { fx: kp0.fx, fy: kp0.fx }
+            let deals = [{ keyOut: 'X', nm }]
+            let methods = [{ method: 'fx', deals, optMethod: {} }, { method: 'fy', deals, optMethod: {} }]
+            let fd = fresh()
+            await call(methods, kp, fd)
+            assert.deepStrictEqual(reads, { avg: 1, std: 1 }, '各讀取一次(同一deal物件於兩個method共用)')
+            assert.deepStrictEqual(readP(fd, 'a'), [-1, 0, 1])
+            //檢核後(funAddKeysIn執行時)改動nm ⇒ 仍用檢核時之值
+            let nm2 = { avg: 20, std: 10 }
+            let fd2 = fresh()
+            let funAddKeysIn = (v) => {
+                nm2.avg = 1e9
+                nm2.std = 1e-9
+                return v
+            }
+            await call(dealOf(nm2), kp, fd2, { funAddKeysIn })
+            assert.deepStrictEqual(readP(fd2, 'a'), [-1, 0, 1])
+        })
+
+        it('凍結之nm可用、不改寫呼叫端之輸入', async function() {
+            let nm = Object.freeze({ avg: 20, std: 10 })
+            let deal = Object.freeze({ keyOut: 'X', nm })
+            let methods = Object.freeze([Object.freeze({ method: 'fx', deals: Object.freeze([deal]), optMethod: Object.freeze({}) })])
+            let { kp } = fixedCalc([{ period: 'a', len: 1, xs: [10, 20, 30] }])
+            let fd = fresh()
+            await call(methods, kp, fd)
+            assert.deepStrictEqual(readP(fd, 'a'), [-1, 0, 1])
+        })
+
+    })
+
+    describe('D8 檢核失敗之處置: 訊息為固定詞彙(只含位置與期望之種類, 不含輸入值)、不以console輸出輸入(V19、V20、〈診斷輸出與遮罩〉)', function() {
+
+        let SENT = 'SENTINEL-8e3b9d'
+
+        //run, 執行並收集拒絕訊息與console輸出(含各層級)
+        let run = async (methods, opt = {}) => {
+            let { kp, st } = fixedCalc([{ period: 'a', len: 1, xs: [1, 2, 3] }])
+            let fd = fresh()
+            let err = null
+            let outs = []
+            let names = ['log', 'warn', 'error', 'info', 'debug']
+            let orgs = {}
+            names.forEach((k) => {
+                orgs[k] = console[k]
+                console[k] = (...a) => {
+                    outs.push(a)
+                }
+            })
+            try {
+                await call(methods, kp, fd, opt)
+            }
+            catch (e) {
+                err = e
+            }
+            finally {
+                names.forEach((k) => {
+                    console[k] = orgs[k]
+                })
+            }
+            return { err, outs, st, files: fs.readdirSync(fd) }
+        }
+
+        let ok = { method: 'fx', deals: [{ keyOut: 'X', nm: { avg: 0, std: 1 } }], optMethod: {} }
+
+        let CASES = [
+            ['keysIn之元素', [ok], { keysIn: ['none', 5] }, 'invalid opt.keysIn[1]: must be a non-empty string'],
+            ['keysIn之元素(字串以外之機敏值)', [ok], { keysIn: [{ k: SENT }] }, 'invalid opt.keysIn[0]: must be a non-empty string'],
+            ['methods[i]非物件', [ok, SENT], {}, 'invalid methods[1]: must be a non-empty object'],
+            ['methods[i]為null', [ok, null], {}, 'invalid methods[1]: must be a non-empty object'],
+            ['method非字串', [{ ...ok, method: { k: SENT } }], {}, 'invalid methods[0].method: must be a non-empty string'],
+            ['method不在kp內', [{ ...ok, method: SENT }], {}, 'invalid methods[0].method: must be a key of kp'],
+            ['deals非陣列', [{ ...ok, deals: SENT }], {}, 'invalid methods[0].deals: must be a non-empty array'],
+            ['deals為空陣列', [{ ...ok, deals: [] }], {}, 'invalid methods[0].deals: must be a non-empty array'],
+            ['deal.keyOut非字串', [{ ...ok, deals: [{ keyOut: { k: SENT }, nm: { avg: 0, std: 1 } }] }], {}, 'invalid deal.keyOut: must be a non-empty string'],
+            ['deal.nm非物件', [{ ...ok, deals: [{ keyOut: 'X', nm: SENT }] }], {}, 'invalid deal.nm: must be a non-empty object'],
+            ['deal.nm為空物件', [{ ...ok, deals: [{ keyOut: 'X', nm: {} }] }], {}, 'invalid deal.nm: must be a non-empty object'],
+            ['nm.avg無效', [{ ...ok, deals: [{ keyOut: 'X', nm: { avg: SENT, std: 1 } }] }], {}, 'invalid deal.nm.avg: must be a finite number'],
+            ['nm.std無效', [{ ...ok, deals: [{ keyOut: 'X', nm: { avg: 0, std: SENT } }] }], {}, 'invalid deal.nm.std: must be a finite number greater than 0'],
+            ['nm.byPeriod無效', [{ ...ok, deals: [{ keyOut: 'X', nm: { avg: 0, std: 1, byPeriod: SENT } }] }], {}, 'invalid deal.nm.byPeriod: must be an object of { avg, std } with a finite avg and a finite std > 0'],
+        ]
+        CASES.forEach(([tag, methods, opt, msg]) => {
+            it(`${tag} ⇒ reject固定訊息(逐字)、不含輸入值、不以console輸出、夾為空、calc未被呼叫`, async function() {
+                let r = await run(methods, opt)
+                assert.ok(r.err !== null, '應reject')
+                assert.ok(r.err.message === msg, `訊息(實際 ${r.err.message})`)
+                assert.ok(!r.err.message.includes(SENT), '訊息不含輸入值')
+                assert.strictEqual(r.outs.length, 0, '不得以console輸出(含methods、m、kp、deals、deal之傾印)')
+                assert.deepStrictEqual(r.files, [])
+                assert.strictEqual(r.st.calls, 0)
+            })
+        })
+
+        it('methods之第1個與第2個以後皆依實際索引(i)定位', async function() {
+            let r0 = await run([{ ...ok, method: 5 }, ok])
+            assert.strictEqual(r0.err.message, 'invalid methods[0].method: must be a non-empty string')
+            let r2 = await run([ok, ok, { ...ok, deals: 'x' }])
+            assert.strictEqual(r2.err.message, 'invalid methods[2].deals: must be a non-empty array')
         })
 
     })

@@ -17,11 +17,37 @@ import arrFilterByENum from 'wsemi/src/arrFilterByENum.mjs'
 import fsWriteJson from 'wsemi/src/fsWriteJson.mjs'
 import arrAverage from 'w-statistic/src/arrAverage.mjs'
 import arrStd from 'w-statistic/src/arrStd.mjs'
-import { INTERVAL_SEC_BASE, chkIntervalSec } from './resolvePeriods.mjs'
+import { INTERVAL_SEC_BASE, readIntervalSec } from './resolvePeriods.mjs'
 
 
 //MSG_BY_PERIOD, nm.byPeriod無效時之固定訊息(不含輸入值)
 const MSG_BY_PERIOD = 'invalid deal.nm.byPeriod: must be an object of { avg, std } with a finite avg and a finite std > 0'
+
+//MSG_NM_AVG、MSG_NM_STD, nm.avg與nm.std無效時之固定訊息(不含輸入值)
+const MSG_NM_AVG = 'invalid deal.nm.avg: must be a finite number'
+const MSG_NM_STD = 'invalid deal.nm.std: must be a finite number greater than 0'
+
+
+//snapNmNum, 讀取並檢核nm.avg或nm.std(只讀取一次, 讀取拋錯視為無效; 檢測之值即使用之值):
+//  undefined與null視為未給, 回傳{ ok: true, v: def }; 須為typeof為number之有限數值(不收數字字串與BigInt), min給了者須大於min; 無效回傳{ ok: false, v: def }
+let snapNmNum = (nm, key, def, min) => {
+    try {
+        let v = nm[key]
+        if (v === undefined || v === null) {
+            return { ok: true, v: def }
+        }
+        if (typeof v !== 'number' || !Number.isFinite(v)) {
+            return { ok: false, v: def }
+        }
+        if (min !== null && !(v > min)) {
+            return { ok: false, v: def }
+        }
+        return { ok: true, v }
+    }
+    catch (err) {
+        return { ok: false, v: def }
+    }
+}
 
 
 //snapByPeriod, 讀取並檢核deal.nm.byPeriod(各鍵與各值只讀取一次, 讀取拋錯視為無效; 檢測之值即使用之值):
@@ -93,7 +119,8 @@ let statOf = (ps) => {
  * 呼叫kp[method](arr,keyIn,optMethod)取得rrs(各期{period,len,vs}結果)後，對每個deal依其keyOut取值並以(值-avg)/std正規化，若deal.keyIn有指定則僅處理keyIn相符者，其餘略過
  * deal.nm.byPeriod(選配，null與undefined視為未給)為物件，鍵為期別標籤(即各期之period)、值為{avg,std}：某期別於byPeriod有自己之鍵(自有且可列舉者，與檢核所走訪之鍵相同)者用其avg與std正規化，否則用nm.avg與nm.std；byPeriod之各鍵與各值於檢核時只讀取一次(讀取拋錯視為無效)，其後正規化用檢核時讀得之值；未給byPeriod時行為與既有相同
  * 除非opt.denyOutput為true，否則會將各期正規化後之序列以檔名`${cointpe}_${keyKind}_${keyIn}_${keyOut}_${method}_${period}.json`寫入fdSelfData資料夾
- * 全部檢核先於任何計算(含opt.funAddKeysIn與calc)與寫檔：keysIn各元素、methods各元素(須為物件，method須為字串且存在於kp，deals須為非空陣列，各deal之keyOut須為字串、nm須為物件、nm.byPeriod有給時須為一般物件(可為空物件)且各值為物件、avg為有限數值、std為有限數值且大於0(只收數值，不收數字字串)，deal.keyIn有指定而不在keysIn內之deal不會被處理故不檢核)、各methods[i].optMethod之intervalSec(每根秒數，見resolvePeriods)；任一無效即reject且不寫出任何檔，nm.byPeriod無效時訊息為固定之`invalid deal.nm.byPeriod: must be an object of { avg, std } with a finite avg and a finite std > 0`(不含輸入值)
+ * 全部檢核先於任何計算(含opt.funAddKeysIn與calc)與寫檔：keysIn各元素、methods各元素(須為物件，method須為字串且存在於kp，deals須為非空陣列，各deal之keyOut須為字串、nm須為物件、nm.avg與nm.std有給時須為有限數值且std大於0(只收typeof為number者，不收數字字串與BigInt；未給或null為avg 0、std 1)、nm.byPeriod有給時須為一般物件(可為空物件)且各值為物件、avg為有限數值、std為有限數值且大於0(同樣只收數值，不收數字字串)，deal.keyIn有指定而不在keysIn內之deal不會被處理故不檢核)、各methods[i].optMethod之intervalSec(每根秒數，見resolvePeriods)；任一無效即reject且不寫出任何檔
+ * 檢核失敗之訊息皆為固定詞彙(只含位置與期望之種類，不含輸入值)，亦不以console輸出輸入：`invalid opt.keysIn[i]: must be a non-empty string`、`invalid methods[i]: must be a non-empty object`、`invalid methods[i].method: must be a non-empty string`、`invalid methods[i].method: must be a key of kp`、`invalid methods[i].deals: must be a non-empty array`、`invalid deal.keyOut: must be a non-empty string`、`invalid deal.nm: must be a non-empty object`、`invalid deal.nm.avg: must be a finite number`、`invalid deal.nm.std: must be a finite number greater than 0`、`invalid deal.nm.byPeriod: must be an object of { avg, std } with a finite avg and a finite std > 0`；nm.avg、nm.std、nm.byPeriod與其各鍵於檢核時只讀取一次(讀取拋錯視為無效)，其後正規化只用檢核時讀得之值
  * 同一次呼叫內各method之optMethod.intervalSec須相同(未給視為14400，數字字串與數值視為同值)，否則reject `invalid methods[i].optMethod.intervalSec: must be the same in every method`(i為第一個與先前不一致者之索引)，以免不同每根時長之序列靜默寫進同一資料夾；各method之optMethod.intervalSec皆未給時行為與既有相同
  * 最終計算全期攤平後序列(各期以其自己之常數正規化後)之avg、std、min、max，另增n、median、q25、q75與periods(依各期次序之陣列，各元素{period,len,n,avg,std,min,max,median,q25,q75}為該期正規化後序列之統計)，彙整為單筆結果；nm為{avg:0,std:1}且未給byPeriod時，periods即為各期原值之統計
  * 回傳列與periods之全部統計(n、avg、std、min、max、median、q25、q75)只取有限數值：NaN、±Infinity與非數值皆不計入(例如nm.std極小使正規化後溢位為±Infinity者亦不計入)，n為有限值之個數，avg與std用w-statistic之arrAverage與arrStd(取用之母體相同)，min與max為有限值中之極值，median、q25、q75為第7型分位數(排序後h=(n-1)*q，x[floor(h)]+(h-floor(h))*(x[floor(h)+1]-x[floor(h)])，n為1時即該值)；n為0者(無有限值)其餘統計欄皆為null，回傳列之min與max亦然；正規化本身不變，非有限之值仍照常逐值寫出
@@ -204,20 +231,19 @@ let dataConvert = async (name, symbol, interval, cointpe, keyKind, methods, arrO
 
     //check, 全部檢核先於任何計算(opt.funAddKeysIn與calc)與寫檔: 任一無效即拒, 輸出夾不留任何檔
     //  訊息與先前於逐method迴圈內檢核時相同; deal.keyIn有指定而不在keysIn內之deal不會被處理, 故不檢核(與先前相同)
-    each(keysIn, (keyIn) => {
+    //  各訊息為固定詞彙, 只含位置與期望之種類, 不含輸入值, 亦不以console輸出輸入(跨套件規格V19、V20與〈診斷輸出與遮罩〉)
+    each(keysIn, (keyIn, i) => {
         if (!isestr(keyIn)) {
-            throw new Error(`invalid keyIn[${keyIn}]`)
+            throw new Error(`invalid opt.keysIn[${i}]: must be a non-empty string`)
         }
     })
     let intervalSecFirst = null
-    let snaps = new Map() //deal => nm.byPeriod之快照(檢核時讀得且已檢核之值; 每個deal物件只讀取一次)
+    let snaps = new Map() //deal => nm之快照{ avg, std, byPeriod }(檢核時讀得且已檢核之值; 每個deal物件只讀取一次)
     each(methods, (m, i) => {
 
         //check
         if (!iseobj(m)) {
-            console.log('methods', methods)
-            console.log('m', m)
-            throw new Error(`invalid m[${m}]`)
+            throw new Error(`invalid methods[${i}]: must be a non-empty object`)
         }
 
         //method
@@ -225,17 +251,12 @@ let dataConvert = async (name, symbol, interval, cointpe, keyKind, methods, arrO
 
         //check
         if (!isestr(method)) {
-            console.log('methods', methods)
-            console.log('m', m)
-            throw new Error(`invalid m.method[${method}]`)
+            throw new Error(`invalid methods[${i}].method: must be a non-empty string`)
         }
 
         //check
         if (!haskey(kp, method)) {
-            console.log('kp', kp)
-            console.log('methods', methods)
-            console.log('m', m)
-            throw new Error(`invalid m.method[${method}] in kp`)
+            throw new Error(`invalid methods[${i}].method: must be a key of kp`)
         }
 
         //deals
@@ -243,9 +264,7 @@ let dataConvert = async (name, symbol, interval, cointpe, keyKind, methods, arrO
 
         //check
         if (!isearr(deals)) {
-            console.log('methods', methods)
-            console.log('m', m)
-            throw new Error(`invalid m.deals[${deals}]`)
+            throw new Error(`invalid methods[${i}].deals: must be a non-empty array`)
         }
 
         //check, 各deal
@@ -264,9 +283,7 @@ let dataConvert = async (name, symbol, interval, cointpe, keyKind, methods, arrO
 
             //check
             if (!isestr(keyOut)) {
-                console.log('deals', deals)
-                console.log('deal', deal)
-                throw new Error(`invalid deal.keyOut[${keyOut}]`)
+                throw new Error(`invalid deal.keyOut: must be a non-empty string`)
             }
 
             //nm
@@ -274,27 +291,33 @@ let dataConvert = async (name, symbol, interval, cointpe, keyKind, methods, arrO
 
             //check
             if (!iseobj(nm)) {
-                console.log('deals', deals)
-                console.log('deal', deal)
-                throw new Error(`invalid deal.nm[${nm}]`)
+                throw new Error(`invalid deal.nm: must be a non-empty object`)
             }
 
-            //byPeriod, 選配(null與undefined視為未給), 給了即檢核(訊息固定, 不含輸入值), 並取快照供其後正規化使用
+            //avg、std、byPeriod, 給了即檢核(訊息固定, 不含輸入值), 並取快照供其後正規化使用(檢測之值即使用之值)
+            //  avg與std為選配(undefined與null視為未給, 取avg 0、std 1), 給了須為有限數值, std須大於0(只收typeof為number者, 不收數字字串與BigInt); byPeriod見snapByPeriod
             if (!snaps.has(deal)) { //同一deal物件重複出現(例如多個method共用同一deals陣列)時, 沿用已檢核之快照, 不重讀
+                let a = snapNmNum(nm, 'avg', 0, null)
+                if (!a.ok) {
+                    throw new Error(MSG_NM_AVG)
+                }
+                let s = snapNmNum(nm, 'std', 1, 0)
+                if (!s.ok) {
+                    throw new Error(MSG_NM_STD)
+                }
                 let { ok, snap } = snapByPeriod(nm)
                 if (!ok) {
                     throw new Error(MSG_BY_PERIOD)
                 }
-                snaps.set(deal, snap)
+                snaps.set(deal, { avg: a.v, std: s.v, byPeriod: snap })
             }
 
         })
 
         //check, optMethod.intervalSec(每根秒數): 給了而無效即拒(訊息同calc); 各method須同一每根秒數(未給視為14400, 檢測之值即使用之值), 否則不同每根時長之序列會寫進同一資料夾
-        let intervalSecOpt = get(get(m, 'optMethod', {}), 'intervalSec', null)
-        let intervalSec = INTERVAL_SEC_BASE
-        if (intervalSecOpt !== null && intervalSecOpt !== undefined) {
-            intervalSec = chkIntervalSec(intervalSecOpt)
+        let intervalSec = readIntervalSec(get(m, 'optMethod', {}))
+        if (intervalSec === null) {
+            intervalSec = INTERVAL_SEC_BASE
         }
         if (intervalSecFirst === null) {
             intervalSecFirst = intervalSec
@@ -401,16 +424,11 @@ let dataConvert = async (name, symbol, interval, cointpe, keyKind, methods, arrO
                     }
                 }
 
-                //keyOut, nm, 各檢核已於上方先行完成(先於任何計算與寫檔)
+                //keyOut, 各檢核已於上方先行完成(先於任何計算與寫檔)
                 let keyOut = get(deal, 'keyOut')
-                let nm = get(deal, 'nm')
 
-                //corr
-                let avg = get(nm, `avg`, 0)
-                let std = get(nm, `std`, 1)
-
-                //byPeriod, 各檢核已於上方先行完成(先於任何計算與寫檔), 此處只用檢核時取得之快照(不再讀取呼叫端之物件); 未給(null與undefined)為null
-                let byPeriod = snaps.get(deal) || null
+                //avg、std、byPeriod, 各檢核已於上方先行完成(先於任何計算與寫檔), 此處只用檢核時取得之快照(不再讀取呼叫端之物件); 未給avg與std為0與1, 未給byPeriod(null與undefined)為null
+                let { avg, std, byPeriod } = snaps.get(deal)
 
                 //funOut
                 let funOut = (v, vs, ps) => {

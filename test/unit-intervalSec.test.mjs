@@ -1,6 +1,7 @@
 import assert from 'assert'
 import fs from 'fs'
 import { fileURLToPath } from 'url'
+import getOptReader from 'wsemi/src/getOptReader.mjs'
 import wdt from '../src/WDataTrade.mjs'
 import * as rp from '../src/resolvePeriods.mjs'
 import { genOhlc, assertNear } from './unit-setup.mjs'
@@ -386,14 +387,14 @@ describe('opt.intervalSec(根數為本: 根數不變、期別標籤依根數×�
         })
 
         it('opt.kp非預期時改用內建表並依intervalSec換算標籤; opt.debug警告opt.kp', function() {
-            rp.resetWarned()
+            getOptReader.resetWarned()
             let logs = []
             let funLog = (msg, meta) => {
                 logs.push(meta.key)
             }
             assert.deepStrictEqual(rp.default({ '12hr': 3, '1day': 6 }, { kp: { a: 0 }, intervalSec: 86400, debug: true, funLog }), { '3day': 3, '6day': 6 })
-            assert.deepStrictEqual(logs, ['opt.kp'])
-            rp.resetWarned()
+            assert.deepStrictEqual(logs, ['kp']) //行為改變(第688項): 警告之鍵名改為getOptReader之形式(不含opt.前綴; 原為'opt.kp')
+            getOptReader.resetWarned()
         })
 
         it('根數為本之結果為新物件, 參數物件亦複製, 不改寫輸入(凍結之kp與opt可執行)', function() {
@@ -662,6 +663,27 @@ describe('opt.intervalSec(根數為本: 根數不變、期別標籤依根數×�
             assert.strictEqual(rs.optMethod.intervalSec, 86400)
         })
 
+        it('dataCalibrate: optMethodInit或optMethodRef之intervalSec為讀取即拋錯之存取器 ⇒ 未呼叫calcFn即reject固定訊息(不洩漏拋出之訊息; 第688項)', async function() {
+            let n = 0
+            let calcFn = async (a, keyIn, om) => {
+                n++
+                return wdt.calcMa(a, 'Close', om)
+            }
+            let thrower = {
+                enumerable: true,
+                get() {
+                    throw new Error('SECRET-boom')
+                },
+            }
+            let init = { norm: 0 }
+            Object.defineProperty(init, 'intervalSec', thrower)
+            let ref = {}
+            Object.defineProperty(ref, 'intervalSec', thrower)
+            await assert.rejects(wdt.dataCalibrate(calcFn, a300, a300, ['param'], init, { params: ['norm'] }), (e) => e.message === MSG_ISEC)
+            await assert.rejects(wdt.dataCalibrate(calcFn, a300, a300, ['param'], { norm: 0 }, { params: ['norm'], optMethodRef: ref }), (e) => e.message === MSG_ISEC)
+            assert.strictEqual(n, 0)
+        })
+
         describe('S9 dataConvert之入口檢核先於任何計算與寫檔(V17): 任一無效 ⇒ reject、輸出夾為空、calc與funAddKeysIn未被呼叫', function() {
 
             let a = genOhlc(300)
@@ -688,7 +710,7 @@ describe('opt.intervalSec(根數為本: 根數不變、期別標籤依根數×�
                 return { method: 'rsi', deals: [{ keyOut: 'RSI', nm: { avg: 50, std: 10 } }], optMethod: {}, ...patch }
             }
 
-            //runCase, 執行dataConvert(寫檔模式)並回傳{ err, calls, adds, files }; 既有之除錯console.log於拒絕時輸出, 此處靜音
+            //runCase, 執行dataConvert(寫檔模式)並回傳{ err, calls, adds, files, nConsole }; nConsole為執行期間console.log、warn、error、info、debug之呼叫次數(檢核失敗之處置不得以console輸出輸入, 見expectRejected)
             let runCase = async (methods, optX = {}) => {
                 calls = 0
                 adds = 0
@@ -700,8 +722,15 @@ describe('opt.intervalSec(根數為本: 根數不變、期別標籤依根數×�
                 }
                 let opt = { keysIn: ['Close'], funAddKeysIn, ...optX }
                 let err = null
-                let log = console.log
-                console.log = () => {}
+                let nConsole = 0
+                let orgs = {}
+                let names = ['log', 'warn', 'error', 'info', 'debug']
+                names.forEach((k) => {
+                    orgs[k] = console[k]
+                    console[k] = () => {
+                        nConsole++
+                    }
+                })
                 try {
                     await wdt.dataConvert('t', 'SYM', '1day', 'price', 'ohlc', methods, a, kpC, fd, opt)
                 }
@@ -709,18 +738,21 @@ describe('opt.intervalSec(根數為本: 根數不變、期別標籤依根數×�
                     err = e
                 }
                 finally {
-                    console.log = log
+                    names.forEach((k) => {
+                        console[k] = orgs[k]
+                    })
                 }
-                return { err, calls, adds, files: fs.readdirSync(fd) }
+                return { err, calls, adds, files: fs.readdirSync(fd), nConsole }
             }
 
-            //expectRejected, 斷言以指定訊息拒絕且無任何副作用
+            //expectRejected, 斷言以指定訊息拒絕且無任何副作用(含不以console輸出, 跨套件規格V20與〈診斷輸出與遮罩〉)
             let expectRejected = (r, msg, tag) => {
                 assert.ok(r.err !== null, `${tag}: 應reject`)
                 assert.strictEqual(r.err.message, msg, `${tag}: 訊息`)
                 assert.deepStrictEqual(r.files, [], `${tag}: 輸出夾須為空`)
                 assert.strictEqual(r.calls, 0, `${tag}: calc不得被呼叫`)
                 assert.strictEqual(r.adds, 0, `${tag}: funAddKeysIn不得被呼叫`)
+                assert.strictEqual(r.nConsole, 0, `${tag}: 不得以console輸出`)
             }
 
             it('對照: 兩個method皆有效時正常寫檔(確認下列拒絕案之夾為空非因設定錯誤)', async function() {
@@ -731,34 +763,35 @@ describe('opt.intervalSec(根數為本: 根數不變、期別標籤依根數×�
                 assert.strictEqual(r.adds, 300)
             })
 
-            it('第2個method非物件 ⇒ invalid m[...](含給了intervalSec時仍為此訊息)', async function() {
-                expectRejected(await runCase([m1(), null]), 'invalid m[null]', 'null')
-                expectRejected(await runCase([m1(), 5]), 'invalid m[5]', '5')
-                expectRejected(await runCase([m1(), 'x']), 'invalid m[x]', 'x')
+            //行為改變(Gitea 本輪第688項,V19、V20): 各檢核失敗之訊息改為固定詞彙(只含位置與期望之種類, 不含輸入值), 且不以console輸出輸入; 舊訊息為`invalid m[...]`等(方括號內為輸入值)
+            it('第2個method非物件 ⇒ invalid methods[1]: must be a non-empty object(含給了intervalSec時仍為此訊息; 不含輸入值)', async function() {
+                expectRejected(await runCase([m1(), null]), 'invalid methods[1]: must be a non-empty object', 'null')
+                expectRejected(await runCase([m1(), 5]), 'invalid methods[1]: must be a non-empty object', '5')
+                expectRejected(await runCase([m1(), 'x']), 'invalid methods[1]: must be a non-empty object', 'x')
                 let withSec = m1()
                 withSec.optMethod = { intervalSec: 86400 }
-                expectRejected(await runCase([withSec, null]), 'invalid m[null]', 'null+intervalSec')
+                expectRejected(await runCase([withSec, null]), 'invalid methods[1]: must be a non-empty object', 'null+intervalSec')
             })
 
-            it('第2個method之method無效或不在kp ⇒ invalid m.method[...]、invalid m.method[...] in kp', async function() {
-                expectRejected(await runCase([m1(), m2({ method: 5 })]), 'invalid m.method[5]', 'method:5')
-                expectRejected(await runCase([m1(), m2({ method: undefined })]), 'invalid m.method[undefined]', 'method:undefined')
-                expectRejected(await runCase([m1(), m2({ method: 'zzz' })]), 'invalid m.method[zzz] in kp', 'method:zzz')
+            it('第2個method之method無效或不在kp ⇒ invalid methods[1].method: must be a non-empty string / must be a key of kp(不含輸入值)', async function() {
+                expectRejected(await runCase([m1(), m2({ method: 5 })]), 'invalid methods[1].method: must be a non-empty string', 'method:5')
+                expectRejected(await runCase([m1(), m2({ method: undefined })]), 'invalid methods[1].method: must be a non-empty string', 'method:undefined')
+                expectRejected(await runCase([m1(), m2({ method: 'zzz' })]), 'invalid methods[1].method: must be a key of kp', 'method:zzz')
             })
 
-            it('第2個method之deals無效 ⇒ invalid m.deals[...]', async function() {
-                expectRejected(await runCase([m1(), m2({ deals: undefined })]), 'invalid m.deals[undefined]', 'deals:undefined')
-                expectRejected(await runCase([m1(), m2({ deals: [] })]), 'invalid m.deals[]', 'deals:[]')
-                expectRejected(await runCase([m1(), m2({ deals: 'x' })]), 'invalid m.deals[x]', 'deals:x')
+            it('第2個method之deals無效 ⇒ invalid methods[1].deals: must be a non-empty array(不含輸入值)', async function() {
+                expectRejected(await runCase([m1(), m2({ deals: undefined })]), 'invalid methods[1].deals: must be a non-empty array', 'deals:undefined')
+                expectRejected(await runCase([m1(), m2({ deals: [] })]), 'invalid methods[1].deals: must be a non-empty array', 'deals:[]')
+                expectRejected(await runCase([m1(), m2({ deals: 'x' })]), 'invalid methods[1].deals: must be a non-empty array', 'deals:x')
             })
 
-            it('第2個method之deal.keyOut或deal.nm無效 ⇒ invalid deal.keyOut[...]、invalid deal.nm[...]', async function() {
-                expectRejected(await runCase([m1(), m2({ deals: [{ nm: { avg: 50, std: 10 } }] })]), 'invalid deal.keyOut[undefined]', 'keyOut:undefined')
-                expectRejected(await runCase([m1(), m2({ deals: [{ keyOut: 5, nm: { avg: 50, std: 10 } }] })]), 'invalid deal.keyOut[5]', 'keyOut:5')
-                expectRejected(await runCase([m1(), m2({ deals: [{ keyOut: 'RSI' }] })]), 'invalid deal.nm[undefined]', 'nm:undefined')
-                expectRejected(await runCase([m1(), m2({ deals: [{ keyOut: 'RSI', nm: 'x' }] })]), 'invalid deal.nm[x]', 'nm:x')
+            it('第2個method之deal.keyOut或deal.nm無效 ⇒ invalid deal.keyOut: must be a non-empty string、invalid deal.nm: must be a non-empty object(不含輸入值)', async function() {
+                expectRejected(await runCase([m1(), m2({ deals: [{ nm: { avg: 50, std: 10 } }] })]), 'invalid deal.keyOut: must be a non-empty string', 'keyOut:undefined')
+                expectRejected(await runCase([m1(), m2({ deals: [{ keyOut: 5, nm: { avg: 50, std: 10 } }] })]), 'invalid deal.keyOut: must be a non-empty string', 'keyOut:5')
+                expectRejected(await runCase([m1(), m2({ deals: [{ keyOut: 'RSI' }] })]), 'invalid deal.nm: must be a non-empty object', 'nm:undefined')
+                expectRejected(await runCase([m1(), m2({ deals: [{ keyOut: 'RSI', nm: 'x' }] })]), 'invalid deal.nm: must be a non-empty object', 'nm:x')
                 //同一method之第2個deal無效, 第1個deal有效
-                expectRejected(await runCase([m1(), m2({ deals: [{ keyOut: 'RSI', nm: { avg: 50, std: 10 } }, { keyOut: 'RSI', nm: null }] })]), 'invalid deal.nm[null]', 'deal[1].nm:null')
+                expectRejected(await runCase([m1(), m2({ deals: [{ keyOut: 'RSI', nm: { avg: 50, std: 10 } }, { keyOut: 'RSI', nm: null }] })]), 'invalid deal.nm: must be a non-empty object', 'deal[1].nm:null')
             })
 
             it('第2個method之intervalSec無效 ⇒ 訊息同calc; 與第1個method不一致 ⇒ invalid methods[1]...', async function() {
@@ -777,8 +810,8 @@ describe('opt.intervalSec(根數為本: 根數不變、期別標籤依根數×�
                 expectRejected(await runCase([m3(86400), withSec(3600), m3(3600)]), MSG_MISMATCH(1), 'second')
             })
 
-            it('keysIn之元素非字串 ⇒ invalid keyIn[...](先於計算與寫檔)', async function() {
-                expectRejected(await runCase([m1(), m2()], { keysIn: ['Close', 5] }), 'invalid keyIn[5]', 'keysIn:5')
+            it('keysIn之元素非字串 ⇒ invalid opt.keysIn[1]: must be a non-empty string(先於計算與寫檔; 不含輸入值)', async function() {
+                expectRejected(await runCase([m1(), m2()], { keysIn: ['Close', 5] }), 'invalid opt.keysIn[1]: must be a non-empty string', 'keysIn:5')
             })
 
             it('deal.keyIn有指定而不在keysIn內者不會被處理, 故不檢核(與修正前相同); 在keysIn內者照檢核', async function() {
@@ -789,23 +822,23 @@ describe('opt.intervalSec(根數為本: 根數不變、期別標籤依根數×�
                 assert.strictEqual(r.files.length, 6 + 7)
                 //Close在keysIn內: 照檢核
                 let hit = m2({ deals: [{ keyIn: 'Close', keyOut: 'RSI', nm: 'x' }] })
-                expectRejected(await runCase([m1(), hit]), 'invalid deal.nm[x]', 'keyIn:Close')
+                expectRejected(await runCase([m1(), hit]), 'invalid deal.nm: must be a non-empty object', 'keyIn:Close')
             })
 
             it('opt.denyOutput為true時亦先檢核(calc與funAddKeysIn未被呼叫)', async function() {
-                expectRejected(await runCase([m1(), null], { denyOutput: true }), 'invalid m[null]', 'denyOutput')
+                expectRejected(await runCase([m1(), null], { denyOutput: true }), 'invalid methods[1]: must be a non-empty object', 'denyOutput')
             })
 
             it('第1個method無效而其後有效者亦拒(檢核涵蓋每一個method, 不只第2個以後)', async function() {
-                expectRejected(await runCase([null, m2()]), 'invalid m[null]', 'first null')
-                expectRejected(await runCase([m1(), m2()].map((v, i) => (i === 0 ? { ...v, method: 'zzz' } : v))), 'invalid m.method[zzz] in kp', 'first method zzz')
-                expectRejected(await runCase([{ ...m1(), deals: [{ keyOut: 'param' }] }, m2()]), 'invalid deal.nm[undefined]', 'first nm')
+                expectRejected(await runCase([null, m2()]), 'invalid methods[0]: must be a non-empty object', 'first null')
+                expectRejected(await runCase([m1(), m2()].map((v, i) => (i === 0 ? { ...v, method: 'zzz' } : v))), 'invalid methods[0].method: must be a key of kp', 'first method zzz')
+                expectRejected(await runCase([{ ...m1(), deals: [{ keyOut: 'param' }] }, m2()]), 'invalid deal.nm: must be a non-empty object', 'first nm')
                 expectRejected(await runCase([{ ...m1(), optMethod: { intervalSec: 61 } }, m2()]), 'invalid opt.intervalSec: must be a positive integer multiple of 60 up to 31536000', 'first intervalSec')
             })
 
             it('同一method之第1個deal無效而其後有效者亦拒(檢核涵蓋每一個deal)', async function() {
                 let bad = m2({ deals: [{ keyOut: 'RSI', nm: 'x' }, { keyOut: 'RSI', nm: { avg: 50, std: 10 } }] })
-                expectRejected(await runCase([m1(), bad]), 'invalid deal.nm[x]', 'deal[0].nm')
+                expectRejected(await runCase([m1(), bad]), 'invalid deal.nm: must be a non-empty object', 'deal[0].nm')
             })
 
             it('同一method內多個deal依陣列順序處理(回傳依序、各依自己之avg/std)', async function() {

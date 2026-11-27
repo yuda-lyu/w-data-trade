@@ -1,6 +1,15 @@
 import assert from 'assert'
+import getOptReader from 'wsemi/src/getOptReader.mjs'
 import * as rp from '../src/resolvePeriods.mjs'
-import resolvePeriods, { INTERVAL_SEC_BASE, INTERVAL_SEC_MAX, SCALE_KEYS, resetWarned } from '../src/resolvePeriods.mjs'
+import resolvePeriods, { INTERVAL_SEC_BASE, INTERVAL_SEC_MAX, SCALE_KEYS } from '../src/resolvePeriods.mjs'
+import periodInfo from '../src/periodInfo.mjs'
+import { labelOf } from './unit-setupFeat.mjs'
+
+
+//resetWarned, 重設已警告之紀錄(警告改由wsemi之getOptReader輸出, 去重表為其所有; 本套件不再匯出resetWarned)
+let resetWarned = () => {
+    getOptReader.resetWarned()
+}
 
 
 //規格來源: src/resolvePeriods.mjs 之 JSDoc 與 README〈opt.intervalSec〉
@@ -50,7 +59,8 @@ describe('resolvePeriods', function() {
         it('已移除barsPerDay之時間換算: 不再匯出BARS_PER_DAY_BASE、BARS_PER_DAY_MAX、barLabelOf', function() {
             //規格6: 專案原則(自有套件不留相容層與雙重語意)
             let names = Object.keys(rp).sort()
-            assert.deepStrictEqual(names, ['INTERVAL_SEC_BASE', 'INTERVAL_SEC_MAX', 'SCALE_KEYS', 'chkIntervalSec', 'default', 'resetWarned', 'spanLabelOf', 'spanSecOf'])
+            //行為改變(第688項): 警告之去重改由wsemi之getOptReader擁有, 不再匯出resetWarned; 新增匯出readIntervalSec(各處讀取opt.intervalSec之單一入口)
+            assert.deepStrictEqual(names, ['INTERVAL_SEC_BASE', 'INTERVAL_SEC_MAX', 'SCALE_KEYS', 'chkIntervalSec', 'default', 'readIntervalSec', 'spanLabelOf', 'spanSecOf'])
         })
 
     })
@@ -287,7 +297,8 @@ describe('resolvePeriods', function() {
             assert.deepStrictEqual(r2, kp)
             assert.strictEqual(logs.length, 1)
             assert.strictEqual(logs[0].msg, '[w-data-trade resolvePeriods] invalid opt.kp: must be a non-empty object of positive integers or objects whose len, tenkan, kijun and senkouB are positive integers, using default the built-in table')
-            assert.deepStrictEqual(logs[0].meta, { fn: 'resolvePeriods', reason: 'invalid', key: 'opt.kp' })
+            //行為改變(第688項): funLog之第2參數改為getOptReader之形式{ fn: 函式標籤, reason: 'invalid', key: 不含opt.前綴之鍵名 }(原為{ fn: 'resolvePeriods', reason: 'invalid', key: 'opt.kp' }); 警告文字不變
+            assert.deepStrictEqual(logs[0].meta, { fn: 'w-data-trade resolvePeriods', reason: 'invalid', key: 'kp' })
             assert.ok(!logs[0].msg.includes('secretLabel'))
         })
 
@@ -332,6 +343,125 @@ describe('resolvePeriods', function() {
                 throw new Error('boom')
             }
             assert.deepStrictEqual(resolvePeriods(kp, { kp: 'x', debug: true, funLog: thrower }), kp)
+        })
+
+        it('opt.kp之檢測只做一次(檢測之值即使用之值, K4、V11): opt.kp為存取器時只讀取一次, 數字字串轉為數值', function() {
+            let n = 0
+            let o = {}
+            Object.defineProperty(o, 'kp', {
+                enumerable: true,
+                get() {
+                    n++
+                    return n === 1 ? { a: '5', b: 7 } : { z: 1 }
+                },
+            })
+            let r = resolvePeriods({ '1day': 6 }, o)
+            assert.deepStrictEqual(r, { a: 5, b: 7 })
+            assert.strictEqual(n, 1)
+        })
+
+        it('opt.kp之值為存取器時檢測與採用為同一次讀取(不另行重新檢測): 第1次讀得有效、其後讀得無效, 結果仍為第1次讀得之值', function() {
+            let n = 0
+            let kpObj = {}
+            Object.defineProperty(kpObj, 'a', {
+                enumerable: true,
+                get() {
+                    n++
+                    return n === 1 ? '6' : 'bad'
+                },
+            })
+            let r = resolvePeriods({ '1day': 6 }, { kp: kpObj })
+            assert.deepStrictEqual(r, { a: 6 })
+            assert.strictEqual(n, 1)
+        })
+
+        it('opt.kp之讀取拋錯(存取器、值內之存取器、已撤銷之Proxy)視為未給: 改用內建表、不拋錯、不洩漏拋出之訊息; opt.debug為true時讀取拋錯不警告(同getOptReader), 值內之存取器拋錯屬給了而非預期、警告一次', function() {
+            let kp = { '1day': 6 }
+            let thrower = () => {
+                throw new Error('boom-secret')
+            }
+            let o = { debug: true }
+            Object.defineProperty(o, 'kp', { enumerable: true, get: thrower })
+            let { logs, funLog } = capture()
+            o.funLog = funLog
+            assert.deepStrictEqual(resolvePeriods(kp, o), kp, '存取器拋錯')
+            assert.strictEqual(logs.length, 0)
+            let rv = Proxy.revocable({}, {})
+            rv.revoke()
+            assert.deepStrictEqual(resolvePeriods(kp, { kp: rv.proxy, debug: true, funLog }), kp, '值為已撤銷之Proxy')
+            assert.strictEqual(logs.length, 1)
+            assert.ok(!logs[0].msg.includes('boom-secret'))
+            let inner = { a: {} }
+            Object.defineProperty(inner.a, 'len', { enumerable: true, get: thrower })
+            assert.deepStrictEqual(resolvePeriods(kp, { kp: inner }), kp, '值內之存取器拋錯')
+        })
+
+    })
+
+    describe('readIntervalSec(各處讀取opt.intervalSec之單一入口; K3之例外: 給了而無效即throw)', function() {
+
+        let MSG_ISEC = 'invalid opt.intervalSec: must be a positive integer multiple of 60 up to 31536000'
+
+        it('未給: opt非物件與非函數、鍵之值為undefined或null ⇒ null', function() {
+            for (let o of [undefined, null, 5, 'x', true, {}, { intervalSec: undefined }, { intervalSec: null }, { kp: 1 }]) {
+                assert.strictEqual(rp.readIntervalSec(o), null, String(o))
+            }
+        })
+
+        it('有效: 60之正整數倍且至多31536000之數值或數字字串 ⇒ 轉為數值(檢測之值即使用之值)', function() {
+            for (let [v, exp] of [[60, 60], ['60', 60], [' 3600 ', 3600], ['+86400', 86400], [14400, 14400], ['1.44e4', 14400], [31536000, 31536000]]) {
+                assert.strictEqual(rp.readIntervalSec({ intervalSec: v }), exp, String(v))
+            }
+            //opt為函數(帶屬性)亦可讀
+            let f = () => {}
+            f.intervalSec = 900
+            assert.strictEqual(rp.readIntervalSec(f), 900)
+        })
+
+        it('給了而無效 ⇒ throw固定訊息(不含傳入之值)', function() {
+            let bads = [0, -60, 59, 61, 90, 1.5, 31536060, 'abc', '', ' ', NaN, Infinity, true, false, [], [60], {}, 60n, Object(60), Symbol('s'), () => 60, '0x3c', '1,000', 'SENTINEL-2b7']
+            for (let v of bads) {
+                assert.throws(() => rp.readIntervalSec({ intervalSec: v }), (e) => e.message === MSG_ISEC, labelOf(v))
+            }
+        })
+
+        it('讀取拋錯(存取器、Proxy陷阱、已撤銷之Proxy) ⇒ 視為給了而無效, throw固定訊息(不洩漏拋出之訊息)', function() {
+            let thrower = () => {
+                throw new Error('boom-secret')
+            }
+            let o = {}
+            Object.defineProperty(o, 'intervalSec', { enumerable: true, get: thrower })
+            let rv = Proxy.revocable({}, {})
+            rv.revoke()
+            for (let x of [o, new Proxy({}, { get: thrower }), rv.proxy]) {
+                assert.throws(() => rp.readIntervalSec(x), (e) => e.message === MSG_ISEC && !e.message.includes('boom'))
+            }
+        })
+
+        it('只讀取一次(存取器): 讀得之值即使用之值', function() {
+            let n = 0
+            let o = {}
+            Object.defineProperty(o, 'intervalSec', {
+                enumerable: true,
+                get() {
+                    n++
+                    return n === 1 ? '3600' : 'x'
+                },
+            })
+            assert.strictEqual(rp.readIntervalSec(o), 3600)
+            assert.strictEqual(n, 1)
+        })
+
+        it('resolvePeriods與periodInfo對讀取拋錯之opt.intervalSec亦throw固定訊息', function() {
+            let o = {}
+            Object.defineProperty(o, 'intervalSec', {
+                enumerable: true,
+                get() {
+                    throw new Error('boom-secret')
+                },
+            })
+            assert.throws(() => resolvePeriods({ '1day': 6 }, o), (e) => e.message === MSG_ISEC)
+            assert.throws(() => periodInfo('12hr', o), (e) => e.message === MSG_ISEC)
         })
 
     })

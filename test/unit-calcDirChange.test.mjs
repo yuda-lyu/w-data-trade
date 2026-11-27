@@ -4,7 +4,7 @@ import { fileURLToPath } from 'url'
 import calcDirChange from '../src/calcDirChange.mjs'
 import periodInfo from '../src/periodInfo.mjs'
 import dataConvert from '../src/dataConvert.mjs'
-import { resetWarned } from '../src/resolvePeriods.mjs'
+import getOptReader from 'wsemi/src/getOptReader.mjs'
 import { genOhlc, genFlat, genUp, ohlcFromCloses, genTimes, valuesOf, pickPeriod, assertNear } from './unit-setup.mjs'
 
 
@@ -363,7 +363,7 @@ describe('calcDirChange', function() {
         for (let kp of [{}, { a: 0 }, { a: -4 }, { a: 1.5 }, { a: 'abc' }, { a: 5, b: 0 }, 'x', 4, [4], null]) {
             assert.deepStrictEqual(await calcDirChange(arr, 'Close', { kp }), r0, `kp ${JSON.stringify(kp)}`)
         }
-        resetWarned()
+        getOptReader.resetWarned()
         let logs = []
         let funLog = (msg, info) => logs.push({ msg, info })
         await calcDirChange(arr, 'Close', { kp: { a: 'sk-777' }, debug: true, funLog })
@@ -371,8 +371,8 @@ describe('calcDirChange', function() {
         assert.strictEqual(logs.length, 1, '每個行程只警告一次')
         assert.ok(logs[0].msg.startsWith('[w-data-trade resolvePeriods] invalid opt.kp: '), logs[0].msg)
         assert.ok(!logs[0].msg.includes('sk-777'), '警告不含輸入值')
-        assert.deepStrictEqual(logs[0].info, { fn: 'resolvePeriods', reason: 'invalid', key: 'opt.kp' })
-        resetWarned()
+        assert.deepStrictEqual(logs[0].info, { fn: 'w-data-trade resolvePeriods', reason: 'invalid', key: 'kp' }) //行為改變(第688項): getOptReader之形式(原為{ fn: 'resolvePeriods', reason: 'invalid', key: 'opt.kp' })
+        getOptReader.resetWarned()
         await assert.rejects(calcDirChange(arr, 'Close', { kp: { a: {} } }), (e) => e.message === 'invalid opt.kp: must be an object of positive integer percentages')
     })
 

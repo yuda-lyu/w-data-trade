@@ -1,7 +1,8 @@
 import isNumber from 'lodash-es/isNumber.js'
 import size from 'lodash-es/size.js'
-import get from 'lodash-es/get.js'
 import each from 'lodash-es/each.js'
+import isenum from 'wsemi/src/isenum.mjs'
+import getOptReader from 'wsemi/src/getOptReader.mjs'
 import diviProt from './diviProt.mjs'
 import resolvePeriods from './resolvePeriods.mjs'
 
@@ -26,9 +27,9 @@ import resolvePeriods from './resolvePeriods.mjs'
  * @param {Object} [opt={}] 輸入設定物件，預設{}
  * @param {Number|String} [opt.intervalSec=14400] 輸入每根K線之秒數，60之正整數倍且至多31536000(數值或數字字串)，各期根數不變(根數為本)，期別標籤為根數×每根秒數之時間跨度(例：每根1day時3根之期為'3day')，預設14400(每根4hr，標籤與根數皆同內建表)，無效時reject
  * @param {Object} [opt.kp] 輸入直接採用之週期表物件，鍵為週期標籤，值為正整數根數或參數物件，給予時不換算，預設採內建週期表，非預期之輸入視為未給
- * @param {Boolean} [opt.debug=false] 輸入是否於opt.kp出現非預期輸入時輸出警告布林值，預設false
+ * @param {Boolean} [opt.debug=false] 輸入是否於opt.kp、opt.plusClose出現非預期輸入(視為未給、改用預設)時輸出警告布林值，須恰為true才生效，警告為固定詞彙、不含傳入之值，同一個鍵每個行程只警告一次，預設false
  * @param {Function} [opt.funLog] 輸入警告出口函數，以(msg, { fn, reason, key })呼叫，未給則用console.warn，預設未給
- * @param {Number} [opt.plusClose=0] 輸入stDistanceMod計算時對Close之偏移量，用以避免Close接近0時除法爆炸，預設0
+ * @param {Number|String} [opt.plusClose=0] 輸入stDistanceMod計算時對Close之偏移量，用以避免Close接近0時除法爆炸，須為有效數字(有限數值或數字字串，數字字串轉為數值使用)，預設0，非預期之輸入(含NaN、Infinity、非數字字串、布林、物件)視為未給而改用預設
  * @returns {Promise} 回傳Promise，resolve為各期結果陣列，各元素為{period,len,vs}，vs內各元素為{time,stDistance,stDistanceMod}
  * @example
  *
@@ -69,7 +70,8 @@ let calcSupertrend = (() => {
         '30day': { len: 180, mult: 5 },
     }
 
-    let caSupertrend = (arr, len, mult, opt = {}) => {
+    //plusClose, 由caSupertrends經getOptReader讀取一次(見其處)
+    let caSupertrend = (arr, len, mult, plusClose) => {
 
         //check
         if (!isNumber(len)) {
@@ -86,9 +88,6 @@ let calcSupertrend = (() => {
         if (n < len + 1) {
             return []
         }
-
-        //plusClose
-        let plusClose = get(opt, 'plusClose', 0)
 
         let kTime = 'time'
         let kHigh = 'High'
@@ -238,12 +237,16 @@ let calcSupertrend = (() => {
         //kp, 週期表(resolvePeriods: opt.intervalSec根數不變、標籤依根數×每根時長換算, 未給時同內建表; opt.kp直接採用)
         let kp = resolvePeriods(KP, opt)
 
+        //plusClose, opt各鍵經getOptReader讀取一次(給了即檢測, 非預期之輸入視為未給而改用預設, opt.debug為true時警告); 檢測通過之數字字串轉為數值後使用
+        let rd = getOptReader('w-data-trade calcSupertrend', opt)
+        let plusClose = Number(rd('plusClose', 0, (v) => isenum(v), 'a valid number', '0'))
+
         //rrs
         let rrs = []
         each(kp, (cfg, period) => {
 
             //caSupertrend
-            let rs = caSupertrend(arr, cfg.len, cfg.mult, opt)
+            let rs = caSupertrend(arr, cfg.len, cfg.mult, plusClose)
 
             //push
             rrs.push({

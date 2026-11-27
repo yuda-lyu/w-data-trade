@@ -1,7 +1,7 @@
 import isNumber from 'lodash-es/isNumber.js'
-import get from 'lodash-es/get.js'
 import size from 'lodash-es/size.js'
 import each from 'lodash-es/each.js'
+import getOptReader from 'wsemi/src/getOptReader.mjs'
 import pickValue from './pickValue.mjs'
 import resolvePeriods from './resolvePeriods.mjs'
 
@@ -19,9 +19,9 @@ import resolvePeriods from './resolvePeriods.mjs'
  * @param {Object} [opt={}] 輸入設定物件，預設{}
  * @param {Number|String} [opt.intervalSec=14400] 輸入每根K線之秒數，60之正整數倍且至多31536000(數值或數字字串)，各期根數不變(根數為本)，期別標籤為根數×每根秒數之時間跨度(例：每根1day時3根之期為'3day')，預設14400(每根4hr，標籤與根數皆同內建表)，無效時reject
  * @param {Object} [opt.kp] 輸入直接採用之週期表物件，鍵為週期標籤，值為正整數根數或參數物件，給予時不換算，預設採內建週期表，非預期之輸入視為未給
- * @param {Boolean} [opt.debug=false] 輸入是否於opt.kp出現非預期輸入時輸出警告布林值，預設false
+ * @param {Boolean} [opt.debug=false] 輸入是否於opt.kp、opt.norm出現非預期輸入(視為未給、改用預設)時輸出警告布林值，須恰為true才生效，警告為固定詞彙、不含傳入之值，同一個鍵每個行程只警告一次，預設false
  * @param {Function} [opt.funLog] 輸入警告出口函數，以(msg, { fn, reason, key })呼叫，未給則用console.warn，預設未給
- * @param {Boolean} [opt.norm=false] 輸入是否將param改為差值對現值之比例(value[i]-value[i-len])/value[i]布林值，預設false
+ * @param {Boolean} [opt.norm=false] 輸入是否將param改為差值對現值之比例(value[i]-value[i-len])/value[i]布林值，預設false；只收true與false(不收1、0、'true'、'y'等)，非預期之輸入視為未給而改用預設
  * @returns {Promise} 回傳Promise，resolve為各期結果陣列，各元素為{period,len,vs}，vs內各元素為{time,param}
  * @example
  *
@@ -67,15 +67,13 @@ let calcVec = (() => {
         '30day': 180, // 30 days = 180 * 4 hours
     }
 
-    let caVec = (vs, len, opt = {}) => {
+    //norm, 由caVecs經getOptReader讀取一次(見其處)
+    let caVec = (vs, len, norm) => {
 
         //check
         if (!isNumber(len)) {
             throw new Error(`len is not a number`)
         }
-
-        //norm
-        let norm = get(opt, 'norm', false)
 
         //n
         let n = size(vs)
@@ -132,12 +130,16 @@ let calcVec = (() => {
         //kp, 週期表(resolvePeriods: opt.intervalSec根數不變、標籤依根數×每根時長換算, 未給時同內建表; opt.kp直接採用)
         let kp = resolvePeriods(KP, opt)
 
+        //norm, opt各鍵經getOptReader讀取一次(給了即檢測, 非預期之輸入視為未給而改用預設, opt.debug為true時警告); 布林只收true與false
+        let rd = getOptReader('w-data-trade calcVec', opt)
+        let norm = rd('norm', false, (v) => typeof v === 'boolean', 'a boolean', 'false')
+
         //rrs
         let rrs = []
         each(kp, (len, period) => {
 
             //caVec
-            let rs = caVec(vs, len, opt)
+            let rs = caVec(vs, len, norm)
 
             //push
             rrs.push({

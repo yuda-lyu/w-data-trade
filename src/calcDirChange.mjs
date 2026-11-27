@@ -2,7 +2,8 @@ import isNumber from 'lodash-es/isNumber.js'
 import get from 'lodash-es/get.js'
 import size from 'lodash-es/size.js'
 import each from 'lodash-es/each.js'
-import resolvePeriods, { chkIntervalSec } from './resolvePeriods.mjs'
+import getOptReader from 'wsemi/src/getOptReader.mjs'
+import resolvePeriods, { readIntervalSec } from './resolvePeriods.mjs'
 
 
 /**
@@ -175,14 +176,13 @@ let calcDirChange = (() => {
 
     let caDirChanges = (arr, opt = {}) => {
 
-        //check, opt.intervalSec給了即檢核(無效即拋, 同其他calc); 門檻與K線週期無關, 標籤不換算
-        let intervalSecOpt = get(opt, 'intervalSec', null)
-        if (intervalSecOpt !== null && intervalSecOpt !== undefined) {
-            chkIntervalSec(intervalSecOpt)
-        }
+        //check, opt.intervalSec給了即檢核(無效即拋, 同其他calc; K3之例外); 門檻與K線週期無關, 標籤不換算
+        readIntervalSec(opt)
 
         //kp, 門檻表(opt.kp直接採用, 非預期之輸入視為未給而用內建表; 不給intervalSec故不換算標籤)
-        let kp = resolvePeriods(KP, { ...opt, intervalSec: null })
+        //  opt之鍵經getOptReader安全讀取(讀取拋錯視為未給), 只轉交kp、debug、funLog(不展開整份opt, 以免他鍵之存取器拋錯)
+        let rd = getOptReader('w-data-trade calcDirChange', opt)
+        let kp = resolvePeriods(KP, { kp: rd.read('kp'), debug: rd.debug, funLog: rd.funLog })
 
         //rrs
         let rrs = []

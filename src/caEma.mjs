@@ -1,7 +1,7 @@
 import isNumber from 'lodash-es/isNumber.js'
-import get from 'lodash-es/get.js'
 import size from 'lodash-es/size.js'
 import meanBy from 'lodash-es/meanBy.js'
+import getOptReader from 'wsemi/src/getOptReader.mjs'
 
 
 /**
@@ -16,7 +16,9 @@ import meanBy from 'lodash-es/meanBy.js'
  * @param {Array} vs 輸入數值序列，各元素為{time,value}
  * @param {Number} len 輸入計算所用之期數(K線根數)
  * @param {Object} [opt={}] 輸入設定物件，預設{}
- * @param {Boolean} [opt.norm=false] 輸入是否將param改為(EMA-現值)/現值布林值，預設false
+ * @param {Boolean} [opt.norm=false] 輸入是否將param改為(EMA-現值)/現值布林值，預設false；只收true與false(不收1、0、'true'、'y'等)，非預期之輸入視為未給而改用預設，opt.debug恰為true時警告一次(固定詞彙、不含傳入之值，出口為opt.funLog或console.warn)
+ * @param {Boolean} [opt.debug=false] 輸入是否於opt.norm出現非預期輸入時輸出警告布林值，須恰為true才生效，預設false
+ * @param {Function} [opt.funLog] 輸入警告出口函數，以(msg, { fn, reason, key })呼叫，未給則用console.warn，預設未給
  * @returns {Array} 回傳各筆結果陣列，第0筆為{time,param}，其後各筆為{time,value,diff,ratio,param}
  * @example
  *
@@ -43,8 +45,9 @@ let caEma = (vs, len, opt = {}) => {
         throw new Error(`len is not a number`)
     }
 
-    //norm
-    let norm = get(opt, 'norm', false)
+    //norm, 經getOptReader讀取(給了即檢測, 非預期之輸入視為未給而改用預設, opt.debug為true時警告); 布林只收true與false
+    let rd = getOptReader('w-data-trade caEma', opt)
+    let norm = rd('norm', false, (v) => typeof v === 'boolean', 'a boolean', 'false')
 
     //n
     let n = size(vs)

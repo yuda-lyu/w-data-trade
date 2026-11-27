@@ -29,7 +29,7 @@
 <nav >
     
     
-    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#caEma">caEma</a></li><li><a href="global.html#calcAdx">calcAdx</a></li><li><a href="global.html#calcAtr">calcAtr</a></li><li><a href="global.html#calcAts">calcAts</a></li><li><a href="global.html#calcBbpb">calcBbpb</a></li><li><a href="global.html#calcCandle">calcCandle</a></li><li><a href="global.html#calcCvd">calcCvd</a></li><li><a href="global.html#calcDirChange">calcDirChange</a></li><li><a href="global.html#calcDonchian">calcDonchian</a></li><li><a href="global.html#calcDown">calcDown</a></li><li><a href="global.html#calcEma">calcEma</a></li><li><a href="global.html#calcFlow">calcFlow</a></li><li><a href="global.html#calcIchimoku">calcIchimoku</a></li><li><a href="global.html#calcKdj">calcKdj</a></li><li><a href="global.html#calcKeltner">calcKeltner</a></li><li><a href="global.html#calcKlr">calcKlr</a></li><li><a href="global.html#calcMa">calcMa</a></li><li><a href="global.html#calcMacd">calcMacd</a></li><li><a href="global.html#calcMfi">calcMfi</a></li><li><a href="global.html#calcMomz">calcMomz</a></li><li><a href="global.html#calcObv">calcObv</a></li><li><a href="global.html#calcOrig">calcOrig</a></li><li><a href="global.html#calcRsi">calcRsi</a></li><li><a href="global.html#calcSupertrend">calcSupertrend</a></li><li><a href="global.html#calcVec">calcVec</a></li><li><a href="global.html#calcVolx">calcVolx</a></li><li><a href="global.html#calcVortex">calcVortex</a></li><li><a href="global.html#calcVwap">calcVwap</a></li><li><a href="global.html#chkIntervalSec">chkIntervalSec</a></li><li><a href="global.html#dataCalibrate">dataCalibrate</a></li><li><a href="global.html#dataConvert">dataConvert</a></li><li><a href="global.html#periodInfo">periodInfo</a></li><li><a href="global.html#resetWarned">resetWarned</a></li><li><a href="global.html#resolvePeriods">resolvePeriods</a></li><li><a href="global.html#spanLabelOf">spanLabelOf</a></li><li><a href="global.html#spanSecOf">spanSecOf</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#caEma">caEma</a></li><li><a href="global.html#calcAdx">calcAdx</a></li><li><a href="global.html#calcAtr">calcAtr</a></li><li><a href="global.html#calcAts">calcAts</a></li><li><a href="global.html#calcBbpb">calcBbpb</a></li><li><a href="global.html#calcCandle">calcCandle</a></li><li><a href="global.html#calcCvd">calcCvd</a></li><li><a href="global.html#calcDirChange">calcDirChange</a></li><li><a href="global.html#calcDonchian">calcDonchian</a></li><li><a href="global.html#calcDown">calcDown</a></li><li><a href="global.html#calcEma">calcEma</a></li><li><a href="global.html#calcFlow">calcFlow</a></li><li><a href="global.html#calcIchimoku">calcIchimoku</a></li><li><a href="global.html#calcKdj">calcKdj</a></li><li><a href="global.html#calcKeltner">calcKeltner</a></li><li><a href="global.html#calcKlr">calcKlr</a></li><li><a href="global.html#calcMa">calcMa</a></li><li><a href="global.html#calcMacd">calcMacd</a></li><li><a href="global.html#calcMfi">calcMfi</a></li><li><a href="global.html#calcMomz">calcMomz</a></li><li><a href="global.html#calcObv">calcObv</a></li><li><a href="global.html#calcOrig">calcOrig</a></li><li><a href="global.html#calcRsi">calcRsi</a></li><li><a href="global.html#calcSupertrend">calcSupertrend</a></li><li><a href="global.html#calcVec">calcVec</a></li><li><a href="global.html#calcVolx">calcVolx</a></li><li><a href="global.html#calcVortex">calcVortex</a></li><li><a href="global.html#calcVwap">calcVwap</a></li><li><a href="global.html#chkIntervalSec">chkIntervalSec</a></li><li><a href="global.html#dataCalibrate">dataCalibrate</a></li><li><a href="global.html#dataConvert">dataConvert</a></li><li><a href="global.html#periodInfo">periodInfo</a></li><li><a href="global.html#readIntervalSec">readIntervalSec</a></li><li><a href="global.html#resolvePeriods">resolvePeriods</a></li><li><a href="global.html#spanLabelOf">spanLabelOf</a></li><li><a href="global.html#spanSecOf">spanSecOf</a></li></ul>
     
 </nav>
 
@@ -46,9 +46,9 @@
     <section>
         <article>
             <pre class="prettyprint source linenums"><code>import isNumber from 'lodash-es/isNumber.js'
-import get from 'lodash-es/get.js'
 import size from 'lodash-es/size.js'
 import meanBy from 'lodash-es/meanBy.js'
+import getOptReader from 'wsemi/src/getOptReader.mjs'
 
 
 /**
@@ -63,7 +63,9 @@ import meanBy from 'lodash-es/meanBy.js'
  * @param {Array} vs 輸入數值序列，各元素為{time,value}
  * @param {Number} len 輸入計算所用之期數(K線根數)
  * @param {Object} [opt={}] 輸入設定物件，預設{}
- * @param {Boolean} [opt.norm=false] 輸入是否將param改為(EMA-現值)/現值布林值，預設false
+ * @param {Boolean} [opt.norm=false] 輸入是否將param改為(EMA-現值)/現值布林值，預設false；只收true與false(不收1、0、'true'、'y'等)，非預期之輸入視為未給而改用預設，opt.debug恰為true時警告一次(固定詞彙、不含傳入之值，出口為opt.funLog或console.warn)
+ * @param {Boolean} [opt.debug=false] 輸入是否於opt.norm出現非預期輸入時輸出警告布林值，須恰為true才生效，預設false
+ * @param {Function} [opt.funLog] 輸入警告出口函數，以(msg, { fn, reason, key })呼叫，未給則用console.warn，預設未給
  * @returns {Array} 回傳各筆結果陣列，第0筆為{time,param}，其後各筆為{time,value,diff,ratio,param}
  * @example
  *
@@ -90,8 +92,9 @@ let caEma = (vs, len, opt = {}) => {
         throw new Error(`len is not a number`)
     }
 
-    //norm
-    let norm = get(opt, 'norm', false)
+    //norm, 經getOptReader讀取(給了即檢測, 非預期之輸入視為未給而改用預設, opt.debug為true時警告); 布林只收true與false
+    let rd = getOptReader('w-data-trade caEma', opt)
+    let norm = rd('norm', false, (v) => typeof v === 'boolean', 'a boolean', 'false')
 
     //n
     let n = size(vs)
@@ -199,7 +202,7 @@ export default caEma
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.5</a> on Sat Nov 28 2026 04:43:28 GMT+0800 (台北標準時間) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.5</a> on Sat Nov 28 2026 06:09:31 GMT+0800 (台北標準時間) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
 <script>prettyPrint();</script>

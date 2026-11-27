@@ -29,7 +29,7 @@
 <nav >
     
     
-    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#caEma">caEma</a></li><li><a href="global.html#calcAdx">calcAdx</a></li><li><a href="global.html#calcAtr">calcAtr</a></li><li><a href="global.html#calcAts">calcAts</a></li><li><a href="global.html#calcBbpb">calcBbpb</a></li><li><a href="global.html#calcCandle">calcCandle</a></li><li><a href="global.html#calcCvd">calcCvd</a></li><li><a href="global.html#calcDirChange">calcDirChange</a></li><li><a href="global.html#calcDonchian">calcDonchian</a></li><li><a href="global.html#calcDown">calcDown</a></li><li><a href="global.html#calcEma">calcEma</a></li><li><a href="global.html#calcFlow">calcFlow</a></li><li><a href="global.html#calcIchimoku">calcIchimoku</a></li><li><a href="global.html#calcKdj">calcKdj</a></li><li><a href="global.html#calcKeltner">calcKeltner</a></li><li><a href="global.html#calcKlr">calcKlr</a></li><li><a href="global.html#calcMa">calcMa</a></li><li><a href="global.html#calcMacd">calcMacd</a></li><li><a href="global.html#calcMfi">calcMfi</a></li><li><a href="global.html#calcMomz">calcMomz</a></li><li><a href="global.html#calcObv">calcObv</a></li><li><a href="global.html#calcOrig">calcOrig</a></li><li><a href="global.html#calcRsi">calcRsi</a></li><li><a href="global.html#calcSupertrend">calcSupertrend</a></li><li><a href="global.html#calcVec">calcVec</a></li><li><a href="global.html#calcVolx">calcVolx</a></li><li><a href="global.html#calcVortex">calcVortex</a></li><li><a href="global.html#calcVwap">calcVwap</a></li><li><a href="global.html#chkIntervalSec">chkIntervalSec</a></li><li><a href="global.html#dataCalibrate">dataCalibrate</a></li><li><a href="global.html#dataConvert">dataConvert</a></li><li><a href="global.html#periodInfo">periodInfo</a></li><li><a href="global.html#resetWarned">resetWarned</a></li><li><a href="global.html#resolvePeriods">resolvePeriods</a></li><li><a href="global.html#spanLabelOf">spanLabelOf</a></li><li><a href="global.html#spanSecOf">spanSecOf</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#caEma">caEma</a></li><li><a href="global.html#calcAdx">calcAdx</a></li><li><a href="global.html#calcAtr">calcAtr</a></li><li><a href="global.html#calcAts">calcAts</a></li><li><a href="global.html#calcBbpb">calcBbpb</a></li><li><a href="global.html#calcCandle">calcCandle</a></li><li><a href="global.html#calcCvd">calcCvd</a></li><li><a href="global.html#calcDirChange">calcDirChange</a></li><li><a href="global.html#calcDonchian">calcDonchian</a></li><li><a href="global.html#calcDown">calcDown</a></li><li><a href="global.html#calcEma">calcEma</a></li><li><a href="global.html#calcFlow">calcFlow</a></li><li><a href="global.html#calcIchimoku">calcIchimoku</a></li><li><a href="global.html#calcKdj">calcKdj</a></li><li><a href="global.html#calcKeltner">calcKeltner</a></li><li><a href="global.html#calcKlr">calcKlr</a></li><li><a href="global.html#calcMa">calcMa</a></li><li><a href="global.html#calcMacd">calcMacd</a></li><li><a href="global.html#calcMfi">calcMfi</a></li><li><a href="global.html#calcMomz">calcMomz</a></li><li><a href="global.html#calcObv">calcObv</a></li><li><a href="global.html#calcOrig">calcOrig</a></li><li><a href="global.html#calcRsi">calcRsi</a></li><li><a href="global.html#calcSupertrend">calcSupertrend</a></li><li><a href="global.html#calcVec">calcVec</a></li><li><a href="global.html#calcVolx">calcVolx</a></li><li><a href="global.html#calcVortex">calcVortex</a></li><li><a href="global.html#calcVwap">calcVwap</a></li><li><a href="global.html#chkIntervalSec">chkIntervalSec</a></li><li><a href="global.html#dataCalibrate">dataCalibrate</a></li><li><a href="global.html#dataConvert">dataConvert</a></li><li><a href="global.html#periodInfo">periodInfo</a></li><li><a href="global.html#readIntervalSec">readIntervalSec</a></li><li><a href="global.html#resolvePeriods">resolvePeriods</a></li><li><a href="global.html#spanLabelOf">spanLabelOf</a></li><li><a href="global.html#spanSecOf">spanSecOf</a></li></ul>
     
 </nav>
 
@@ -61,7 +61,7 @@ import isearr from 'wsemi/src/isearr.mjs'
 import iseobj from 'wsemi/src/iseobj.mjs'
 import isestr from 'wsemi/src/isestr.mjs'
 import haskey from 'wsemi/src/haskey.mjs'
-import { chkIntervalSec } from './resolvePeriods.mjs'
+import { readIntervalSec } from './resolvePeriods.mjs'
 
 
 /**
@@ -187,10 +187,7 @@ let dataCalibrate = async (calcFn, arrSrc, arrRef, pairs, optMethodInit, opt = {
 
     //check, optMethodInit與optMethodRef之intervalSec(每根秒數)先行檢核, 給了而無效即拒(與calc同一檢核, 先於任何計算)
     each([optMethodInit, optMethodRef], (om) => {
-        let intervalSecOpt = get(om, 'intervalSec', null)
-        if (intervalSecOpt !== null &amp;&amp; intervalSecOpt !== undefined) {
-            chkIntervalSec(intervalSecOpt)
-        }
+        readIntervalSec(om)
     })
 
     //pool: 跑 calc 後彙集指定 keyOut 之全期有限值
@@ -359,7 +356,7 @@ export default dataCalibrate
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.5</a> on Sat Nov 28 2026 04:43:28 GMT+0800 (台北標準時間) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.5</a> on Sat Nov 28 2026 06:09:31 GMT+0800 (台北標準時間) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
 <script>prettyPrint();</script>

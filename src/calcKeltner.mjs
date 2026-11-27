@@ -1,7 +1,8 @@
 import isNumber from 'lodash-es/isNumber.js'
-import get from 'lodash-es/get.js'
 import size from 'lodash-es/size.js'
 import each from 'lodash-es/each.js'
+import isenum from 'wsemi/src/isenum.mjs'
+import getOptReader from 'wsemi/src/getOptReader.mjs'
 import diviProt from './diviProt.mjs'
 import resolvePeriods from './resolvePeriods.mjs'
 
@@ -30,9 +31,9 @@ import resolvePeriods from './resolvePeriods.mjs'
  * @param {Object} [opt={}] 輸入設定物件，預設{}
  * @param {Number|String} [opt.intervalSec=14400] 輸入每根K線之秒數，60之正整數倍且至多31536000(數值或數字字串)，各期根數不變(根數為本)，期別標籤為根數×每根秒數之時間跨度(例：每根1day時3根之期為'3day')，預設14400(每根4hr，標籤與根數皆同內建表)，無效時reject
  * @param {Object} [opt.kp] 輸入直接採用之週期表物件，鍵為週期標籤，值為正整數根數或參數物件，給予時不換算，預設採內建週期表，非預期之輸入視為未給
- * @param {Boolean} [opt.debug=false] 輸入是否於opt.kp出現非預期輸入時輸出警告布林值，預設false
+ * @param {Boolean} [opt.debug=false] 輸入是否於opt.kp、opt.plusMiddle出現非預期輸入(視為未給、改用預設)時輸出警告布林值，須恰為true才生效，警告為固定詞彙、不含傳入之值，同一個鍵每個行程只警告一次，預設false
  * @param {Function} [opt.funLog] 輸入警告出口函數，以(msg, { fn, reason, key })呼叫，未給則用console.warn，預設未給
- * @param {Number} [opt.plusMiddle=0] 輸入偏移middle之量，用於穩定kcWidthMod之分母，預設0
+ * @param {Number|String} [opt.plusMiddle=0] 輸入偏移middle之量，用於穩定kcWidthMod之分母，須為有效數字(有限數值或數字字串，數字字串轉為數值使用)，預設0，非預期之輸入(含NaN、Infinity、非數字字串、布林、物件)視為未給而改用預設
  * @returns {Promise} 回傳Promise，resolve為各期結果陣列，各元素為{period,len,vs}，vs內各元素為{time,kcPctB,kcWidth,kcWidthMod}
  * @example
  *
@@ -77,7 +78,12 @@ let calcKeltner = (() => {
         '30day': { len: 180, mult: 3 },
     }
 
-    let caKeltner = (arr, len, mult, opt = {}) => {
+    //plusMiddle: 偏移 middle (EMA close) 為穩定 kcWidth 分母, 用於 kcWidthMod (由caKeltners經getOptReader讀取一次, 見其處)
+    //  原 kcWidth = bandWidth / middle, index OHLC 之 middle 可 ≈0 或負 → ratio 爆
+    //  kcWidthMod = bandWidth / (middle + plusMiddle), 用 diviProt 額外保護 |分母|<0.00001 邊界
+    //  bandWidth = upper-lower ≥0 不需偏移
+    //  middle 直接命名 (不沿用 plusClose) 因 middle 是 EMA(close), 跟 c 隔一層, 直接對應 middle 較清晰
+    let caKeltner = (arr, len, mult, plusMiddle) => {
 
         //check
         if (!isNumber(len)) {
@@ -86,13 +92,6 @@ let calcKeltner = (() => {
         if (!isNumber(mult)) {
             throw new Error(`mult is not a number`)
         }
-
-        //plusMiddle: 偏移 middle (EMA close) 為穩定 kcWidth 分母, 用於 kcWidthMod
-        //  原 kcWidth = bandWidth / middle, index OHLC 之 middle 可 ≈0 或負 → ratio 爆
-        //  kcWidthMod = bandWidth / (middle + plusMiddle), 用 diviProt 額外保護 |分母|<0.00001 邊界
-        //  bandWidth = upper-lower ≥0 不需偏移
-        //  middle 直接命名 (不沿用 plusClose) 因 middle 是 EMA(close), 跟 c 隔一層, 直接對應 middle 較清晰
-        let plusMiddle = get(opt, 'plusMiddle', 0)
 
         //n
         let n = size(arr)
@@ -221,12 +220,16 @@ let calcKeltner = (() => {
         //kp, 週期表(resolvePeriods: opt.intervalSec根數不變、標籤依根數×每根時長換算, 未給時同內建表; opt.kp直接採用)
         let kp = resolvePeriods(KP, opt)
 
+        //plusMiddle, opt各鍵經getOptReader讀取一次(給了即檢測, 非預期之輸入視為未給而改用預設, opt.debug為true時警告); 檢測通過之數字字串轉為數值後使用
+        let rd = getOptReader('w-data-trade calcKeltner', opt)
+        let plusMiddle = Number(rd('plusMiddle', 0, (v) => isenum(v), 'a valid number', '0'))
+
         //rrs
         let rrs = []
         each(kp, (cfg, period) => {
 
             //caKeltner
-            let rs = caKeltner(arr, cfg.len, cfg.mult, opt)
+            let rs = caKeltner(arr, cfg.len, cfg.mult, plusMiddle)
 
             //push
             rrs.push({
