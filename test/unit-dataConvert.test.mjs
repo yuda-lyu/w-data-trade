@@ -10,7 +10,7 @@ import { NEW_FIELDS, SYN_PERIODS, synCalc, KP, methodsOf, runParityCase } from '
 //  D1. 未給nm.byPeriod(含null、undefined)時, 寫出之整個資料夾(檔名清單與各檔內容)與回傳列之既有欄位(名稱、次序、值)皆與1.0.66相同(以改動前之sha256快照釘住; 與原版逐檔對拍另見交付之對拍腳本)
 //  D2. nm.byPeriod之鍵為期別標籤、值為{avg,std}: 某期別有自己之鍵(own property)者用其avg與std, 否則用nm.avg與nm.std(只給部分期別、空物件、繼承之鍵皆然)
 //  D3. nm.byPeriod給了即檢核(先於任何計算與寫檔; 與其他deal之檢核同): 須為一般物件(可為空物件), 各值須為物件、avg為有限數值、std為有限數值且大於0(只收數值, 不收數字字串、BigInt); 否則reject固定訊息(不含輸入值)且不寫出任何檔; deal.keyIn有指定而不在keysIn內者不處理故不檢核
-//  D4. 回傳列增列n、median、q25、q75(各期攤平後)與periods(各期正規化後之統計{period,len,n,avg,std,min,max,median,q25,q75}); 分位數為第7型; n為非NaN值之個數, 為0時其餘統計欄皆為null
+//  D4. 回傳列增列n、median、q25、q75(各期攤平後)與periods(各期正規化後之統計{period,len,n,avg,std,min,max,median,q25,q75}); 分位數為第7型; 回傳列與periods之全部統計(n、avg、std、min、max、median、q25、q75)只取有限數值(NaN、±Infinity皆不計入), n為有限值之個數, 為0時其餘統計欄皆為null(回傳列之min與max亦然); 正規化本身(逐值寫出之檔)不變
 //  D5. 往返: 以{avg:0,std:1}取得各期之統計後組成byPeriod重跑, 各期輸出之平均約0、標準差約1; 以中位數與四分位距組成者, 中位數約0、四分位距約1.349
 
 
@@ -30,9 +30,9 @@ let COLS_PERIOD = ['period', 'len', 'n', 'avg', 'std', 'min', 'max', 'median', '
 let ARR = [{ time: 't0' }]
 
 
-//brute, 另寫之暴力統計(不與src共用程式): 排序後以分數位置線性內插(第7型之定義); n為0時各欄為null
+//brute, 另寫之暴力統計(不與src共用程式): 只取有限數值(NaN、±Infinity皆不計), 排序後以分數位置線性內插(第7型之定義); n為0時各欄為null
 let brute = (xs) => {
-    let v = xs.filter((x) => !Number.isNaN(x))
+    let v = xs.filter((x) => typeof x === 'number' && Number.isFinite(x))
     let n = v.length
     if (n === 0) {
         return { n, avg: null, std: null, min: null, max: null, median: null, q25: null, q75: null }
@@ -517,69 +517,144 @@ describe('dataConvert(正規化常數依期別、各期統計)', function() {
             }
         })
 
-        it('n為0之期(vs為空、或值皆為NaN): n為0且其餘統計欄皆為null; 該期不影響攤平之統計; 整體皆無值時攤平亦n為0且分位數為null', async function() {
+        it('n為0之期(vs為空、或值皆為非有限: NaN、±Infinity): n為0且其餘統計欄皆為null; 該期不影響攤平之統計; 整體皆無有限值時攤平亦n為0且各統計為null', async function() {
             let { kp } = fixedCalc([
                 { period: 'e0', len: 1, xs: [] },
                 { period: 'nan', len: 2, xs: [NaN, NaN] },
+                { period: 'inf', len: 4, xs: [Infinity, -Infinity, NaN, Infinity] },
                 { period: 'ok', len: 3, xs: [2, 4, 6] },
             ])
             let r = (await call(dealOf({ avg: 0, std: 1 }), kp, fresh(), { denyOutput: true }))[0]
             let nul = { n: 0, avg: null, std: null, min: null, max: null, median: null, q25: null, q75: null }
             assert.deepStrictEqual(r.periods[0], { period: 'e0', len: 1, ...nul })
             assert.deepStrictEqual(r.periods[1], { period: 'nan', len: 2, ...nul })
-            assert.deepStrictEqual([r.periods[2].n, r.periods[2].avg, r.periods[2].median, r.periods[2].q25, r.periods[2].q75, r.periods[2].min, r.periods[2].max], [3, 4, 4, 3, 5, 2, 6])
-            assert.deepStrictEqual([r.n, r.avg, r.median, r.q25, r.q75], [3, 4, 4, 3, 5])
-            //整體皆無值
-            let { kp: kp0 } = fixedCalc([{ period: 'e0', len: 1, xs: [] }])
-            let r0 = (await call(dealOf({ avg: 0, std: 1 }), kp0, fresh(), { denyOutput: true }))[0]
-            assert.strictEqual(r0.n, 0)
-            assert.strictEqual(r0.median, null)
-            assert.strictEqual(r0.q25, null)
-            assert.strictEqual(r0.q75, null)
-            assert.deepStrictEqual(r0.periods, [{ period: 'e0', len: 1, ...nul }])
-        })
-
-        it('含Infinity之期(例如nm.std為0之正規化): Infinity計入n; h為整數時分位數取該值而不與下一值內插(不因Infinity得NaN)', async function() {
-            let { kp } = fixedCalc([{ period: 'inf', len: 1, xs: [1, 2, Infinity] }])
-            let r = (await call(dealOf({ avg: 0, std: 1 }), kp, fresh(), { denyOutput: true }))[0]
-            let p = r.periods[0]
-            assert.deepStrictEqual([p.n, p.min, p.max, p.median, p.q25, p.q75], [3, 1, Infinity, 2, 1.5, Infinity])
-            assert.deepStrictEqual([r.n, r.median, r.q25, r.q75], [3, 2, 1.5, Infinity])
-        })
-
-        it('含±Infinity之相鄰兩值之分位數: 相等時取該值(不因Infinity - Infinity得NaN); 一側為±Infinity時用加權式(不因-Infinity + Infinity得NaN); -Infinity與Infinity之間無定義而為NaN', async function() {
-            let I = Infinity
-            //[xs, median, q25, q75]; 期望值為極限意義之手算值: 排序後h = (n - 1) × q, 相鄰兩值a、b, (1 - f) × a + f × b
-            let cases = [
-                [[I, I], I, I, I],
-                [[-I, -I, 5], -I, -I, -I], //q75: h = 1.5, a = -I, b = 5
-                [[-I, 1], -I, -I, -I],
-                [[1, I], I, I, I],
-                [[3, 1, 2, I], 2.5, 1.75, I], //排序 [1,2,3,I]: median h = 1.5 → 2.5; q25 h = 0.75 → 1.75; q75 h = 2.25: a = 3, b = I
-                [[2, -I, 3, 1], 1.5, -I, 2.25], //排序 [-I,1,2,3]: q25 h = 0.75: a = -I, b = 1; median 1.5; q75 h = 2.25 → 2.25
-            ]
-            let { kp } = fixedCalc(cases.map((c, i) => ({ period: `p${i}`, len: i + 1, xs: c[0] })))
-            let rs = await call(dealOf({ avg: 0, std: 1 }), kp, fresh(), { denyOutput: true })
-            for (let [i, c] of cases.entries()) {
-                let p = rs[0].periods[i]
-                assert.deepStrictEqual([p.median, p.q25, p.q75, p.n], [c[1], c[2], c[3], c[0].length], `案${i}`)
-                let { kp: kp1 } = fixedCalc([{ period: 'p', len: 1, xs: c[0] }])
-                let rr = await call(dealOf({ avg: 0, std: 1 }), kp1, fresh(), { denyOutput: true })
-                assert.deepStrictEqual([rr[0].median, rr[0].q25, rr[0].q75, rr[0].n], [c[1], c[2], c[3], c[0].length], `攤平案${i}`)
+            assert.deepStrictEqual(r.periods[2], { period: 'inf', len: 4, ...nul })
+            assert.deepStrictEqual([r.periods[3].n, r.periods[3].avg, r.periods[3].median, r.periods[3].q25, r.periods[3].q75, r.periods[3].min, r.periods[3].max], [3, 4, 4, 3, 5, 2, 6])
+            assert.deepStrictEqual([r.n, r.avg, r.median, r.q25, r.q75, r.min, r.max], [3, 4, 4, 3, 5, 2, 6])
+            //整體皆無有限值(空、NaN、±Infinity各種組合): 回傳列之n為0, 其餘統計(含min與max)皆為null
+            let sets = [[{ period: 'e0', len: 1, xs: [] }], [{ period: 'n', len: 1, xs: [NaN] }], [{ period: 'i', len: 1, xs: [Infinity, -Infinity] }], [{ period: 'a', len: 1, xs: [] }, { period: 'b', len: 2, xs: [NaN, Infinity] }]]
+            for (let [i, set] of sets.entries()) {
+                let { kp: kp0 } = fixedCalc(set)
+                let r0 = (await call(dealOf({ avg: 0, std: 1 }), kp0, fresh(), { denyOutput: true }))[0]
+                assert.deepStrictEqual([r0.n, r0.avg, r0.std, r0.min, r0.max, r0.median, r0.q25, r0.q75], [0, null, null, null, null, null, null, null], `整體皆無有限值案${i}`)
+                assert.deepStrictEqual(r0.periods, set.map((p) => ({ period: p.period, len: p.len, ...nul })), `整體皆無有限值案${i} periods`)
             }
-            let { kp: kpU } = fixedCalc([{ period: 'u', len: 1, xs: [-I, I] }])
-            let u = (await call(dealOf({ avg: 0, std: 1 }), kpU, fresh(), { denyOutput: true }))[0]
-            assert.ok([u.median, u.q25, u.q75, u.periods[0].median, u.periods[0].q25, u.periods[0].q75].every((x) => Number.isNaN(x)), '-Infinity與Infinity之間為NaN')
-            assert.strictEqual(u.n, 2)
         })
 
-        it('空序列(n為0)時回傳列既有之avg與std為null、min與max為undefined(照舊不動), 新增之分位數為null; periods內該期之各統計欄為null', async function() {
+        it('含±Infinity與NaN之期: 該期與攤平之統計(n、avg、std、min、max、median、q25、q75)等於去除非有限值後之統計; 非有限值不計入n', async function() {
+            let I = Infinity
+            //各值逐筆相異; 去除非有限值後各期之個數為4、2、4、5(含一期無非有限值之對照)
+            let raw = [
+                { period: 'pA', len: 1, xs: [7, I, 2.5, -I, 11, NaN, -4, I] },
+                { period: 'pB', len: 2, xs: [I, 3, 9] },
+                { period: 'pC', len: 3, xs: [-I, 1.5, 6, 8.25, 20] },
+                { period: 'pD', len: 4, xs: [5, 13, 21, 34, 55] },
+            ]
+            let fin = raw.map((p) => ({ ...p, xs: p.xs.filter((x) => Number.isFinite(x)) }))
+            //前提(§6.2第6點): 只排除NaN之基準與只取有限值之基準之個數不同(且分位數不同), 否則取錯基準測不到
+            assert.deepStrictEqual(raw.map((p) => p.xs.filter((x) => !Number.isNaN(x)).length), [7, 3, 5, 5])
+            assert.deepStrictEqual(fin.map((p) => p.xs.length), [4, 2, 4, 5])
+            let { kp } = fixedCalc(raw)
+            let { kp: kpF } = fixedCalc(fin)
+            let r = (await call(dealOf({ avg: 0, std: 1 }), kp, fresh(), { denyOutput: true }))[0]
+            let rf = (await call(dealOf({ avg: 0, std: 1 }), kpF, fresh(), { denyOutput: true }))[0]
+            //等於去除非有限值後之統計(整個回傳列逐欄相同, 含periods)
+            assert.deepStrictEqual(r, rf)
+            //手算(pA排序後[-4, 2.5, 7, 11]): n 4, avg 4.125, min -4, max 11, median h = 1.5 → 4.75, q25 h = 0.75 → 0.875, q75 h = 2.25 → 8
+            let pA = r.periods[0]
+            assert.deepStrictEqual([pA.n, pA.avg, pA.min, pA.max, pA.median, pA.q25, pA.q75], [4, 4.125, -4, 11, 4.75, 0.875, 8])
+            assertNear(pA.std, Math.sqrt(41.395833333333336), 1e-12)
+            //pB: 只剩[3, 9]
+            assert.deepStrictEqual([r.periods[1].n, r.periods[1].avg, r.periods[1].min, r.periods[1].max, r.periods[1].median, r.periods[1].q25, r.periods[1].q75], [2, 6, 3, 9, 6, 4.5, 7.5])
+            //另寫之暴力計算(各期與攤平)
+            let flat = []
+            for (let [k, p] of raw.entries()) {
+                assertStat(r.periods[k], brute(p.xs), `期別${p.period}`)
+                flat.push(...p.xs)
+            }
+            assertStat({ n: r.n, avg: r.avg, std: r.std, min: r.min, max: r.max, median: r.median, q25: r.q25, q75: r.q75 }, brute(flat), '攤平')
+            //回傳列之n為各期之n之和; 有限值皆為真實之有限數(min、max不為±Infinity)
+            assert.strictEqual(r.n, r.periods.reduce((s, p) => s + p.n, 0))
+            assert.strictEqual(r.n, 15)
+            assert.ok(Number.isFinite(r.min) && Number.isFinite(r.max) && Number.isFinite(r.avg) && Number.isFinite(r.std), '回傳列之avg、std、min、max皆為有限數值')
+            assert.deepStrictEqual([r.min, r.max], [-4, 55])
+        })
+
+        it('含±Infinity之各種排列: 位於最前、最後、連續、各一個或單獨一個有限值時, 皆等於去除非有限值後之統計(單一有限值: n為1, 分位數與min、max皆為該值, std為null)', async function() {
+            let I = Infinity
+            let cases = [
+                [-I, 1, 2, 3], //最前之-Infinity
+                [1, 2, 3, I], //最後之Infinity
+                [-I, -I, 4, 5, 6, I, I], //兩端連續
+                [10, I, 20, -I, 30, I, 40], //交錯
+                [-I, 8, I], //單一有限值
+                [I, 9], //單一有限值, 另一端
+                [-I, 12.5, NaN, I], //單一有限值, 含NaN
+            ]
+            let { kp } = fixedCalc(cases.map((xs, i) => ({ period: `p${i}`, len: i + 1, xs })))
+            let { kp: kpF } = fixedCalc(cases.map((xs, i) => ({ period: `p${i}`, len: i + 1, xs: xs.filter((x) => Number.isFinite(x)) })))
+            let r = (await call(dealOf({ avg: 0, std: 1 }), kp, fresh(), { denyOutput: true }))[0]
+            let rf = (await call(dealOf({ avg: 0, std: 1 }), kpF, fresh(), { denyOutput: true }))[0]
+            assert.deepStrictEqual(r, rf)
+            for (let i of [4, 5, 6]) {
+                let p = r.periods[i]
+                assert.deepStrictEqual([p.n, p.std, p.avg === p.min, p.min === p.max, p.median === p.min, p.q25 === p.min, p.q75 === p.min], [1, null, true, true, true, true, true], `單一有限值案${i}`)
+                assert.ok(Number.isFinite(p.min), `單一有限值案${i}之值為有限`)
+            }
+            //每一期各自單獨呼叫(攤平即該期)亦同
+            for (let [i, xs] of cases.entries()) {
+                let { kp: kp1 } = fixedCalc([{ period: 'p', len: 1, xs }])
+                let { kp: kp1F } = fixedCalc([{ period: 'p', len: 1, xs: xs.filter((x) => Number.isFinite(x)) }])
+                let a = (await call(dealOf({ avg: 0, std: 1 }), kp1, fresh(), { denyOutput: true }))[0]
+                let b = (await call(dealOf({ avg: 0, std: 1 }), kp1F, fresh(), { denyOutput: true }))[0]
+                assert.deepStrictEqual(a, b, `單獨呼叫案${i}`)
+            }
+        })
+
+        it('正規化本身不變: 非有限值照常逐值寫出(JSON內為null), 只是統計不計入; nm.std極小使有限之原值正規化後溢位為±Infinity者, 亦不計入統計', async function() {
+            //(值 - avg) ÷ std, avg 1、std 2: [0, Inf, -Inf, NaN, 2, 4]; JSON內非有限值為null
+            let { kp } = fixedCalc([{ period: 'a', len: 1, xs: [1, Infinity, -Infinity, NaN, 5, 9] }])
+            let fd = fresh()
+            let r = (await call(dealOf({ avg: 1, std: 2 }), kp, fd))[0]
+            assert.deepStrictEqual(readP(fd, 'a'), [0, null, null, null, 2, 4])
+            assert.deepStrictEqual([r.periods[0].n, r.periods[0].avg, r.periods[0].min, r.periods[0].max, r.periods[0].median], [3, 2, 0, 4, 2])
+            assert.deepStrictEqual([r.n, r.avg, r.min, r.max, r.median, r.q25, r.q75], [3, 2, 0, 4, 2, 1, 3])
+            //nm.std極小: 有限之原值除以std溢位為±Infinity(正規化之既有行為), 統計只取其餘之有限值
+            let std = 1e-307
+            let xs = [1e-300, 2e-300, 20, 3e-300, -50]
+            let ys = xs.map((x) => (x - 0) / std)
+            assert.deepStrictEqual(ys.map((y) => Number.isFinite(y)), [true, true, false, true, false], '前提: 20與-50正規化後溢位')
+            let { kp: kp2 } = fixedCalc([{ period: 'b', len: 1, xs }])
+            let fd2 = fresh()
+            let r2 = (await call(dealOf({ avg: 0, std }), kp2, fd2))[0]
+            assert.deepStrictEqual(readP(fd2, 'b'), ys.map((y) => (Number.isFinite(y) ? y : null)))
+            assertStat(r2.periods[0], brute(ys), '溢位之期')
+            assert.deepStrictEqual([r2.n, r2.periods[0].n], [3, 3])
+            assert.deepStrictEqual([r2.min, r2.max], [Math.min(ys[0], ys[1], ys[3]), Math.max(ys[0], ys[1], ys[3])])
+        })
+
+        it('有限資料下回傳列之min與max同既有(取原順序中之極值, 平手時取先出現者: 0與-0之平手保留符號), 不因統計只取有限值而改變', async function() {
+            let cases = [
+                [[0, -0], 0, 0], //平手: min、max皆取先出現之0
+                [[-0, 0], -0, -0], //平手: 皆取先出現之-0
+                [[3, 0, -0, 7], 0, 7],
+                [[3, -0, 0, 7], -0, 7],
+            ]
+            for (let [i, c] of cases.entries()) {
+                let { kp } = fixedCalc([{ period: 'z', len: 1, xs: c[0] }])
+                let r = (await call(dealOf({ avg: 0, std: 1 }), kp, fresh(), { denyOutput: true }))[0]
+                assert.ok(Object.is(r.min, c[1]), `案${i} min`)
+                assert.ok(Object.is(r.max, c[2]), `案${i} max`)
+            }
+        })
+
+        it('空序列(n為0)時回傳列之avg、std、min、max皆為null(與新增之分位數及periods內該期之各統計欄一致; min與max原為undefined, 改為null)', async function() {
             let { kp } = fixedCalc([{ period: 'e0', len: 1, xs: [] }, { period: 'nan', len: 2, xs: [NaN] }])
             let r = (await call(dealOf({ avg: 0, std: 1 }), kp, fresh(), { denyOutput: true }))[0]
             assert.strictEqual(r.avg, null)
             assert.strictEqual(r.std, null)
-            assert.strictEqual(r.min, undefined)
-            assert.strictEqual(r.max, undefined)
+            assert.strictEqual(r.min, null)
+            assert.strictEqual(r.max, null)
             assert.strictEqual(r.n, 0)
             assert.ok(Object.prototype.hasOwnProperty.call(r, 'min') && Object.prototype.hasOwnProperty.call(r, 'max'), 'min與max仍為回傳列之鍵')
             assert.strictEqual(r.periods[0].min, null)
@@ -592,7 +667,7 @@ describe('dataConvert(正規化常數依期別、各期統計)', function() {
             assert.deepStrictEqual(r.periods[0], { period: 'one', len: 1, n: 1, avg: 2, std: null, min: 2, max: 2, median: 2, q25: 2, q75: 2 })
         })
 
-        it('NaN不計入n與各統計(同arrAverage與arrStd只取有效數字); 其餘值照計', async function() {
+        it('NaN不計入n與各統計(同arrAverage與arrStd只取有限數值); 其餘值照計', async function() {
             let { kp } = fixedCalc([{ period: 'm', len: 1, xs: [1, NaN, 3, NaN] }])
             let r = (await call(dealOf({ avg: 0, std: 1 }), kp, fresh(), { denyOutput: true }))[0]
             let p = r.periods[0]
@@ -601,7 +676,18 @@ describe('dataConvert(正規化常數依期別、各期統計)', function() {
             assert.strictEqual(r.n, 2)
         })
 
-        it('BigInt不是數值(同arrAverage與arrStd只取有效數字): nm之avg與std為BigInt而值亦為BigInt時, 該期之n為0且各統計欄為null, 不拋錯(denyOutput)', async function() {
+        it('n與avg、std取用之母體相同(有限數值): n等於arrAverage與arrStd所計之個數, 以平均反推 ⇒ 含±Infinity時avg、std仍為有限且與只取有限值者相同', async function() {
+            let xs = [4, Infinity, 8, 15, -Infinity, 16, 23, 42, NaN]
+            let { kp } = fixedCalc([{ period: 'm', len: 1, xs }])
+            let r = (await call(dealOf({ avg: 0, std: 1 }), kp, fresh(), { denyOutput: true }))[0]
+            let p = r.periods[0]
+            assert.strictEqual(p.n, 6)
+            assertNear(p.avg, (4 + 8 + 15 + 16 + 23 + 42) / 6, 1e-12)
+            assert.deepStrictEqual([r.n, r.avg, r.std], [p.n, p.avg, p.std])
+            assert.ok(Number.isFinite(p.avg) && Number.isFinite(p.std), 'avg與std為有限數值(不因Infinity而異常)')
+        })
+
+        it('BigInt不是數值(同arrAverage與arrStd只取有限數值): nm之avg與std為BigInt而值亦為BigInt時, 該期之n為0且各統計欄為null, 回傳列之min與max亦為null, 不拋錯(denyOutput)', async function() {
             let { kp } = fixedCalc([{ period: 'big', len: 1, xs: [5n, 7n] }])
             let r = (await call(dealOf({ avg: 0n, std: 1n }), kp, fresh(), { denyOutput: true }))[0]
             assert.strictEqual(r.periods.length, 1)
@@ -611,6 +697,8 @@ describe('dataConvert(正規化常數依期別、各期統計)', function() {
             assert.strictEqual(r.periods[0].min, null)
             assert.strictEqual(r.n, 0)
             assert.strictEqual(r.median, null)
+            assert.strictEqual(r.min, null)
+            assert.strictEqual(r.max, null)
         })
 
         it('合成資料(各期尺度相差逾100倍、含重尾與0根、1根之期)之periods與攤平之n、median、q25、q75皆等於另寫之暴力計算(含avg、std、min、max), 於未正規化與正規化兩種nm下', async function() {
