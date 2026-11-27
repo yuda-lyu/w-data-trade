@@ -14038,6 +14038,7 @@ vwapDist於Close為0時給0；vwapDistATR於ATR為0時給0</p>
 <p>本專案用例: src=溢價指數(index) OHLC，ref=價格(price) OHLC，校正index系變換偏移量
 搜尋為逐維座標下降: 每維先粗掃(現值+0+正負mags量級)，再以粗掃最佳為中心做倍率細化與微調
 防churn: 需(score0-scoreBest)/score0 &gt; threshold，且(score0-scoreBest) &gt; thresholdAbs，兩者皆達門檻才採納搜尋結果，否則optMethod維持optMethodInit
+opt.params與opt.keyIn決定搜尋之參數與傳入calcFn之欄位，屬跨套件規格K3之例外：給了而無效即reject固定訊息(不含輸入值)、不改用預設；其餘opt鍵經wsemi之getOptReader宣告(K3、K4、V11)：非預期之opt輸入視為未給、改用預設
 optMethodInit與opt.optMethodRef之intervalSec(每根秒數，見resolvePeriods)給了而無效時，於任何計算(calcFn之呼叫)之前即reject(訊息同calc)；未給時行為與既有相同；intervalSec為固定之每根時長，不是校正參數，須以opt.params排除(預設params為optMethodInit全部鍵)</p>
 <p>Unit Test: <a href="https://github.com/yuda-lyu/w-data-trade/blob/master/test/unit-dataCalibrate.test.mjs">Github</a></p></li></ul></dd>
     
@@ -14045,7 +14046,7 @@ optMethodInit與opt.optMethodRef之intervalSec(每根秒數，見resolvePeriods)
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="dataCalibrate.mjs.html">dataCalibrate.mjs</a>, <a href="dataCalibrate.mjs.html#line83">line 83</a>
+        <a href="dataCalibrate.mjs.html">dataCalibrate.mjs</a>, <a href="dataCalibrate.mjs.html#line105">line 105</a>
     </li></ul></dd>
     
 
@@ -14296,7 +14297,7 @@ dataCalibrate(calcFn, arr, arr, ['X'], { a: 0 }, { optMethodRef: { a: 0.1 } })
                 </td>
             
 
-            <td class="description last"><p>輸入兩側keyOut對應表，元素為{keyOutSrc,keyOutRef}物件或字串(代表兩側同名之縮寫)</p></td>
+            <td class="description last"><p>輸入兩側keyOut對應表，元素為{keyOutSrc,keyOutRef}物件或字串(代表兩側同名之縮寫)，元素之keyOutSrc、keyOutRef須為非空字串，否則reject固定訊息<code>invalid pairs[i].keyOutSrc: must be a non-empty string</code>或<code>invalid pairs[i].keyOutRef: must be a non-empty string</code>(i為元素之索引，不含輸入值)</p></td>
         </tr>
 
     
@@ -14372,7 +14373,7 @@ dataCalibrate(calcFn, arr, arr, ['X'], { a: 0 }, { optMethodRef: { a: 0.1 } })
                 </td>
             
 
-            <td class="description last"><p>輸入設定物件，預設{}</p>
+            <td class="description last"><p>輸入設定物件，預設{}；每鍵只讀一次、給了即檢測。params與keyIn外之各鍵：非預期之輸入(型別或範圍不符)視為未給而改用預設、不reject，opt.debug恰為true時每個鍵每個行程警告一次(固定詞彙、不含傳入之值，出口為opt.funLog或console.warn)，鍵之讀取拋錯視為未給，數字類檢測通過之數字字串轉為數值後使用；params與keyIn屬K3之例外，給了而無效即reject(見各鍵)</p>
                 <h6>Properties</h6>
                 
 
@@ -14435,7 +14436,7 @@ dataCalibrate(calcFn, arr, arr, ['X'], { a: 0 }, { optMethodRef: { a: 0.1 } })
                 </td>
             
 
-            <td class="description last"><p>輸入要校正之參數名陣列，預設為optMethodInit全部鍵</p></td>
+            <td class="description last"><p>輸入要校正之參數名陣列，預設為optMethodInit全部鍵；未給(undefined、null)取預設，給了須為非空陣列且元素皆為非空字串，否則(含鍵或元素之讀取拋錯)於任何計算之前reject <code>invalid opt.params: must be a non-empty array of non-empty strings</code></p></td>
         </tr>
 
     
@@ -14475,7 +14476,7 @@ dataCalibrate(calcFn, arr, arr, ['X'], { a: 0 }, { optMethodRef: { a: 0.1 } })
                 </td>
             
 
-            <td class="description last"><p>輸入傳入calcFn之keyIn，預設'none'</p></td>
+            <td class="description last"><p>輸入傳入calcFn之keyIn，預設'none'；未給(undefined、null)取預設，給了須為非空字串，否則(含鍵之讀取拋錯)於任何計算之前reject <code>invalid opt.keyIn: must be a non-empty string</code></p></td>
         </tr>
 
     
@@ -14515,7 +14516,7 @@ dataCalibrate(calcFn, arr, arr, ['X'], { a: 0 }, { optMethodRef: { a: 0.1 } })
                 </td>
             
 
-            <td class="description last"><p>輸入參考側呼叫calcFn所用之optMethod，預設{}</p></td>
+            <td class="description last"><p>輸入參考側呼叫calcFn所用之optMethod，須為物件(可為空物件)，預設{}</p></td>
         </tr>
 
     
@@ -14555,7 +14556,7 @@ dataCalibrate(calcFn, arr, arr, ['X'], { a: 0 }, { optMethodRef: { a: 0.1 } })
                 </td>
             
 
-            <td class="description last"><p>輸入粗掃量級階梯(正值，內部自動含正負與0)</p></td>
+            <td class="description last"><p>輸入粗掃量級階梯(正值，內部自動含正負與0)，須為陣列(可為空陣列)且元素皆為有效數字(數字字串轉為數值)</p></td>
         </tr>
 
     
@@ -14569,6 +14570,9 @@ dataCalibrate(calcFn, arr, arr, ['X'], { a: 0 }, { optMethodRef: { a: 0.1 } })
             
                 
 <span class="param-type">Number</span>
+|
+
+<span class="param-type">String</span>
 
 
 
@@ -14595,7 +14599,7 @@ dataCalibrate(calcFn, arr, arr, ['X'], { a: 0 }, { optMethodRef: { a: 0.1 } })
                 </td>
             
 
-            <td class="description last"><p>輸入採納門檻(相對改善比例)</p></td>
+            <td class="description last"><p>輸入採納門檻(相對改善比例)，須為有效數字，預設0.15</p></td>
         </tr>
 
     
@@ -14609,6 +14613,9 @@ dataCalibrate(calcFn, arr, arr, ['X'], { a: 0 }, { optMethodRef: { a: 0.1 } })
             
                 
 <span class="param-type">Number</span>
+|
+
+<span class="param-type">String</span>
 
 
 
@@ -14635,7 +14642,7 @@ dataCalibrate(calcFn, arr, arr, ['X'], { a: 0 }, { optMethodRef: { a: 0.1 } })
                 </td>
             
 
-            <td class="description last"><p>輸入採納門檻(絕對改善量)</p></td>
+            <td class="description last"><p>輸入採納門檻(絕對改善量)，須為有效數字，預設0.01</p></td>
         </tr>
 
     
@@ -14649,6 +14656,9 @@ dataCalibrate(calcFn, arr, arr, ['X'], { a: 0 }, { optMethodRef: { a: 0.1 } })
             
                 
 <span class="param-type">Number</span>
+|
+
+<span class="param-type">String</span>
 
 
 
@@ -14673,7 +14683,7 @@ dataCalibrate(calcFn, arr, arr, ['X'], { a: 0 }, { optMethodRef: { a: 0.1 } })
                 </td>
             
 
-            <td class="description last"><p>輸入逐維掃描輪數，預設單參數為1輪，多參數為2輪</p></td>
+            <td class="description last"><p>輸入逐維掃描輪數，須為不小於0之整數(0為不搜尋)，預設單參數為1輪，多參數為2輪</p></td>
         </tr>
 
     
@@ -14711,7 +14721,7 @@ dataCalibrate(calcFn, arr, arr, ['X'], { a: 0 }, { optMethodRef: { a: 0.1 } })
                 </td>
             
 
-            <td class="description last"><p>輸入搜尋進度回呼函式(msg)，可選</p></td>
+            <td class="description last"><p>輸入搜尋進度回呼函式(msg)，可選；opt.debug為true時亦為警告之出口(以(msg, { fn, reason, key })呼叫，fn為'w-data-trade dataCalibrate')</p></td>
         </tr>
 
     
@@ -14787,8 +14797,8 @@ dataCalibrate(calcFn, arr, arr, ['X'], { a: 0 }, { optMethodRef: { a: 0.1 } })
 呼叫kp<a href="arr,keyIn,optMethod">method</a>取得rrs(各期{period,len,vs}結果)後，對每個deal依其keyOut取值並以(值-avg)/std正規化，若deal.keyIn有指定則僅處理keyIn相符者，其餘略過
 deal.nm.byPeriod(選配，null與undefined視為未給)為物件，鍵為期別標籤(即各期之period)、值為{avg,std}：某期別於byPeriod有自己之鍵(自有且可列舉者，與檢核所走訪之鍵相同)者用其avg與std正規化，否則用nm.avg與nm.std；byPeriod之各鍵與各值於檢核時只讀取一次(讀取拋錯視為無效)，其後正規化用檢核時讀得之值；未給byPeriod時行為與既有相同
 除非opt.denyOutput為true，否則會將各期正規化後之序列以檔名<code>${cointpe}_${keyKind}_${keyIn}_${keyOut}_${method}_${period}.json</code>寫入fdSelfData資料夾
-全部檢核先於任何計算(含opt.funAddKeysIn與calc)與寫檔：keysIn各元素、methods各元素(須為物件，method須為字串且存在於kp，deals須為非空陣列，各deal之keyOut須為字串、nm須為物件、nm.avg與nm.std有給時須為有限數值且std大於0(只收typeof為number者，不收數字字串與BigInt；未給或null為avg 0、std 1)、nm.byPeriod有給時須為一般物件(可為空物件)且各值為物件、avg為有限數值、std為有限數值且大於0(同樣只收數值，不收數字字串)，deal.keyIn有指定而不在keysIn內之deal不會被處理故不檢核)、各methods[i].optMethod之intervalSec(每根秒數，見resolvePeriods)；任一無效即reject且不寫出任何檔
-檢核失敗之訊息皆為固定詞彙(只含位置與期望之種類，不含輸入值)，亦不以console輸出輸入：<code>invalid opt.keysIn[i]: must be a non-empty string</code>、<code>invalid methods[i]: must be a non-empty object</code>、<code>invalid methods[i].method: must be a non-empty string</code>、<code>invalid methods[i].method: must be a key of kp</code>、<code>invalid methods[i].deals: must be a non-empty array</code>、<code>invalid deal.keyOut: must be a non-empty string</code>、<code>invalid deal.nm: must be a non-empty object</code>、<code>invalid deal.nm.avg: must be a finite number</code>、<code>invalid deal.nm.std: must be a finite number greater than 0</code>、<code>invalid deal.nm.byPeriod: must be an object of { avg, std } with a finite avg and a finite std &gt; 0</code>；nm.avg、nm.std、nm.byPeriod與其各鍵於檢核時只讀取一次(讀取拋錯視為無效)，其後正規化只用檢核時讀得之值
+全部檢核先於任何計算(含opt.funAddKeysIn與calc)與寫檔：opt.keysIn(有給時，見opt.keysIn；給了而無效即reject <code>invalid opt.keysIn: must be a non-empty array of non-empty strings</code>或<code>invalid opt.keysIn[i]: must be a non-empty string</code>)、methods各元素(須為物件，method須為字串且存在於kp，deals須為非空陣列，各deal之keyOut須為字串、nm須為物件、nm.avg與nm.std有給時須為有限數值且std大於0(只收typeof為number者，不收數字字串與BigInt；未給或null為avg 0、std 1)、nm.byPeriod有給時須為一般物件(可為空物件)且各值為物件、avg為有限數值、std為有限數值且大於0(同樣只收數值，不收數字字串)，deal.keyIn有指定而不在keysIn內之deal不會被處理故不檢核)、各methods[i].optMethod之intervalSec(每根秒數，見resolvePeriods)；任一無效即reject且不寫出任何檔
+檢核失敗之訊息皆為固定詞彙(只含位置與期望之種類，不含輸入值)，亦不以console輸出輸入：<code>invalid methods[i]: must be a non-empty object</code>、<code>invalid methods[i].method: must be a non-empty string</code>、<code>invalid methods[i].method: must be a key of kp</code>、<code>invalid methods[i].deals: must be a non-empty array</code>、<code>invalid deal.keyOut: must be a non-empty string</code>、<code>invalid deal.nm: must be a non-empty object</code>、<code>invalid deal.nm.avg: must be a finite number</code>、<code>invalid deal.nm.std: must be a finite number greater than 0</code>、<code>invalid deal.nm.byPeriod: must be an object of { avg, std } with a finite avg and a finite std &gt; 0</code>；nm.avg、nm.std、nm.byPeriod與其各鍵於檢核時只讀取一次(讀取拋錯視為無效)，其後正規化只用檢核時讀得之值
 同一次呼叫內各method之optMethod.intervalSec須相同(未給視為14400，數字字串與數值視為同值)，否則reject <code>invalid methods[i].optMethod.intervalSec: must be the same in every method</code>(i為第一個與先前不一致者之索引)，以免不同每根時長之序列靜默寫進同一資料夾；各method之optMethod.intervalSec皆未給時行為與既有相同
 最終計算全期攤平後序列(各期以其自己之常數正規化後)之avg、std、min、max，另增n、median、q25、q75與periods(依各期次序之陣列，各元素{period,len,n,avg,std,min,max,median,q25,q75}為該期正規化後序列之統計)，彙整為單筆結果；nm為{avg:0,std:1}且未給byPeriod時，periods即為各期原值之統計
 回傳列與periods之全部統計(n、avg、std、min、max、median、q25、q75)只取有限數值：NaN、±Infinity與非數值皆不計入(例如nm.std極小使正規化後溢位為±Infinity者亦不計入)，n為有限值之個數，avg與std用w-statistic之arrAverage與arrStd(取用之母體相同)，min與max為有限值中之極值，median、q25、q75為第7型分位數(排序後h=(n-1)<em>q，x[floor(h)]+(h-floor(h))</em>(x[floor(h)+1]-x[floor(h)])，n為1時即該值)；n為0者(無有限值)其餘統計欄皆為null，回傳列之min與max亦然；正規化本身不變，非有限之值仍照常逐值寫出</p></li></ul></dd>
@@ -14797,7 +14807,7 @@ deal.nm.byPeriod(選配，null與undefined視為未給)為物件，鍵為期別�
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="dataConvert.mjs.html">dataConvert.mjs</a>, <a href="dataConvert.mjs.html#line191">line 191</a>
+        <a href="dataConvert.mjs.html">dataConvert.mjs</a>, <a href="dataConvert.mjs.html#line196">line 196</a>
     </li></ul></dd>
     
 
@@ -15278,7 +15288,7 @@ dataConvert('demo', 'BTCUSDT', '4hr', 'price', 'ohlc', methods, arr, kp, './tmp/
                 </td>
             
 
-            <td class="description last"><p>輸入設定物件，預設{}</p>
+            <td class="description last"><p>輸入設定物件，預設{}；每鍵只讀一次。funAddKeysIn與denyOutput經wsemi之getOptReader宣告(跨套件規格K3、V11)：給了即檢測，非預期之輸入(型別不符)視為未給而改用預設、不reject，opt.debug恰為true時每個鍵每個行程警告一次(固定詞彙、不含傳入之值，出口為opt.funLog或console.warn，funLog以(msg, { fn, reason, key })呼叫，fn為'w-data-trade dataConvert')；鍵之讀取拋錯視為未給。keysIn決定計算之欄位，屬K3之例外：給了而無效即reject(見opt.keysIn)</p>
                 <h6>Properties</h6>
                 
 
@@ -15339,7 +15349,7 @@ dataConvert('demo', 'BTCUSDT', '4hr', 'price', 'ohlc', methods, arr, kp, './tmp/
                 </td>
             
 
-            <td class="description last"><p>輸入用於逐筆轉換/擴增arrOhlc之函式，可回傳Promise，預設不轉換</p></td>
+            <td class="description last"><p>輸入用於逐筆轉換/擴增arrOhlc之函式，可回傳Promise，非函式視為未給，預設不轉換</p></td>
         </tr>
 
     
@@ -15379,7 +15389,7 @@ dataConvert('demo', 'BTCUSDT', '4hr', 'price', 'ohlc', methods, arr, kp, './tmp/
                 </td>
             
 
-            <td class="description last"><p>輸入計算所用數值欄位名稱字串陣列，預設['none']</p></td>
+            <td class="description last"><p>輸入計算所用數值欄位名稱字串陣列，預設['none']；未給(undefined、null)取預設，給了須為非空陣列且元素皆為非空字串，否則reject、不改用預設且不寫出任何檔：非陣列、空陣列、鍵或元素之讀取拋錯為<code>invalid opt.keysIn: must be a non-empty array of non-empty strings</code>，元素非非空字串為<code>invalid opt.keysIn[i]: must be a non-empty string</code>(i為元素之索引；訊息皆不含輸入值)</p></td>
         </tr>
 
     
@@ -15414,12 +15424,12 @@ dataConvert('demo', 'BTCUSDT', '4hr', 'price', 'ohlc', methods, arr, kp, './tmp/
             
                 <td class="default">
                 
-                    <code>null</code>
+                    <code>false</code>
                 
                 </td>
             
 
-            <td class="description last"><p>輸入是否禁止寫出json檔案布林值，為true時不寫檔，預設null(不禁止)</p></td>
+            <td class="description last"><p>輸入是否禁止寫出json檔案布林值，只收true與false(不收1、0、'true'等，視為未給)，為true時不寫檔，預設false(不禁止)</p></td>
         </tr>
 
     
@@ -16788,7 +16798,7 @@ opt內之其他鍵(含已移除之舊選項barsPerDay)視為未知鍵，忽略</
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.5</a> on Sat Nov 28 2026 06:09:31 GMT+0800 (台北標準時間) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.5</a> on Sat Nov 28 2026 07:57:09 GMT+0800 (台北標準時間) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
 <script>prettyPrint();</script>
