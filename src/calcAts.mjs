@@ -92,10 +92,10 @@ let calcAts = (() => {
 
             //check
             if (!isNumber(qv)) {
-                throw new Error(`invalid qv[${qv}]`)
+                throw new Error(`invalid arr[${i}].QuoteAssetVolume: must be a number`)
             }
             if (!isNumber(nt)) {
-                throw new Error(`invalid nt[${nt}]`)
+                throw new Error(`invalid arr[${i}].NumberOfTrades: must be a number`)
             }
 
             if (nt > 0) {

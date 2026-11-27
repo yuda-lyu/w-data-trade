@@ -141,10 +141,10 @@ let calcDonchian = (() => {
 
                 //check
                 if (!isNumber(h)) {
-                    throw new Error(`invalid h[${h}]`)
+                    throw new Error(`invalid arr[${j}].High: must be a number`)
                 }
                 if (!isNumber(l)) {
-                    throw new Error(`invalid l[${l}]`)
+                    throw new Error(`invalid arr[${j}].Low: must be a number`)
                 }
 
                 if (h > upper) {
@@ -160,7 +160,7 @@ let calcDonchian = (() => {
 
             //check
             if (!isNumber(c)) {
-                throw new Error(`invalid c[${c}]`)
+                throw new Error(`invalid arr[${i}].Close: must be a number`)
             }
 
             //mid, bandWidth

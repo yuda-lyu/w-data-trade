@@ -369,7 +369,7 @@ describe('calcIchimoku', function() {
     it('Close 非數值時須拋錯 (src 之輸入檢查)', async function() {
         let arr = genOhlc(400)
         arr[399].Close = null
-        await assert.rejects(calcIchimoku(arr, 'Close'), /invalid c/)
+        await assert.rejects(calcIchimoku(arr, 'Close'), { message: 'invalid arr[399].Close: must be a number' })
     })
 
 })

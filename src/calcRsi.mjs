@@ -98,10 +98,10 @@ let calcRsi = (() => {
 
             //check
             if (!isNumber(c0)) {
-                throw new Error(`invalid c0[${c0}]`)
+                throw new Error(`invalid arr[${i - 1}].Close: must be a number`)
             }
             if (!isNumber(c1)) {
-                throw new Error(`invalid c1[${c1}]`)
+                throw new Error(`invalid arr[${i}].Close: must be a number`)
             }
 
             //diff

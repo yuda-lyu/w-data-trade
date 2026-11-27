@@ -314,7 +314,7 @@ describe('calcAtr', function() {
         arr[1].High = null
         await assert.rejects(async () => {
             await calcAtr(arr, 'Close')
-        }, /invalid h/)
+        }, { message: 'invalid arr[1].High: must be a number' })
     })
 
     it('Low 非數值時須拋錯', async function() {
@@ -322,7 +322,7 @@ describe('calcAtr', function() {
         arr[2].Low = 'x'
         await assert.rejects(async () => {
             await calcAtr(arr, 'Close')
-        }, /invalid l/)
+        }, { message: 'invalid arr[2].Low: must be a number' })
     })
 
     it('前一根 Close 非數值時須拋錯', async function() {
@@ -330,7 +330,7 @@ describe('calcAtr', function() {
         arr[0].Close = undefined
         await assert.rejects(async () => {
             await calcAtr(arr, 'Close')
-        }, /invalid cPrev/)
+        }, { message: 'invalid arr[0].Close: must be a number' })
     })
 
 })

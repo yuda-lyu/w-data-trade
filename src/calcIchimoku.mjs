@@ -209,7 +209,7 @@ let calcIchimoku = (() => {
                 continue
             }
             if (!isNumber(c)) {
-                throw new Error(`invalid c[${c}]`)
+                throw new Error(`invalid arr[${i}].Close: must be a number`)
             }
 
             //cloud 上下邊界

@@ -281,13 +281,13 @@ describe('calcDonchian', function() {
     it('High/Low/Close 非數值時須拋錯', async function() {
         let arrH = genOhlc(20)
         arrH[7].High = null
-        await assert.rejects(calcDonchian(arrH, 'Close'), /invalid h/)
+        await assert.rejects(calcDonchian(arrH, 'Close'), { message: 'invalid arr[7].High: must be a number' })
         let arrL = genOhlc(20)
         arrL[7].Low = null
-        await assert.rejects(calcDonchian(arrL, 'Close'), /invalid l/)
+        await assert.rejects(calcDonchian(arrL, 'Close'), { message: 'invalid arr[7].Low: must be a number' })
         let arrC = genOhlc(20)
         arrC[7].Close = null
-        await assert.rejects(calcDonchian(arrC, 'Close'), /invalid c/)
+        await assert.rejects(calcDonchian(arrC, 'Close'), { message: 'invalid arr[7].Close: must be a number' })
     })
 
 })

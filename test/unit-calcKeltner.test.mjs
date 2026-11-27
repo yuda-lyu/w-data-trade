@@ -271,16 +271,16 @@ describe('calcKeltner', function() {
     it('High/Low/前根 Close/當根 Close 非數值時須拋錯', async function() {
         let arrH = genOhlc(20)
         arrH[7].High = null
-        await assert.rejects(calcKeltner(arrH, 'Close'), /invalid h/)
+        await assert.rejects(calcKeltner(arrH, 'Close'), { message: 'invalid arr[7].High: must be a number' })
         let arrL = genOhlc(20)
         arrL[7].Low = null
-        await assert.rejects(calcKeltner(arrL, 'Close'), /invalid l/)
+        await assert.rejects(calcKeltner(arrL, 'Close'), { message: 'invalid arr[7].Low: must be a number' })
         let arrP = genOhlc(20)
         arrP[7].Close = null
-        await assert.rejects(calcKeltner(arrP, 'Close'), /invalid cPrev/)
+        await assert.rejects(calcKeltner(arrP, 'Close'), { message: 'invalid arr[7].Close: must be a number' })
         let arrC = genOhlc(20)
         arrC[19].Close = null
-        await assert.rejects(calcKeltner(arrC, 'Close'), /invalid c\[/)
+        await assert.rejects(calcKeltner(arrC, 'Close'), { message: 'invalid arr[19].Close: must be a number' })
     })
 
 })

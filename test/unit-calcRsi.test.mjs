@@ -298,7 +298,7 @@ describe('calcRsi', function() {
         arr[3].Close = null
         await assert.rejects(async () => {
             await calcRsi(arr, 'Close')
-        }, /invalid c/)
+        }, { message: 'invalid arr[3].Close: must be a number' })
     })
 
 })

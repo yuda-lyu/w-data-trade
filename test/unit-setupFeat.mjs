@@ -208,7 +208,10 @@ let numBads = () => {
 //  tag、desc、defDesc 為警告文字之三段: `[${tag}] invalid opt.${name}: must be ${desc}, using default ${defDesc}`
 //  extra 為其他需併給之 opt(如另一鍵之有效值), 併於每次呼叫
 //  probe 為「該鍵之非預期之值」之代表(用於 (d)~(g) 之重複呼叫), 預設 -3.5(適用於須為正數、整數之鍵; 於「任何有限數皆有效」之鍵須改給其他非預期之值, 如 NaN)
-let assertOptK3 = async({ call, base, name, invalids, sames = [], tag, desc, defDesc, extra = {}, probe = -3.5 }) => {
+//  sentinelValue 為(c)用之「非預期且其字串形式含 SENTINEL-7c3e1a」之值, 預設即該字串本身(於字串為合格值之鍵須另給, 如非空字串類之鍵給 ['SENTINEL-7c3e1a'])
+//  ownFunLogMsg 為 funLog 本身亦為被檢測之鍵時(如 dataCalibrate 之 opt.funLog)其非函式之值之警告文字: (f) 於非 undefined、null 之無效 funLog 時預期另有此一則
+//  isWarn 為「出口收到之訊息是否為警告」之判定 (m, info) => 布林, 預設皆是; 出口同時收進度輸出者(如 dataCalibrate 之 opt.funLog 另收 (msg) 之進度輸出, 警告則帶 info)須另給
+let assertOptK3 = async({ call, base, name, invalids, sames = [], tag, desc, defDesc, extra = {}, probe = -3.5, sentinelValue = 'SENTINEL-7c3e1a', isWarn = () => true, ownFunLogMsg = null }) => {
     let msgExp = `[${tag}] invalid opt.${name}: must be ${desc}, using default ${defDesc}`
 
     //(a) 非預期之輸入視為未給: 不 reject、結果同未給(結果須取得之斷言以 assert.ok 加固定訊息, 值可能不可讀)
@@ -229,7 +232,7 @@ let assertOptK3 = async({ call, base, name, invalids, sames = [], tag, desc, def
     for (let v of invalids) {
         getOptReader.resetWarned()
         let logs = []
-        await call({ ...extra, [name]: v, debug: true, funLog: (m, info) => logs.push([m, info]) })
+        await call({ ...extra, [name]: v, debug: true, funLog: (m, info) => isWarn(m, info) && logs.push([m, info]) })
         let okOne = logs.length === 1 && logs[0][0] === msgExp && JSON.stringify(logs[0][1]) === JSON.stringify({ fn: tag, reason: 'invalid', key: name })
         assert.ok(okOne, `opt.${name} ${labelOf(v)} 於 debug 應警告恰一則 ${msgExp}(實際 ${logs.length} 則)`)
     }
@@ -237,14 +240,14 @@ let assertOptK3 = async({ call, base, name, invalids, sames = [], tag, desc, def
     //(c) 警告不含傳入之值(以特徵字串為值; 該字串非合格之值)
     getOptReader.resetWarned()
     let logs2 = []
-    await call({ ...extra, [name]: 'SENTINEL-7c3e1a', debug: true, funLog: (m) => logs2.push(m) })
+    await call({ ...extra, [name]: sentinelValue, debug: true, funLog: (m, info) => isWarn(m, info) && logs2.push(m) })
     assert.ok(logs2.length === 1 && !logs2[0].includes('SENTINEL-7c3e1a'), `opt.${name} 警告不得含傳入之值`)
 
     //(d) 同一個鍵每個行程只警告一次(不重設去重表連呼兩次)
     getOptReader.resetWarned()
     let logs3 = []
     for (let k = 0; k < 2; k++) {
-        await call({ ...extra, [name]: probe, debug: true, funLog: (m) => logs3.push(m) })
+        await call({ ...extra, [name]: probe, debug: true, funLog: (m, info) => isWarn(m, info) && logs3.push(m) })
     }
     assert.ok(logs3.length === 1, `opt.${name} 同一鍵警告一次, 實際 ${logs3.length}`)
 
@@ -269,7 +272,11 @@ let assertOptK3 = async({ call, base, name, invalids, sames = [], tag, desc, def
             getOptReader.resetWarned()
             warns.length = 0
             await call({ ...extra, [name]: probe, debug: true, funLog: f })
-            assert.ok(warns.length === 1 && warns[0].length === 1 && warns[0][0] === msgExp, `opt.${name} funLog ${labelOf(f)} 時 console.warn 恰一則`)
+            let expWarns = [[msgExp]]
+            if (ownFunLogMsg !== null && f !== undefined && f !== null) {
+                expWarns.push([ownFunLogMsg]) //funLog 本身亦為被檢測之鍵(如 dataCalibrate): 非函式者另警告一則
+            }
+            assert.ok(JSON.stringify(warns) === JSON.stringify(expWarns), `opt.${name} funLog ${labelOf(f)} 時 console.warn 恰 ${expWarns.length} 則`)
         }
     }
     finally {
@@ -278,19 +285,21 @@ let assertOptK3 = async({ call, base, name, invalids, sames = [], tag, desc, def
 
     //(g) funLog 拋錯或回傳 rejection 皆忽略: 結果不變
     getOptReader.resetWarned()
-    let funThrow = () => {
-        throw new Error('boom')
+    let funThrow = (m, info) => {
+        if (isWarn(m, info)) { //只於警告時拋錯(出口同時收進度輸出者, 進度輸出由呼叫端自負, 拋錯即中止)
+            throw new Error('boom')
+        }
     }
     let r1 = await call({ ...extra, [name]: probe, debug: true, funLog: funThrow })
     assert.ok(JSON.stringify(r1) === JSON.stringify(base), `opt.${name} funLog 拋錯不影響結果`)
     getOptReader.resetWarned()
-    let r2 = await call({ ...extra, [name]: probe, debug: true, funLog: () => Promise.reject(new Error('boom')) })
+    let r2 = await call({ ...extra, [name]: probe, debug: true, funLog: (m, info) => (isWarn(m, info) ? Promise.reject(new Error('boom')) : undefined) })
     assert.ok(JSON.stringify(r2) === JSON.stringify(base), `opt.${name} funLog 回傳 rejection 不影響結果`)
 
     //(h) 鍵之讀取拋錯(存取器)視為未給, 不 reject、不警告
     getOptReader.resetWarned()
     let logs4 = []
-    let o = { ...extra, debug: true, funLog: (m) => logs4.push(m) }
+    let o = { ...extra, debug: true, funLog: (m, info) => isWarn(m, info) && logs4.push(m) }
     let getThrow = () => {
         throw new Error('boom')
     }

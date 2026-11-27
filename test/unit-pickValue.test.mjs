@@ -3,6 +3,9 @@ import pickValue from '../src/pickValue.mjs'
 import { genOhlc, valuesOf } from './unit-setup.mjs'
 
 
+//量級防呆之固定訊息(排程第694項起: 訊息只含位置與期望之種類, 不含輸入值; 以下各案之越界值皆在 arr[0])
+let MSG_RANGE = 'invalid arr[0][key]: must be a number with an absolute value of at most 1e15'
+
 //規格來源: src/pickValue.mjs
 //  pickValue(arr, key): 將 arr 轉為 [{time, value}]
 //  arr 需為 wsemi isearr 判定之有效陣列 (非陣列, 或陣列長度為 0 皆視為無效) => 否則 throw
@@ -136,25 +139,25 @@ describe('pickValue', function() {
         //正負兩側各驗一次
         assert.throws(() => {
             pickValue([{ time: 't1', Close: 1e16 }], 'Close')
-        }, /invalid value/)
+        }, { message: MSG_RANGE })
         assert.throws(() => {
             pickValue([{ time: 't1', Close: -1e16 }], 'Close')
-        }, /invalid value/)
+        }, { message: MSG_RANGE })
 
         //數字字串亦於 cdbl 轉型後受檢
         assert.throws(() => {
             pickValue([{ time: 't1', Close: '1e16' }], 'Close')
-        }, /invalid value/)
+        }, { message: MSG_RANGE })
     })
 
     it('±Infinity 經 cdbl 轉為 ±Number.MAX_VALUE 後超過量級上限, 故拋錯', function() {
         //isnum(Infinity)===true 故不在剔除階段被濾掉, 而是在量級檢查被擋下
         assert.throws(() => {
             pickValue([{ time: 't1', Close: Infinity }], 'Close')
-        }, /invalid value/)
+        }, { message: MSG_RANGE })
         assert.throws(() => {
             pickValue([{ time: 't1', Close: -Infinity }], 'Close')
-        }, /invalid value/)
+        }, { message: MSG_RANGE })
     })
 
     it('絕對值恰為 1e15 之值不拋錯 (邊界不含)', function() {

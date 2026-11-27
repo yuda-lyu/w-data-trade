@@ -53,6 +53,7 @@ import flatten from 'lodash-es/flatten.js'
 import min from 'lodash-es/min.js'
 import max from 'lodash-es/max.js'
 import isestr from 'wsemi/src/isestr.mjs'
+import isarr from 'wsemi/src/isarr.mjs'
 import isearr from 'wsemi/src/isearr.mjs'
 import iseobj from 'wsemi/src/iseobj.mjs'
 import isobj from 'wsemi/src/isobj.mjs'
@@ -60,6 +61,7 @@ import isfun from 'wsemi/src/isfun.mjs'
 import pmSeries from 'wsemi/src/pmSeries.mjs'
 import ispm from 'wsemi/src/ispm.mjs'
 import haskey from 'wsemi/src/haskey.mjs'
+import getOptReader from 'wsemi/src/getOptReader.mjs'
 import arrFilterByENum from 'wsemi/src/arrFilterByENum.mjs'
 import fsWriteJson from 'wsemi/src/fsWriteJson.mjs'
 import arrAverage from 'w-statistic/src/arrAverage.mjs'
@@ -69,6 +71,9 @@ import { INTERVAL_SEC_BASE, readIntervalSec } from './resolvePeriods.mjs'
 
 //MSG_BY_PERIOD, nm.byPeriod無效時之固定訊息(不含輸入值)
 const MSG_BY_PERIOD = 'invalid deal.nm.byPeriod: must be an object of { avg, std } with a finite avg and a finite std > 0'
+
+//MSG_KEYS_IN, opt.keysIn非非空陣列(或讀取拋錯)時之固定訊息(不含輸入值); 元素無效者訊息另帶元素索引
+const MSG_KEYS_IN = 'invalid opt.keysIn: must be a non-empty array of non-empty strings'
 
 //MSG_NM_AVG、MSG_NM_STD, nm.avg與nm.std無效時之固定訊息(不含輸入值)
 const MSG_NM_AVG = 'invalid deal.nm.avg: must be a finite number'
@@ -166,8 +171,8 @@ let statOf = (ps) => {
  * 呼叫kp[method](arr,keyIn,optMethod)取得rrs(各期{period,len,vs}結果)後，對每個deal依其keyOut取值並以(值-avg)/std正規化，若deal.keyIn有指定則僅處理keyIn相符者，其餘略過
  * deal.nm.byPeriod(選配，null與undefined視為未給)為物件，鍵為期別標籤(即各期之period)、值為{avg,std}：某期別於byPeriod有自己之鍵(自有且可列舉者，與檢核所走訪之鍵相同)者用其avg與std正規化，否則用nm.avg與nm.std；byPeriod之各鍵與各值於檢核時只讀取一次(讀取拋錯視為無效)，其後正規化用檢核時讀得之值；未給byPeriod時行為與既有相同
  * 除非opt.denyOutput為true，否則會將各期正規化後之序列以檔名`${cointpe}_${keyKind}_${keyIn}_${keyOut}_${method}_${period}.json`寫入fdSelfData資料夾
- * 全部檢核先於任何計算(含opt.funAddKeysIn與calc)與寫檔：keysIn各元素、methods各元素(須為物件，method須為字串且存在於kp，deals須為非空陣列，各deal之keyOut須為字串、nm須為物件、nm.avg與nm.std有給時須為有限數值且std大於0(只收typeof為number者，不收數字字串與BigInt；未給或null為avg 0、std 1)、nm.byPeriod有給時須為一般物件(可為空物件)且各值為物件、avg為有限數值、std為有限數值且大於0(同樣只收數值，不收數字字串)，deal.keyIn有指定而不在keysIn內之deal不會被處理故不檢核)、各methods[i].optMethod之intervalSec(每根秒數，見resolvePeriods)；任一無效即reject且不寫出任何檔
- * 檢核失敗之訊息皆為固定詞彙(只含位置與期望之種類，不含輸入值)，亦不以console輸出輸入：`invalid opt.keysIn[i]: must be a non-empty string`、`invalid methods[i]: must be a non-empty object`、`invalid methods[i].method: must be a non-empty string`、`invalid methods[i].method: must be a key of kp`、`invalid methods[i].deals: must be a non-empty array`、`invalid deal.keyOut: must be a non-empty string`、`invalid deal.nm: must be a non-empty object`、`invalid deal.nm.avg: must be a finite number`、`invalid deal.nm.std: must be a finite number greater than 0`、`invalid deal.nm.byPeriod: must be an object of { avg, std } with a finite avg and a finite std > 0`；nm.avg、nm.std、nm.byPeriod與其各鍵於檢核時只讀取一次(讀取拋錯視為無效)，其後正規化只用檢核時讀得之值
+ * 全部檢核先於任何計算(含opt.funAddKeysIn與calc)與寫檔：opt.keysIn(有給時，見opt.keysIn；給了而無效即reject `invalid opt.keysIn: must be a non-empty array of non-empty strings`或`invalid opt.keysIn[i]: must be a non-empty string`)、methods各元素(須為物件，method須為字串且存在於kp，deals須為非空陣列，各deal之keyOut須為字串、nm須為物件、nm.avg與nm.std有給時須為有限數值且std大於0(只收typeof為number者，不收數字字串與BigInt；未給或null為avg 0、std 1)、nm.byPeriod有給時須為一般物件(可為空物件)且各值為物件、avg為有限數值、std為有限數值且大於0(同樣只收數值，不收數字字串)，deal.keyIn有指定而不在keysIn內之deal不會被處理故不檢核)、各methods[i].optMethod之intervalSec(每根秒數，見resolvePeriods)；任一無效即reject且不寫出任何檔
+ * 檢核失敗之訊息皆為固定詞彙(只含位置與期望之種類，不含輸入值)，亦不以console輸出輸入：`invalid methods[i]: must be a non-empty object`、`invalid methods[i].method: must be a non-empty string`、`invalid methods[i].method: must be a key of kp`、`invalid methods[i].deals: must be a non-empty array`、`invalid deal.keyOut: must be a non-empty string`、`invalid deal.nm: must be a non-empty object`、`invalid deal.nm.avg: must be a finite number`、`invalid deal.nm.std: must be a finite number greater than 0`、`invalid deal.nm.byPeriod: must be an object of { avg, std } with a finite avg and a finite std > 0`；nm.avg、nm.std、nm.byPeriod與其各鍵於檢核時只讀取一次(讀取拋錯視為無效)，其後正規化只用檢核時讀得之值
  * 同一次呼叫內各method之optMethod.intervalSec須相同(未給視為14400，數字字串與數值視為同值)，否則reject `invalid methods[i].optMethod.intervalSec: must be the same in every method`(i為第一個與先前不一致者之索引)，以免不同每根時長之序列靜默寫進同一資料夾；各method之optMethod.intervalSec皆未給時行為與既有相同
  * 最終計算全期攤平後序列(各期以其自己之常數正規化後)之avg、std、min、max，另增n、median、q25、q75與periods(依各期次序之陣列，各元素{period,len,n,avg,std,min,max,median,q25,q75}為該期正規化後序列之統計)，彙整為單筆結果；nm為{avg:0,std:1}且未給byPeriod時，periods即為各期原值之統計
  * 回傳列與periods之全部統計(n、avg、std、min、max、median、q25、q75)只取有限數值：NaN、±Infinity與非數值皆不計入(例如nm.std極小使正規化後溢位為±Infinity者亦不計入)，n為有限值之個數，avg與std用w-statistic之arrAverage與arrStd(取用之母體相同)，min與max為有限值中之極值，median、q25、q75為第7型分位數(排序後h=(n-1)*q，x[floor(h)]+(h-floor(h))*(x[floor(h)+1]-x[floor(h)])，n為1時即該值)；n為0者(無有限值)其餘統計欄皆為null，回傳列之min與max亦然；正規化本身不變，非有限之值仍照常逐值寫出
@@ -182,10 +187,10 @@ let statOf = (ps) => {
  * @param {Array} arrOhlc 輸入K線陣列
  * @param {Object} kp 輸入method名稱對應calc函式之映射物件，函式簽章為(arr,keyIn,optMethod)=>rrs
  * @param {String} fdSelfData 輸入輸出json檔案所在資料夾路徑字串
- * @param {Object} [opt={}] 輸入設定物件，預設{}
- * @param {Function} [opt.funAddKeysIn] 輸入用於逐筆轉換/擴增arrOhlc之函式，可回傳Promise，預設不轉換
- * @param {Array} [opt.keysIn=['none']] 輸入計算所用數值欄位名稱字串陣列，預設['none']
- * @param {Boolean} [opt.denyOutput=null] 輸入是否禁止寫出json檔案布林值，為true時不寫檔，預設null(不禁止)
+ * @param {Object} [opt={}] 輸入設定物件，預設{}；每鍵只讀一次。funAddKeysIn與denyOutput經wsemi之getOptReader宣告(跨套件規格K3、V11)：給了即檢測，非預期之輸入(型別不符)視為未給而改用預設、不reject，opt.debug恰為true時每個鍵每個行程警告一次(固定詞彙、不含傳入之值，出口為opt.funLog或console.warn，funLog以(msg, { fn, reason, key })呼叫，fn為'w-data-trade dataConvert')；鍵之讀取拋錯視為未給。keysIn決定計算之欄位，屬K3之例外：給了而無效即reject(見opt.keysIn)
+ * @param {Function} [opt.funAddKeysIn] 輸入用於逐筆轉換/擴增arrOhlc之函式，可回傳Promise，非函式視為未給，預設不轉換
+ * @param {Array} [opt.keysIn=['none']] 輸入計算所用數值欄位名稱字串陣列，預設['none']；未給(undefined、null)取預設，給了須為非空陣列且元素皆為非空字串，否則reject、不改用預設且不寫出任何檔：非陣列、空陣列、鍵或元素之讀取拋錯為`invalid opt.keysIn: must be a non-empty array of non-empty strings`，元素非非空字串為`invalid opt.keysIn[i]: must be a non-empty string`(i為元素之索引；訊息皆不含輸入值)
+ * @param {Boolean} [opt.denyOutput=false] 輸入是否禁止寫出json檔案布林值，只收true與false(不收1、0、'true'等，視為未給)，為true時不寫檔，預設false(不禁止)
  * @returns {Promise} 回傳Promise，resolve為各method/keyIn/keyOut組合之統計結果陣列，各元素為{method,keyIn,keyOut,avg,std,min,max,n,median,q25,q75,periods}
  * @example
  *
@@ -266,24 +271,40 @@ let dataConvert = async (name, symbol, interval, cointpe, keyKind, methods, arrO
         throw new Error(`invalid fdSelfData`)
     }
 
-    //opt
-    let funAddKeysIn = get(opt, 'funAddKeysIn')
-    let keysIn = get(opt, 'keysIn')
-    let denyOutput = get(opt, 'denyOutput', null)
+    //opt, funAddKeysIn與denyOutput經getOptReader讀取(每鍵只讀一次; 給了即檢測, 非預期之輸入視為未給而改用預設, opt.debug為true時警告; 跨套件規格K3、V11); keysIn屬K3之例外, 見下
+    let rd = getOptReader('w-data-trade dataConvert', opt)
+    let funAddKeysIn = rd('funAddKeysIn', null, isfun, 'a function', 'no conversion')
+    let denyOutput = rd('denyOutput', false, (v) => typeof v === 'boolean', 'a boolean', 'false')
 
-    //keysIn
-    if (!isearr(keysIn)) {
-        keysIn = ['none']
+    //keysIn, 決定計算之欄位, 屬跨套件規格K3之例外(決定資料口徑之opt): 未給(undefined、null)取預設['none']; 給了而無效即拒, 不改用預設(改用預設會得到看似成功之空輸出)
+    //  鍵或元素之讀取拋錯(存取器、陷阱、已撤銷之Proxy)視為給了而無效; 鍵與元素各讀一次並取快照, 其後只用快照(檢測之值即使用之值; isearr對長度1之陣列會另讀v[0], 故不用)
+    let keysIn = ['none']
+    let keysInRaw
+    let keysInSnap = null
+    try {
+        keysInRaw = ((typeof opt === 'object' &amp;&amp; opt !== null) || typeof opt === 'function') ? opt.keysIn : undefined
+        if (isarr(keysInRaw)) {
+            keysInSnap = Array.from(keysInRaw)
+        }
+    }
+    catch (err) {
+        throw new Error(MSG_KEYS_IN) //讀取拋錯, 訊息固定(不含拋出之訊息)
     }
 
     //check, 全部檢核先於任何計算(opt.funAddKeysIn與calc)與寫檔: 任一無效即拒, 輸出夾不留任何檔
     //  訊息與先前於逐method迴圈內檢核時相同; deal.keyIn有指定而不在keysIn內之deal不會被處理, 故不檢核(與先前相同)
     //  各訊息為固定詞彙, 只含位置與期望之種類, 不含輸入值, 亦不以console輸出輸入(跨套件規格V19、V20與〈診斷輸出與遮罩〉)
-    each(keysIn, (keyIn, i) => {
-        if (!isestr(keyIn)) {
-            throw new Error(`invalid opt.keysIn[${i}]: must be a non-empty string`)
+    if (keysInRaw !== undefined &amp;&amp; keysInRaw !== null) {
+        if (keysInSnap === null || keysInSnap.length === 0) {
+            throw new Error(MSG_KEYS_IN)
         }
-    })
+        each(keysInSnap, (keyIn, i) => {
+            if (!isestr(keyIn)) {
+                throw new Error(`invalid opt.keysIn[${i}]: must be a non-empty string`)
+            }
+        })
+        keysIn = keysInSnap
+    }
     let intervalSecFirst = null
     let snaps = new Map() //deal => nm之快照{ avg, std, byPeriod }(檢核時讀得且已檢核之值; 每個deal物件只讀取一次)
     each(methods, (m, i) => {
@@ -564,7 +585,7 @@ export default dataConvert
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.5</a> on Sat Nov 28 2026 06:09:31 GMT+0800 (台北標準時間) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.5</a> on Sat Nov 28 2026 07:57:09 GMT+0800 (台北標準時間) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
 <script>prettyPrint();</script>

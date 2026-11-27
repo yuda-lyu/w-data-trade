@@ -314,7 +314,7 @@ describe('calcAdx', function() {
         arr[1].High = null
         await assert.rejects(async () => {
             await calcAdx(arr, 'Close')
-        }, /invalid h/)
+        }, { message: 'invalid arr[1].High: must be a number' })
     })
 
     it('Low 非數值時須拋錯', async function() {
@@ -322,7 +322,7 @@ describe('calcAdx', function() {
         arr[2].Low = 'x'
         await assert.rejects(async () => {
             await calcAdx(arr, 'Close')
-        }, /invalid l/)
+        }, { message: 'invalid arr[2].Low: must be a number' })
     })
 
     it('前一根之 High, Low, Close 非數值時須拋錯', async function() {
@@ -330,19 +330,19 @@ describe('calcAdx', function() {
         arr1[0].Close = null
         await assert.rejects(async () => {
             await calcAdx(arr1, 'Close')
-        }, /invalid cPrev/)
+        }, { message: 'invalid arr[0].Close: must be a number' })
 
         let arr2 = genOhlc(30)
         arr2[0].High = null
         await assert.rejects(async () => {
             await calcAdx(arr2, 'Close')
-        }, /invalid hPrev/)
+        }, { message: 'invalid arr[0].High: must be a number' })
 
         let arr3 = genOhlc(30)
         arr3[0].Low = null
         await assert.rejects(async () => {
             await calcAdx(arr3, 'Close')
-        }, /invalid lPrev/)
+        }, { message: 'invalid arr[0].Low: must be a number' })
     })
 
 })

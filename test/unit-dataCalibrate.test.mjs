@@ -219,13 +219,17 @@ describe('dataCalibrate', function() {
         await assert.rejects(dataCalibrate(m.calcFn, arr, arr, ['X'], {}), /invalid optMethodInit/)
     })
 
-    it('輸入檢核: pair 與 opt 內容不合法時須拋錯', async function() {
+    it('輸入檢核: pair 與 opt.params、opt.keyIn 不合法時須拋固定訊息(含元素索引、不含輸入值)', async function() {
+        //排程第694項: 原 `invalid pair.keyOutSrc[值]`、`invalid opt.params[值]`、`invalid opt.keyIn[值]` 改為固定詞彙、不含輸入值;
+        //  params、keyIn 屬跨套件規格 K3 之例外(決定資料口徑之 opt): 給了而無效即拒, 其餘案例見 unit-optIo
         let arr = mkArr(400)
         let m = mkCalcFn()
-        await assert.rejects(dataCalibrate(m.calcFn, arr, arr, [{ keyOutRef: 'X' }], { a: 0 }), /invalid pair.keyOutSrc/)
-        await assert.rejects(dataCalibrate(m.calcFn, arr, arr, [{ keyOutSrc: 'X' }], { a: 0 }), /invalid pair.keyOutRef/)
-        await assert.rejects(dataCalibrate(m.calcFn, arr, arr, ['X'], { a: 0 }, { params: [1] }), /invalid opt.params/)
-        await assert.rejects(dataCalibrate(m.calcFn, arr, arr, ['X'], { a: 0 }, { keyIn: 5 }), /invalid opt.keyIn/)
+        await assert.rejects(dataCalibrate(m.calcFn, arr, arr, [{ keyOutRef: 'X' }], { a: 0 }), { message: 'invalid pairs[0].keyOutSrc: must be a non-empty string' })
+        await assert.rejects(dataCalibrate(m.calcFn, arr, arr, [{ keyOutSrc: 'X' }], { a: 0 }), { message: 'invalid pairs[0].keyOutRef: must be a non-empty string' })
+        await assert.rejects(dataCalibrate(m.calcFn, arr, arr, ['X', { keyOutSrc: 'X', keyOutRef: 5 }], { a: 0 }), { message: 'invalid pairs[1].keyOutRef: must be a non-empty string' })
+        await assert.rejects(dataCalibrate(m.calcFn, arr, arr, ['X'], { a: 0 }, { params: [1] }), { message: 'invalid opt.params: must be a non-empty array of non-empty strings' })
+        await assert.rejects(dataCalibrate(m.calcFn, arr, arr, ['X'], { a: 0 }, { keyIn: 5 }), { message: 'invalid opt.keyIn: must be a non-empty string' })
+        assert.strictEqual(m.calls.length, 0, 'calcFn 不得被呼叫')
     })
 
 })

@@ -21,7 +21,7 @@ let pickValue = (arr, key) => {
 
     //close
     let rs = []
-    each(arr, (v) => {
+    each(arr, (v, i) => {
 
         //time
         let time = get(v, 'time', '')
@@ -42,7 +42,7 @@ let pickValue = (arr, key) => {
 
         //check
         if (Math.abs(value) > 1e15) {
-            throw new Error(`invalid value[${value}]`)
+            throw new Error(`invalid arr[${i}][key]: must be a number with an absolute value of at most 1e15`)
         }
 
         //push

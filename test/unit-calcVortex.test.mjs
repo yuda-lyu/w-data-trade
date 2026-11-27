@@ -200,19 +200,19 @@ describe('calcVortex', function() {
     it('High 非數值時須拋錯 (src 之輸入檢查)', async function() {
         let arr = genOhlc(20)
         arr[1].High = null
-        await assert.rejects(calcVortex(arr, 'Close'), /invalid h/)
+        await assert.rejects(calcVortex(arr, 'Close'), { message: 'invalid arr[1].High: must be a number' })
     })
 
     it('Low 非數值時須拋錯 (src 之輸入檢查)', async function() {
         let arr = genOhlc(20)
         arr[1].Low = null
-        await assert.rejects(calcVortex(arr, 'Close'), /invalid l/)
+        await assert.rejects(calcVortex(arr, 'Close'), { message: 'invalid arr[1].Low: must be a number' })
     })
 
     it('前一根 Close 非數值時須拋錯 (src 之輸入檢查)', async function() {
         let arr = genOhlc(20)
         arr[0].Close = null
-        await assert.rejects(calcVortex(arr, 'Close'), /invalid cPrev/)
+        await assert.rejects(calcVortex(arr, 'Close'), { message: 'invalid arr[0].Close: must be a number' })
     })
 
     it('視窗僅取最近 len 根, 更早之極端波動不影響結果', async function() {

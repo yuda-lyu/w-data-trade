@@ -95,13 +95,13 @@ let calcAtr = (() => {
 
             //check
             if (!isNumber(h)) {
-                throw new Error(`invalid h[${h}]`)
+                throw new Error(`invalid arr[${i}].High: must be a number`)
             }
             if (!isNumber(l)) {
-                throw new Error(`invalid l[${l}]`)
+                throw new Error(`invalid arr[${i}].Low: must be a number`)
             }
             if (!isNumber(cPrev)) {
-                throw new Error(`invalid cPrev[${cPrev}]`)
+                throw new Error(`invalid arr[${i - 1}].Close: must be a number`)
             }
 
             //TR = max(H-L, |H-Cprev|, |L-Cprev|)

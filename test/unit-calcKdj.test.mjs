@@ -244,15 +244,15 @@ describe('calcKdj', function() {
 
         let arrH = barsFrom(rows)
         arrH[0].High = null
-        await assert.rejects(calcKdj(arrH, 'Close'), /invalid h/)
+        await assert.rejects(calcKdj(arrH, 'Close'), { message: 'invalid arr[0].High: must be a number' })
 
         let arrL = barsFrom(rows)
         arrL[0].Low = 'x'
-        await assert.rejects(calcKdj(arrL, 'Close'), /invalid l/)
+        await assert.rejects(calcKdj(arrL, 'Close'), { message: 'invalid arr[0].Low: must be a number' })
 
         let arrC = barsFrom(rows)
         arrC[0].Close = undefined
-        await assert.rejects(calcKdj(arrC, 'Close'), /invalid c/)
+        await assert.rejects(calcKdj(arrC, 'Close'), { message: 'invalid arr[0].Close: must be a number' })
     })
 
 })

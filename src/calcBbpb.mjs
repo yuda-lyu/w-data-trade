@@ -112,7 +112,7 @@ let calcBbpb = (() => {
 
             //check
             if (!isNumber(c)) {
-                throw new Error(`invalid c[${c}]`)
+                throw new Error(`invalid arr[${i}].Close: must be a number`)
             }
 
             //加入running sum

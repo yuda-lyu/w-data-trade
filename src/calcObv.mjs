@@ -88,13 +88,13 @@ let calcObv = (() => {
 
             //check
             if (!isNumber(c)) {
-                throw new Error(`invalid c[${c}]`)
+                throw new Error(`invalid arr[${i}].Close: must be a number`)
             }
             if (!isNumber(cPrev)) {
-                throw new Error(`invalid cPrev[${cPrev}]`)
+                throw new Error(`invalid arr[${i - 1}].Close: must be a number`)
             }
             if (!isNumber(vol)) {
-                throw new Error(`invalid vol[${vol}]`)
+                throw new Error(`invalid arr[${i}].Volumn: must be a number`)
             }
 
             //OBV累積

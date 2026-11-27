@@ -97,16 +97,16 @@ let calcCandle = (() => {
 
             //check
             if (!isNumber(o)) {
-                throw new Error(`invalid o[${o}]`)
+                throw new Error(`invalid arr[${i}].Open: must be a number`)
             }
             if (!isNumber(h)) {
-                throw new Error(`invalid h[${h}]`)
+                throw new Error(`invalid arr[${i}].High: must be a number`)
             }
             if (!isNumber(l)) {
-                throw new Error(`invalid l[${l}]`)
+                throw new Error(`invalid arr[${i}].Low: must be a number`)
             }
             if (!isNumber(c)) {
-                throw new Error(`invalid c[${c}]`)
+                throw new Error(`invalid arr[${i}].Close: must be a number`)
             }
 
             //K 線結構量

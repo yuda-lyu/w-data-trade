@@ -285,7 +285,7 @@ describe('calcBbpb', function() {
     it('Close 非數值時須拋錯', async function() {
         let arr = genOhlc(20)
         arr[7].Close = null
-        await assert.rejects(calcBbpb(arr, 'Close'), /invalid c/)
+        await assert.rejects(calcBbpb(arr, 'Close'), { message: 'invalid arr[7].Close: must be a number' })
     })
 
 })

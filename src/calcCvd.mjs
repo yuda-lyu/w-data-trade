@@ -98,10 +98,10 @@ let calcCvd = (() => {
 
             //check
             if (!isNumber(vol)) {
-                throw new Error(`invalid vol[${vol}]`)
+                throw new Error(`invalid arr[${i}].Volumn: must be a number`)
             }
             if (!isNumber(tb)) {
-                throw new Error(`invalid tb[${tb}]`)
+                throw new Error(`invalid arr[${i}].TakerBuyBaseAssetVolume: must be a number`)
             }
 
             if (vol > 0) {

@@ -142,10 +142,6 @@ let calcMacd = (() => {
                 })
             }
             else {
-                console.log('vs', vs)
-                console.log('i', i)
-                console.log('f', f)
-                console.log('s', s)
                 throw new Error(`invalid data`)
             }
 
