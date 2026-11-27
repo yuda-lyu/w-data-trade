@@ -29,7 +29,7 @@
 <nav >
     
     
-    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#caEma">caEma</a></li><li><a href="global.html#calcAdx">calcAdx</a></li><li><a href="global.html#calcAtr">calcAtr</a></li><li><a href="global.html#calcAts">calcAts</a></li><li><a href="global.html#calcBbpb">calcBbpb</a></li><li><a href="global.html#calcCandle">calcCandle</a></li><li><a href="global.html#calcCvd">calcCvd</a></li><li><a href="global.html#calcDirChange">calcDirChange</a></li><li><a href="global.html#calcDonchian">calcDonchian</a></li><li><a href="global.html#calcEma">calcEma</a></li><li><a href="global.html#calcIchimoku">calcIchimoku</a></li><li><a href="global.html#calcKdj">calcKdj</a></li><li><a href="global.html#calcKeltner">calcKeltner</a></li><li><a href="global.html#calcKlr">calcKlr</a></li><li><a href="global.html#calcMa">calcMa</a></li><li><a href="global.html#calcMacd">calcMacd</a></li><li><a href="global.html#calcMfi">calcMfi</a></li><li><a href="global.html#calcObv">calcObv</a></li><li><a href="global.html#calcOrig">calcOrig</a></li><li><a href="global.html#calcRsi">calcRsi</a></li><li><a href="global.html#calcSupertrend">calcSupertrend</a></li><li><a href="global.html#calcVec">calcVec</a></li><li><a href="global.html#calcVortex">calcVortex</a></li><li><a href="global.html#calcVwap">calcVwap</a></li><li><a href="global.html#chkIntervalSec">chkIntervalSec</a></li><li><a href="global.html#dataCalibrate">dataCalibrate</a></li><li><a href="global.html#dataConvert">dataConvert</a></li><li><a href="global.html#periodInfo">periodInfo</a></li><li><a href="global.html#resetWarned">resetWarned</a></li><li><a href="global.html#resolvePeriods">resolvePeriods</a></li><li><a href="global.html#spanLabelOf">spanLabelOf</a></li><li><a href="global.html#spanSecOf">spanSecOf</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#caEma">caEma</a></li><li><a href="global.html#calcAdx">calcAdx</a></li><li><a href="global.html#calcAtr">calcAtr</a></li><li><a href="global.html#calcAts">calcAts</a></li><li><a href="global.html#calcBbpb">calcBbpb</a></li><li><a href="global.html#calcCandle">calcCandle</a></li><li><a href="global.html#calcCvd">calcCvd</a></li><li><a href="global.html#calcDirChange">calcDirChange</a></li><li><a href="global.html#calcDonchian">calcDonchian</a></li><li><a href="global.html#calcDown">calcDown</a></li><li><a href="global.html#calcEma">calcEma</a></li><li><a href="global.html#calcFlow">calcFlow</a></li><li><a href="global.html#calcIchimoku">calcIchimoku</a></li><li><a href="global.html#calcKdj">calcKdj</a></li><li><a href="global.html#calcKeltner">calcKeltner</a></li><li><a href="global.html#calcKlr">calcKlr</a></li><li><a href="global.html#calcMa">calcMa</a></li><li><a href="global.html#calcMacd">calcMacd</a></li><li><a href="global.html#calcMfi">calcMfi</a></li><li><a href="global.html#calcMomz">calcMomz</a></li><li><a href="global.html#calcObv">calcObv</a></li><li><a href="global.html#calcOrig">calcOrig</a></li><li><a href="global.html#calcRsi">calcRsi</a></li><li><a href="global.html#calcSupertrend">calcSupertrend</a></li><li><a href="global.html#calcVec">calcVec</a></li><li><a href="global.html#calcVolx">calcVolx</a></li><li><a href="global.html#calcVortex">calcVortex</a></li><li><a href="global.html#calcVwap">calcVwap</a></li><li><a href="global.html#chkIntervalSec">chkIntervalSec</a></li><li><a href="global.html#dataCalibrate">dataCalibrate</a></li><li><a href="global.html#dataConvert">dataConvert</a></li><li><a href="global.html#periodInfo">periodInfo</a></li><li><a href="global.html#resetWarned">resetWarned</a></li><li><a href="global.html#resolvePeriods">resolvePeriods</a></li><li><a href="global.html#spanLabelOf">spanLabelOf</a></li><li><a href="global.html#spanSecOf">spanSecOf</a></li></ul>
     
 </nav>
 
@@ -4495,6 +4495,545 @@ opt.excludeCurrent=false(預設)時，視窗為[i-len+1,i]含當前根，第1筆
 
     
 
+    <h4 class="name" id="calcDown"><span class="type-signature"></span>calcDown<span class="signature">(arr, key, opt<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+    
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li><p>計算各週期下跌之統計(收跌根數比例、收跌根之量占比、暴跌根數)</p>
+<p>讀取key欄位與Volumn欄位，只用當根(含)以前之資料，逐根因果
+記號：lc=ln(key欄位)，r(i)=lc(i)-lc(i-1)(i至少為1)，視窗W(i,m)為第i-m+1至i根(含當根共m根)，期別之根數為len，σ(j)為r於W(j,opt.volLen)之母體標準差(需j至少為opt.volLen；全部相同者為0，不大於1e-12者亦視為0：完全等比之序列其r僅差浮點捨入，σ殘值約1e-17，不致使r/σ放大而逐根計為暴跌)
+各欄(第i根)：
+downBars=W(i,len)內r小於0之根數/len，收跌根數比例，範圍[0,1]
+downVol=W(i,len)內r小於0之根之Volumn之和/W(i,len)內Volumn之和，收跌根之量占比，範圍[0,1]，分母不大於0時回0.5
+crashN=W(i,len)內「σ(j)大於0且r(j)/σ(j)不大於-opt.crashK」之根數，暴跌根數(σ(j)含第j根自身之報酬)，為0至len之整數
+各期第一筆對應輸入索引len+opt.volLen-1(視窗內最早一根j=i-len+1需有σ(j)，即j至少為opt.volLen)，其後逐根對齊至最後一根，資料筆數n小於其加1時該期vs回空陣列
+各欄於資料充足時皆為有限數值(不輸出NaN或Infinity)</p>
+<p>Unit Test: <a href="https://github.com/yuda-lyu/w-data-trade/blob/master/test/unit-calcDown.test.mjs">Github</a></p></li></ul></dd>
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="calcDown.mjs.html">calcDown.mjs</a>, <a href="calcDown.mjs.html#line61">line 61</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+    <h5 class="h5-examples">Example</h5>
+    
+    <pre class="prettyprint"><code>let arr = [    { time: '2020-01-01T00:00:00', Close: 100, Volumn: 10 },    { time: '2020-01-01T04:00:00', Close: 102, Volumn: 20 },    { time: '2020-01-01T08:00:00', Close: 104, Volumn: 30 },    { time: '2020-01-01T12:00:00', Close: 97, Volumn: 40 },    { time: '2020-01-01T16:00:00', Close: 100, Volumn: 50 },    { time: '2020-01-01T20:00:00', Close: 96, Volumn: 100 },]calcDown(arr, 'Close', { volLen: 2, crashK: 1.5, kp: { '12hr': 3 } })    .then((rs) => {        console.log(rs[0])        // => {        //   period: '12hr',        //   len: 3,        //   vs: [        //     { time: '2020-01-01T16:00:00', downBars: 0.3333333333333333, downVol: 0.3333333333333333, crashN: 1 },        //     { time: '2020-01-01T20:00:00', downBars: 0.6666666666666666, downVol: 0.7368421052631579, crashN: 1 }        //   ]        // }    })</code></pre>
+
+
+
+
+    <h5 class="h5-parameters">Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>arr</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入K線陣列，各元素需含time、Volumn與key指定之欄位，key欄位須為正之有限數、Volumn須為不小於0之有限數，否則reject(任一根無效即整批reject；訊息不含輸入值)；null、undefined、{}(以lodash size計為0根)視為無資料，各期vs為空陣列</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>key</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入計算所用數值欄位名稱字串，如'Close'，須為非空字串，否則reject</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>opt</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>{}</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入設定物件，預設{}</p>
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>volLen</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+|
+
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>30</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入計算σ所用之根數，至少為2之整數(數值或數字字串，數字字串轉為數值使用)，預設30，非預期之輸入(含小於2、非整數、非數值)視為未給而改用預設</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>crashK</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+|
+
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>1.5</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入暴跌之門檻倍數，有限且大於0之數值(數值或數字字串，數字字串轉為數值使用)，預設1.5，非預期之輸入(含0、負數、非有限數、非數值)視為未給而改用預設</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>intervalSec</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+|
+
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>14400</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入每根K線之秒數，60之正整數倍且至多31536000(數值或數字字串)，各期根數不變(根數為本)，期別標籤為根數×每根秒數之時間跨度(例：每根1day時3根之期為'3day')，預設14400(每根4hr，標籤與根數皆同內建表)，無效時reject</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>kp</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入直接採用之週期表物件，鍵為週期標籤，值為正整數根數，給予時不換算，預設採內建週期表，非預期之輸入(非物件、空物件、任一值非正整數)視為未給；值為參數物件者reject</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>debug</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>false</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入是否於opt.kp、opt.volLen、opt.crashK出現非預期輸入(視為未給、改用預設)時輸出警告布林值，預設false；警告為固定詞彙、不含傳入之值，同一個鍵每個行程只警告一次</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>funLog</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入警告出口函數，以(msg, { fn, reason, key })呼叫，未給則用console.warn，預設未給</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>回傳Promise，resolve為各期結果陣列，各元素為{period,len,vs}，vs內各元素為{time,downBars,downVol,crashN}</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise</span>
+
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
     <h4 class="name" id="calcEma"><span class="type-signature"></span>calcEma<span class="signature">(arr, key, opt<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
 
     
@@ -4958,6 +5497,545 @@ diff=EMA-現值，ratio=diff/現值(現值為0時ratio給0)</p>
         
 <div class="param-desc">
     <p>回傳Promise，resolve為各期結果陣列，各元素為{period,len,vs}，vs內各元素為{time,param}(第1筆種子值僅含{time,param}，其後各筆另含{value,diff,ratio})</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise</span>
+
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="calcFlow"><span class="type-signature"></span>calcFlow<span class="signature">(arr, key, opt<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+    
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li><p>計算各週期累積主動買賣量之水準、速度與加速度(Taker flow level, velocity, acceleration)</p>
+<p>讀取Volumn與TakerBuyBaseAssetVolume欄位(key目前未被使用，僅為與其他指標介面一致而保留)，只用當根(含)以前之資料，逐根因果
+量之尺度s(j)=第j根之前(不含當根)至多opt.scaleWin根(第max(0,j-opt.scaleWin)至j-1根)之Volumn平均，需j至少為opt.scaleMin，s(j)不大於0時該根之buy、sell皆記0
+逐根之量：buy(j)=TakerBuyBaseAssetVolume/s(j)，sell(j)=(Volumn-TakerBuyBaseAssetVolume)/s(j)，net(j)=buy(j)-sell(j)
+視窗W(i,len)為第i-len+1至i根(含當根共len根)，期別之根數為len；M(i)為x於W(i,len)之平均(x為buy、sell、net)，share之M(i)=W(i,len)內(2×TakerBuyBaseAssetVolume-Volumn)之和/Volumn之和(和不大於0時回0)
+三階(各欄之M為其x之M)：水準L=M(i)，速度V=M(i)-M(i-len)，加速度A=M(i)-2M(i-len)+M(i-2len)
+輸出12欄：buyL、buyV、buyA、sellL、sellV、sellA、netL、netV、netA、shareL、shareV、shareA
+各期第一筆對應輸入索引s0=opt.scaleMin+3×len-1(M(i-2len)之視窗最早一根為i-3len+1，需至少為opt.scaleMin)，其後逐根對齊至最後一根，資料筆數n小於s0+1時該期vs回空陣列
+各欄於資料充足時皆為有限數值(不輸出NaN或Infinity)</p>
+<p>Unit Test: <a href="https://github.com/yuda-lyu/w-data-trade/blob/master/test/unit-calcFlow.test.mjs">Github</a></p></li></ul></dd>
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="calcFlow.mjs.html">calcFlow.mjs</a>, <a href="calcFlow.mjs.html#line59">line 59</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+    <h5 class="h5-examples">Example</h5>
+    
+    <pre class="prettyprint"><code>let arr = [    { time: '2020-01-01T00:00:00', Volumn: 10, TakerBuyBaseAssetVolume: 6 },    { time: '2020-01-01T04:00:00', Volumn: 20, TakerBuyBaseAssetVolume: 12 },    { time: '2020-01-01T08:00:00', Volumn: 30, TakerBuyBaseAssetVolume: 15 },    { time: '2020-01-01T12:00:00', Volumn: 40, TakerBuyBaseAssetVolume: 30 },    { time: '2020-01-01T16:00:00', Volumn: 50, TakerBuyBaseAssetVolume: 20 },    { time: '2020-01-01T20:00:00', Volumn: 60, TakerBuyBaseAssetVolume: 45 },]calcFlow(arr, 'Close', { scaleWin: 3, scaleMin: 2, kp: { '4hr': 1 } })    .then((rs) => {        console.log(rs[0])        // => {        //   period: '4hr',        //   len: 1,        //   vs: [        //     { time: '2020-01-01T16:00:00', buyL: 0.6666666666666666, buyV: -0.8333333333333334, buyA: -1.3333333333333335, sellL: 1, sellV: 0.5, sellA: 1, netL: -0.33333333333333337, netV: -1.3333333333333335, netA: -2.3333333333333335, shareL: -0.2, shareV: -0.7, shareA: -1.2 },        //     { time: '2020-01-01T20:00:00', buyL: 1.125, buyV: 0.45833333333333337, buyA: 1.2916666666666667, sellL: 0.375, sellV: -0.625, sellA: -1.125, netL: 0.75, netV: 1.0833333333333335, netA: 2.416666666666667, shareL: 0.5, shareV: 0.7, shareA: 1.4 }        //   ]        // }    })</code></pre>
+
+
+
+
+    <h5 class="h5-parameters">Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>arr</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入K線陣列，各元素需含time、Volumn、TakerBuyBaseAssetVolume欄位，須滿足Volumn為不小於0之有限數、TakerBuyBaseAssetVolume為有限數且0&lt;=TakerBuyBaseAssetVolume&lt;=Volumn×(1+1e-9)，否則reject(任一根無效即整批reject；訊息不含輸入值)；null、undefined、{}(以lodash size計為0根)視為無資料，各期vs為空陣列</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>key</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入計算所用數值欄位名稱字串，本指標固定讀取Volumn/TakerBuyBaseAssetVolume欄位，key目前未被使用，僅為與其他指標介面一致而保留</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>opt</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>{}</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入設定物件，預設{}</p>
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>scaleWin</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+|
+
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>90</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入量之尺度所用之最多根數，至少為1之整數(數值或數字字串，數字字串轉為數值使用)，預設90，非預期之輸入(含小於1、非整數、非數值)視為未給而改用預設</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>scaleMin</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+|
+
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>30</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入量之尺度所需之最少根數，至少為1且不大於opt.scaleWin之整數(數值或數字字串，數字字串轉為數值使用)，預設為30與opt.scaleWin之較小者，非預期之輸入(含大於opt.scaleWin者；opt.scaleWin取用其有效值或預設)視為未給而改用預設</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>intervalSec</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+|
+
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>14400</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入每根K線之秒數，60之正整數倍且至多31536000(數值或數字字串)，各期根數不變(根數為本)，期別標籤為根數×每根秒數之時間跨度(例：每根1day時3根之期為'3day')，預設14400(每根4hr，標籤與根數皆同內建表)，無效時reject</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>kp</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入直接採用之週期表物件，鍵為週期標籤，值為正整數根數，給予時不換算，預設採內建週期表，非預期之輸入(非物件、空物件、任一值非正整數)視為未給；值為參數物件者reject</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>debug</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>false</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入是否於opt.kp、opt.scaleWin、opt.scaleMin出現非預期輸入(視為未給、改用預設)時輸出警告布林值，預設false；警告為固定詞彙、不含傳入之值，同一個鍵每個行程只警告一次</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>funLog</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入警告出口函數，以(msg, { fn, reason, key })呼叫，未給則用console.warn，預設未給</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>回傳Promise，resolve為各期結果陣列，各元素為{period,len,vs}，vs內各元素為{time,buyL,buyV,buyA,sellL,sellV,sellA,netL,netV,netA,shareL,shareV,shareA}</p>
 </div>
 
 
@@ -8463,6 +9541,503 @@ MFIdiv為MFI與len根前之MFI取正負號比較，與Close之len根漲跌方向
 
     
 
+    <h4 class="name" id="calcMomz"><span class="type-signature"></span>calcMomz<span class="signature">(arr, key, opt<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+    
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li><p>計算各週期以波動標準化之動能、速度、加速度、已漲之幅與效率比(Momentum in volatility units)</p>
+<p>只用當根(含)以前之資料，逐根因果：lc=ln(key欄位)，r(i)=lc(i)-lc(i-1)(i至少為1)，視窗W(i,m)為第i-m+1至i根(含當根共m根)
+σ(i)為r於W(i,volLen)之母體標準差(需i至少為volLen；全部相同者為0，不大於1e-12者亦視為0：完全等比之序列其r僅差浮點捨入，σ殘值約1e-17，不致使各欄放大至1e13量級)，期別之根數為len，各欄(第i根)：
+momZ=(lc(i)-lc(i-len))/(σ(i)×√len)，起漲力道，σ為0時回0
+vel=lc於W(i,len)對x=0至len-1之最小平方斜率/σ(i)，速度(以每根之波動為單位)，σ為0時回0
+acc=vel(i)-vel(i-len)，加速度，為前後各一個len之速度之差
+ext=(lc(i)-W(i,len)內lc之最小)/(σ(i)×√len)，已漲之幅，不小於0，σ為0時回0
+er=|lc(i)-lc(i-len)|/Σ|r(j)|(j為W(i,len)內各根)，效率比(淨位移占路徑長之比例)，範圍[0,1]，分母為0時回0
+各期第一筆對應輸入索引len+max(len-1,volLen)(acc需第i-len根之vel，該根需有vel與σ)，其後逐根對齊至最後一根，資料筆數n小於其加1時該期vs回空陣列
+len須為至少2之整數(內建週期表皆符合；opt.kp之值不符時reject)，各欄於資料充足時皆為有限數值(不輸出NaN或Infinity)</p>
+<p>Unit Test: <a href="https://github.com/yuda-lyu/w-data-trade/blob/master/test/unit-calcMomz.test.mjs">Github</a></p></li></ul></dd>
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="calcMomz.mjs.html">calcMomz.mjs</a>, <a href="calcMomz.mjs.html#line62">line 62</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+    <h5 class="h5-examples">Example</h5>
+    
+    <pre class="prettyprint"><code>let arr = [    { time: '2020-01-01T00:00:00', Close: 100 },    { time: '2020-01-01T04:00:00', Close: 101 },    { time: '2020-01-01T08:00:00', Close: 103 },    { time: '2020-01-01T12:00:00', Close: 102 },    { time: '2020-01-01T16:00:00', Close: 106 },    { time: '2020-01-01T20:00:00', Close: 105 },    { time: '2020-01-02T00:00:00', Close: 107 },]calcMomz(arr, 'Close', { volLen: 2, kp: { '8hr': 2 } })    .then((rs) => {        console.log(rs[0])        // => {        //   period: '8hr',        //   len: 2,        //   vs: [        //     { time: '2020-01-01T16:00:00', momZ: 0.8419774659983006, vel: 1.595367975813664, acc: -2.465138561007665, ext: 1.1280955141856979, er: 0.5953679758136642 },        //     { time: '2020-01-01T20:00:00', momZ: 0.8550327791475775, vel: -0.3954005237279683, acc: 0.2690838929738175, ext: 0, er: 0.6045994762720317 },        //     { time: '2020-01-02T00:00:00', momZ: 0.4684443229726495, vel: 1.3312401573823016, acc: -0.26412781843136246, ext: 0.9413289426728721, er: 0.33124015738230167 }        //   ]        // }    })</code></pre>
+
+
+
+
+    <h5 class="h5-parameters">Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>arr</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入K線陣列，各元素需含time與key指定之欄位，key欄位須為正之有限數，否則reject(任一根無效即整批reject；訊息不含輸入值)；null、undefined、{}(以lodash size計為0根)視為無資料，各期vs為空陣列</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>key</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入計算所用數值欄位名稱字串，如'Close'，須為非空字串，否則reject</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>opt</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>{}</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入設定物件，預設{}</p>
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>volLen</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+|
+
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>30</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入計算σ所用之根數，至少為2之整數(數值或數字字串，數字字串轉為數值使用)，預設30，非預期之輸入(含小於2、非整數、非數值)視為未給而改用預設</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>intervalSec</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+|
+
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>14400</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入每根K線之秒數，60之正整數倍且至多31536000(數值或數字字串)，各期根數不變(根數為本)，期別標籤為根數×每根秒數之時間跨度(例：每根1day時3根之期為'3day')，預設14400(每根4hr，標籤與根數皆同內建表)，無效時reject</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>kp</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入直接採用之週期表物件，鍵為週期標籤，值為至少為2之整數根數，給予時不換算，預設採內建週期表，非預期之輸入(非物件、空物件、任一值非正整數)視為未給；值為正整數但小於2或為參數物件者reject(給了而不適用於本指標之週期表若改用內建表，期別與標籤將與呼叫端所要不同，故不依非預期視為未給)</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>debug</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>false</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入是否於opt.kp、opt.volLen出現非預期輸入(視為未給、改用預設)時輸出警告布林值，預設false；警告為固定詞彙、不含傳入之值，同一個鍵每個行程只警告一次</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>funLog</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入警告出口函數，以(msg, { fn, reason, key })呼叫，未給則用console.warn，預設未給</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>回傳Promise，resolve為各期結果陣列，各元素為{period,len,vs}，vs內各元素為{time,momZ,vel,acc,ext,er}</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise</span>
+
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
     <h4 class="name" id="calcObv"><span class="type-signature"></span>calcObv<span class="signature">(arr, key, opt<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
 
     
@@ -10591,6 +12166,638 @@ stDistanceMod=diviProt(Close+opt.plusClose-line, Close+opt.plusClose)，opt.plus
         
 <div class="param-desc">
     <p>回傳Promise，resolve為各期結果陣列，各元素為{period,len,vs}，vs內各元素為{time,param}</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise</span>
+
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="calcVolx"><span class="type-signature"></span>calcVolx<span class="signature">(arr, key, opt<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+    
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li><p>計算各週期波動之延伸(Volatility extensions: 已實現波動、以開高低收估之波動、短長比、Choppiness、下行占比、跳躍占比、變異數比、波動之波動)</p>
+<p>讀取Open、High、Low、Close欄位(key目前未被使用，僅為與其他指標介面一致而保留)，只用當根(含)以前之資料，逐根因果
+記號：lo、lh、ll、lc為開、高、低、收之對數，r(i)=lc(i)-lc(i-1)(i至少為1)，視窗W(i,m)為第i-m+1至i根(含當根共m根)，期別之根數為len
+逐根之量：pk=(lh-ll)²/(4 ln2)，gk=0.5(lh-ll)²-(2 ln2-1)(lc-lo)²，rs=(lh-lc)(lh-lo)+(ll-lc)(ll-lo)，tr=max(lh,前一根lc)-min(ll,前一根lc)(i至少為1)；lnv(x)=0.5×ln(max(x,opt.eps))
+各欄(第i根)：
+rv=lnv(r²於W(i,len)之平均)，已實現波動(對數)
+park=lnv(pk於W(i,len)之平均)，gk=lnv(gk於W(i,len)之平均)，rs=lnv(rs於W(i,len)之平均)，以高低(與開收)估之波動(對數)，平均不大於0者亦取opt.eps
+rvRatio=rv(i)-lnv(r²於W(i,len×opt.longMult)之平均)，短長期已實現波動之比(對數之差)
+chop=log10(tr於W(i,len)之和/(W內lh之最大-ll之最小))/log10(len)，Choppiness(趨勢近0、盤整近1)，高低差不大於0(或tr之和不大於0)時回0
+downShare=W(i,len)內r小於0者之r²之和/全部r²之和，下行之占比，分母為0時回0.5
+jumpShare=1-(π/2)×(|r(j)||r(j-1)|於j∈W(i,len)之平均)/(r²於W(i,len)之平均)，跳躍之占比，分母為0時回0；估計式本身不截斷，值域為(−∞,1]，雙冪次變差大於已實現變異時為負(估計誤差)，視窗短(len不大於5)時可為甚大之負值，僅需非負之占比者自行取max(0,jumpShare)
+varRatio=((lc(j)-lc(j-opt.vrLag))²於j∈W(i,len)之平均)/(opt.vrLag×r²於W(i,len)之平均)，變異數比，分母為0時回1
+volOfVol=u(j)於j∈W(i,len)之母體標準差(全部相同者為0)，u(j)=lnv(r²於W(j,opt.vovLen)之平均)，波動之波動
+各期第一筆對應輸入索引s0=各欄所需最早一根之最大者：rv、chop、downShare需i-len+1至少為1；park、gk、rs需至少為0；jumpShare需至少為2；rvRatio需i至少為len×opt.longMult；varRatio需i-len+1至少為opt.vrLag；volOfVol需i-len+1至少為opt.vovLen(u(j)需j至少為opt.vovLen)
+即s0=max(len×opt.longMult, len+1, len+opt.vrLag-1, len+opt.vovLen-1)，其後逐根對齊至最後一根，資料筆數n小於s0+1時該期vs回空陣列
+len須為至少2之整數(chop除以log10(len))，內建週期表皆符合；opt.kp之值不符時reject；各欄於資料充足時皆為有限數值(不輸出NaN或Infinity)</p>
+<p>Unit Test: <a href="https://github.com/yuda-lyu/w-data-trade/blob/master/test/unit-calcVolx.test.mjs">Github</a></p></li></ul></dd>
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="calcVolx.mjs.html">calcVolx.mjs</a>, <a href="calcVolx.mjs.html#line69">line 69</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+    <h5 class="h5-examples">Example</h5>
+    
+    <pre class="prettyprint"><code>let arr = [    { time: '2020-01-01T00:00:00', Open: 100, High: 102, Low: 99, Close: 101 },    { time: '2020-01-01T04:00:00', Open: 101, High: 104, Low: 100, Close: 103 },    { time: '2020-01-01T08:00:00', Open: 103, High: 105, Low: 101, Close: 102 },    { time: '2020-01-01T12:00:00', Open: 102, High: 108, Low: 101, Close: 106 },    { time: '2020-01-01T16:00:00', Open: 106, High: 107, Low: 103, Close: 104 },    { time: '2020-01-01T20:00:00', Open: 104, High: 106, Low: 102, Close: 105 },]calcVolx(arr, 'Close', { longMult: 2, vrLag: 2, vovLen: 2, kp: { '8hr': 2 } })    .then((rs) => {        console.log(rs[0])        // => {        //   period: '8hr',        //   len: 2,        //   vs: [        //     { time: '2020-01-01T16:00:00', rv: -3.4948926800720095, park: -3.419316236254498, gk: -3.39292949656469, rs: -3.432136987313123, rvRatio: 0.23088247302778342, chop: 0.6494439658123444, downShare: 0.19692591467747111, jumpShare: 0.05538753862252899, varRatio: 0.3260080709086289, volOfVol: 0.03924121837922345 },        //     { time: '2020-01-01T20:00:00', rv: -4.194830995946551, park: -3.772626954262258, gk: -3.6730947630270663, rs: -3.673962302353813, rvRatio: -0.4016382829038778, chop: 0.6780058293928951, downShare: 0.7984754500747242, jumpShare: -2.162947831834348, varRatio: 0.5137547286750295, volOfVol: 0.34996915793727057 }        //   ]        // }    })</code></pre>
+
+
+
+
+    <h5 class="h5-parameters">Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>arr</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入K線陣列，各元素需含time、Open、High、Low、Close欄位，四者皆須為正之有限數且Low不大於Open與Close、High不小於Open與Close(高低涵蓋開收，亦即High不小於Low)，否則reject(任一根無效或自相矛盾即整批reject；訊息不含輸入值)；null、undefined、{}(以lodash size計為0根)視為無資料，各期vs為空陣列</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>key</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入計算所用數值欄位名稱字串，本指標固定讀取Open/High/Low/Close欄位，key目前未被使用，僅為與其他指標介面一致而保留</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>opt</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>{}</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入設定物件，預設{}</p>
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>longMult</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+|
+
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>4</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入長視窗相對於期別根數之倍數，至少為2之整數(數值或數字字串，數字字串轉為數值使用)，預設4，非預期之輸入(含小於2、非整數、非數值)視為未給而改用預設</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>vrLag</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+|
+
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>6</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入變異數比之落後根數，至少為2之整數(數值或數字字串，數字字串轉為數值使用)，預設6，非預期之輸入視為未給而改用預設</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>vovLen</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+|
+
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>6</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入波動之波動中逐根波動所用之根數，至少為2之整數(數值或數字字串，數字字串轉為數值使用)，預設6，非預期之輸入視為未給而改用預設</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>eps</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+|
+
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>1e-12</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入波動取對數前之下限，有限且大於0之數值(數值或數字字串，數字字串轉為數值使用)，預設1e-12，非預期之輸入(含0、負數、非有限數、非數值)視為未給而改用預設</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>intervalSec</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+|
+
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>14400</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入每根K線之秒數，60之正整數倍且至多31536000(數值或數字字串)，各期根數不變(根數為本)，期別標籤為根數×每根秒數之時間跨度(例：每根1day時3根之期為'3day')，預設14400(每根4hr，標籤與根數皆同內建表)，無效時reject</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>kp</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入直接採用之週期表物件，鍵為週期標籤，值為至少為2之整數根數，給予時不換算，預設採內建週期表，非預期之輸入(非物件、空物件、任一值非正整數)視為未給；值為正整數但小於2或為參數物件者reject</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>debug</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>false</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入是否於opt.kp、opt.longMult、opt.vrLag、opt.vovLen、opt.eps出現非預期輸入(視為未給、改用預設)時輸出警告布林值，預設false；警告為固定詞彙、不含傳入之值，同一個鍵每個行程只警告一次</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>funLog</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入警告出口函數，以(msg, { fn, reason, key })呼叫，未給則用console.warn，預設未給</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>回傳Promise，resolve為各期結果陣列，各元素為{period,len,vs}，vs內各元素為{time,rv,park,gk,rs,rvRatio,chop,downShare,jumpShare,varRatio,volOfVol}</p>
 </div>
 
 
@@ -14298,7 +16505,7 @@ opt內之其他鍵(含已移除之舊選項barsPerDay)視為未知鍵，忽略</
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.5</a> on Fri Nov 27 2026 15:22:35 GMT+0800 (台北標準時間) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.5</a> on Sat Nov 28 2026 01:00:51 GMT+0800 (台北標準時間) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
 <script>prettyPrint();</script>
